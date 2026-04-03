@@ -2,12 +2,11 @@ import { useState, type FC, type InputHTMLAttributes } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoMailOutline } from "react-icons/io5";
-import { CiUser, CiLock } from "react-icons/ci";
+import { CiLock } from "react-icons/ci";
 import tickIcon from "../../assets/tickIcon.svg";
 import { Link } from "react-router-dom";
-import styles from "./SignUpPage.module.css";
-import type { SignUpFormData } from "./types";
-
+import styles from "./SignInPage.module.css";
+import type { SignInFormData } from "./types";
 
 const Header: FC = () => {
   return (
@@ -61,60 +60,52 @@ const InputField: FC<InputProps> = ({
 };
 
 
-const SignUpPage: FC = () => {
-  const navigate = useNavigate();
+const SignInPage: FC = () => {
+  
+    const navigate = useNavigate();
 
-  const [formData, setFormData] = useState<SignUpFormData>({
-    name: "",
+  const [formData, setFormData] = useState<SignInFormData>({
     email: "",
-    username: "",
     password: "",
-    confirmPassword: "",
   });
 
   const [error, setError] = useState<string>("");
-  const [agreeTerms, setAgreeTerms] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleChange = (field: keyof SignUpFormData, value: string) => {
+  const handleChange = (field: keyof SignInFormData, value: string) => {          
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const validate = (): boolean => {
-    if (!formData.name || !formData.email || !formData.password || !formData.username) {
+    if (!formData.email || !formData.password) {
       setError("All fields are required");
-      return false;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return false;
-    }
-    if (!agreeTerms) {
-      setError("You must agree to the terms and conditions");
       return false;
     }
     setError("");
     return true;
   };
 
+ 
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     console.log("Form Data:", formData);
     // API call
-    navigate("/login");
+    navigate("/dashboard");
   };
 
   return (
-    <div className={styles.signupPage}>
+    <div className={styles.signinPage}>
       <Header />
       <div className={styles.containerWrapper}>
         {/* LEFT SIDE INFO */}
-        <div className={styles.signuppageinfo}>
-          <h2 className={styles.title}>Join Our</h2>
-          <h2 className={styles.subtitle}>Community Today</h2>
+        <div className={styles.signinpageinfo}>
+          <h2 className={styles.title}>Final Year Project</h2>
+          <h2 className={styles.subtitle}>Management System</h2>
           <p className={styles.description}>
-            Create your account to get started with managing your final year project. Access powerful tools for collaboration, progress tracking, and milestone management.
-          </p>
+            Streamline your final year project workflow with our comprehensive management system. 
+            Track progress, collaborate with supervisors, and manage your project milestones efficiently.</p>
           <ul className={styles.features}>
             {[
               ["Powerful Collaboration Tools", "Work seamlessly with your team members"],
@@ -139,20 +130,14 @@ const SignUpPage: FC = () => {
         {/* RIGHT SIDE FORM */}
         <div className={styles.container}>
           <div className={styles.headingSection}>
-            <h1 className={styles.heading}>Create an Account</h1>
+            <h1 className={styles.heading}>Welcome Back</h1>
             <p className={styles.paragraph}>
-              Join our community and start managing your project
+              Sign in to continue to ProjectFlow
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
-            <InputField
-              label="Full Name"
-              name="name"
-              leftIcon={CiUser}
-              value={formData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-            />
+        
             <InputField
               label="Email"
               name="email"
@@ -162,13 +147,6 @@ const SignUpPage: FC = () => {
               onChange={(e) => handleChange("email", e.target.value)}
             />
             <InputField
-              label="Username"
-              name="username"
-              leftIcon={CiUser}
-              value={formData.username}
-              onChange={(e) => handleChange("username", e.target.value)}
-            />
-            <InputField
               label="Password"
               name="password"
               type="password"
@@ -176,28 +154,21 @@ const SignUpPage: FC = () => {
               value={formData.password}
               onChange={(e) => handleChange("password", e.target.value)}
             />
-            <InputField
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              leftIcon={CiLock}
-              value={formData.confirmPassword}
-              onChange={(e) => handleChange("confirmPassword", e.target.value)}
-            />
 
-            <div className={styles.terms}>
-              <input
-                type="checkbox"
-                checked={agreeTerms}
-                onChange={(e) => setAgreeTerms(e.target.checked)}
-                id="terms"
-              />
-              <label htmlFor="terms">
-                I agree to the{" "}
-                <span className={styles.termsAndConditions}>
-                  terms and conditions
-                </span>
-              </label>
+            <div className={styles.optionsRow}>
+                <div className={styles.rememberMe}>
+                    <input
+                    type="checkbox"
+                    id="remember"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    />
+                    <label htmlFor="remember">Remember me</label>
+                </div>
+
+                <Link to="/forgot-password" className={styles.forgotPassword}>
+                    Forgot password?
+                </Link>
             </div>
 
             {error && (
@@ -207,14 +178,14 @@ const SignUpPage: FC = () => {
               </div>
             )}
 
-            <button type="submit" className={styles.button}>
-              Create Account
+            <button type="submit" className={styles.button} >
+              Sign In
             </button>
 
             <div className={styles.loginRedirect}>
-              <span>Already have an account? </span>
-              <Link to="/login" className={styles.signInHere}>
-                Sign in here
+              <span>Dont have an account? </span>
+              <Link to="/" className={styles.signInHere}>
+                Sign up here
               </Link>
             </div>
           </form>
@@ -224,4 +195,4 @@ const SignUpPage: FC = () => {
   );
 };
 
-export default SignUpPage;
+export default SignInPage;

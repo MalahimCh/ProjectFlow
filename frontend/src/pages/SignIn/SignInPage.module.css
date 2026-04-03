@@ -4,10 +4,10 @@ html, body {
   box-sizing: border-box;
 }
 
-.signupPage {
+.signinPage {
   background: #F6F9FF;
-  display: flex;
   height:100vh;
+  display: flex;
   flex-direction: column;
   justify-content: flex-start; 
 }
@@ -43,10 +43,10 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: calc(100vh - 60px);
+  height:calc(100vh - 60px);
 }
 
-.signuppageinfo {
+.signinpageinfo {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -221,19 +221,7 @@ input:-webkit-autofill {
   cursor: pointer;
 }
 
-.terms {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 13px;
-  color: #6a7282;
-}
 
-.termsAndConditions {
-  color: #0d3ccf;
-  font-weight: 500;
-  cursor: pointer;
-}
 
 .button {
   margin-top: 5px;
@@ -253,6 +241,31 @@ input:-webkit-autofill {
 .button:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(13, 60, 207, 0.2);
+}
+
+.optionsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rememberMe {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color:#101828;
+  font-size: 14px;
+}
+
+.forgotPassword {
+  font-size: 14px;
+  color: #6a7282; 
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
 }
 
 .error {
