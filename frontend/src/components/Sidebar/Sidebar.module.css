@@ -1,0 +1,82 @@
+ .sidebar {
+  width: 250px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e5e7eb;
+  background: #fff;
+  font-family: Inter, sans-serif;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 18px;
+  font-weight: 450;
+}
+
+.logoBox {
+  width: 32px;
+  height: 32px;
+  background: #2563eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 8px;
+}
+
+/* Menu */
+.menu {
+  flex: 1;
+  padding: 10px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  padding-left: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+}
+
+.menuItem:hover {
+  background: #f3f4f6;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  background: #9ca3af;
+  border-radius: 4px;
+}
+
+/* Bottom */
+.bottom {
+  padding: 10px;
+}
+
+.logout {
+	padding:10px;
+	border-top: 1px solid #e5e7eb;
+}
+
+
+
+.active {
+  background: #eff6ff;   /* light blue */
+  color: #2563eb;        /* blue text */
+  font-weight: 500;
+}
+
+/* Make icon also blue */
+.active svg {
+  color: #2563eb;
+}
