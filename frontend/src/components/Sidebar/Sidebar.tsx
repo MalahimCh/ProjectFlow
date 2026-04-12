@@ -1,19 +1,25 @@
 import type { FunctionComponent } from "react";
 import type { MenuItem } from "./types";
-import { MdOutlineLogout } from "react-icons/md";
-import { FiUser, FiSettings } from "react-icons/fi";
+import { LuLogOut } from "react-icons/lu";
+import { LuSettings } from "react-icons/lu";
 import styles from "./Sidebar.module.css";
 import { LuGraduationCap } from "react-icons/lu";
 import { useState } from "react";
-import { FiMenu } from "react-icons/fi";
+import { LuMenu } from "react-icons/lu";
+import { LuUser } from "react-icons/lu";
 
 type SidebarProps = {
   menuItems: MenuItem[];
+   collapsed: boolean;
+  setCollapsed: (val: boolean) => void;
 };
 
-const Sidebar: FunctionComponent<SidebarProps> = ({ menuItems }) => {
+const Sidebar: FunctionComponent<SidebarProps> = ({
+  menuItems,
+  collapsed,
+  setCollapsed,
+}) => {
   const [active, setActive] = useState("Dashboard");
-  const [collapsed, setCollapsed] = useState(false);
 
   const handleClick = (item: MenuItem) => {
     setActive(item.label);
@@ -24,7 +30,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ menuItems }) => {
     <div className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
       <div className={styles.header}>
         <button onClick={() => setCollapsed(!collapsed)}>
-          <FiMenu size={18} />
+          <LuMenu size={18} />
         </button>
         {!collapsed && (
           <div className={styles.logoBox}>
@@ -61,7 +67,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ menuItems }) => {
           }`}
           onClick={() => setActive("Profile")}
         >
-          <FiUser size={18} />
+          <LuUser size={18} />
           <span>{!collapsed && "Profile"}</span>
         </div>
 
@@ -72,7 +78,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ menuItems }) => {
           }`}
           onClick={() => setActive("Settings")}
         >
-          <FiSettings size={18} />
+          <LuSettings size={18} />
           <span>{!collapsed && "Settings"}</span>
         </div>
 
@@ -82,7 +88,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({ menuItems }) => {
           onClick={() => console.log("Logout")}
         >
           <div className={styles.menuItem}>
-            <MdOutlineLogout size={18} />
+            <LuLogOut size={18} />
             <span>{!collapsed && "Logout"}</span>
           </div>
         </div>
