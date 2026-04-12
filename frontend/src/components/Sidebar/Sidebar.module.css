@@ -1,4 +1,5 @@
- .sidebar {
+/* Base Sidebar */
+.sidebar {
   width: 250px;
   height: 100vh;
   display: flex;
@@ -6,6 +7,8 @@
   border-right: 1px solid #e5e7eb;
   background: #fff;
   font-family: Inter, sans-serif;
+  transition: width 0.3s ease;
+  overflow: hidden;
 }
 
 /* Header */
@@ -19,13 +22,27 @@
   font-weight: 450;
 }
 
+.header button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 6px;
+  margin-right:4px;
+  border-radius: 6px;
+}
+
+.header button:hover {
+  background: #f3f4f6;
+}
+
 .logoBox {
   width: 32px;
   height: 32px;
   background: #2563eb;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
 }
 
@@ -39,16 +56,33 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
-  padding-left: 18px;
+  padding: 12px 12px 12px 18px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   color: #374151;
+  transition: opacity 0.2s ease;
 }
 
 .menuItem:hover {
   background: #f3f4f6;
+}
+
+.menuItem span {
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.2s ease, width 0.2s ease;
+}
+
+.active {
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.active svg {
+  color: #2563eb;
 }
 
 .icon {
@@ -64,19 +98,22 @@
 }
 
 .logout {
-	padding:10px;
-	border-top: 1px solid #e5e7eb;
+  padding: 0px;
+  border-top: 1px solid #e5e7eb;
 }
 
-
-
-.active {
-  background: #eff6ff;   /* light blue */
-  color: #2563eb;        /* blue text */
-  font-weight: 500;
+/* Collapsed State */
+.collapsed {
+  width: 70px;
 }
 
-/* Make icon also blue */
-.active svg {
-  color: #2563eb;
+.collapsed .menuItem {
+  justify-content: center;
+  padding: 12px 0;
+  gap: 0;
+}
+
+.collapsed .menuItem span {
+  opacity: 0;
+  width: 0;
 }
