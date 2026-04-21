@@ -7,6 +7,7 @@ import { LuGraduationCap } from "react-icons/lu";
 import { useState } from "react";
 import { LuMenu } from "react-icons/lu";
 import { LuUser } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 
 type SidebarProps = {
   menuItems: MenuItem[];
@@ -20,12 +21,18 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   setCollapsed,
 }) => {
   const [active, setActive] = useState("Dashboard");
+  
+    const navigate = useNavigate();
 
   const handleClick = (item: MenuItem) => {
     setActive(item.label);
     if (item.onClick) item.onClick();
   };
 
+  const handleLogout = () => {
+    console.log("Logout");
+    navigate("/");
+  };
   return (
     <div className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
       <div className={styles.header}>
@@ -87,7 +94,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
           className={styles.logout}
           onClick={() => console.log("Logout")}
         >
-          <div className={styles.menuItem}>
+          <div className={styles.menuItem} onClick={handleLogout}>
             <LuLogOut size={18} />
             <span>{!collapsed && "Logout"}</span>
           </div>

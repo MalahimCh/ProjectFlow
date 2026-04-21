@@ -1,0 +1,37 @@
+.card {
+  flex: 1 1 220px; /* ✅ key fix */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+/* icon box */
+.left {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* text section */
+.right {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-size: 20px;
+  font-weight: 550;
+  color: #101828;
+}
+
+.label {
+  font-size: 14px;
+  color: #6a7282;
+}
