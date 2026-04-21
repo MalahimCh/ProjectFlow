@@ -4,6 +4,7 @@ import SignInPage from "../pages/SignIn/SignInPage";
 
 import SDashboard from "../pages/Supervisor/Dashboard/SDashboard";
 import SProjects from "../pages/Supervisor/Projects/SProjects";
+import ProjectDetails from "../pages/Supervisor/Projects/ProjectDetails";
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const AppRoutes = () => {
       {/* Supervisor routes */}
       <Route path="/supervisor/dashboard" element={<SDashboard />} />
       <Route path="/supervisor/projects" element={<SProjects />} />
+      <Route path="/supervisor/projects/:projectId" element={<ProjectDetails />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" />} />

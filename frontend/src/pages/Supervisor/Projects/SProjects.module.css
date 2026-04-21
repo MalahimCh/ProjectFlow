@@ -1,6 +1,7 @@
 .container {
   display: flex;
   height: 100vh;
+  background-color: #F6F9FF;
 }
 
 /* right side */
@@ -12,18 +13,74 @@
 .content {
   flex: 1;
   padding: 20px;
-  background: #f5f5f5;
+  background:#F6F9FF;
   overflow-y: auto;
 }
 
 .statsGrid {
   flex: 1;
   padding: 8px;
-  background: #f5f5f5;
 
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
 
   align-content: start;
+}
+
+.sectionHeader{
+    background-color: #FFFFFD;
+    margin:8px;
+     border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding:10px;
+
+}
+
+
+.title{
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.projectCard {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  border: 1px solid #eee;
+}
+
+.projectCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.desc {
+  font-size: 13px;
+  color: #666;
+  margin: 8px 0;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-top: 10px;
+  color: #444;
+}
+
+.deadline {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #666;
 }
