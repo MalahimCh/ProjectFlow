@@ -134,7 +134,7 @@ const SDashboard: FC = () => {
           <div className={styles.section}>
                 <div className={styles.projectsTopLine}>
                   <p className={styles.sectionTitle}>Active Projects</p>
-                  <Link to="/projects" className={styles.viewAll}>
+                  <Link to="/supervisor/projects" className={styles.viewAll}>
                     View All &gt;
                   </Link>
                 </div>
