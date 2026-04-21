@@ -31,11 +31,25 @@
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
+  
+  padding:10px;
 }
 
 .sectionTitle {
   font-size: 1.2rem;
   margin-bottom: 12px;
+}
+
+.projectsTopLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viewAll {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .projectsGrid {

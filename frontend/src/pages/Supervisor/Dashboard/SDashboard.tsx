@@ -1,5 +1,6 @@
 import SSidebar from "../Sidebar/Ssidebar";
 import { type FC, useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "./SDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
@@ -131,13 +132,18 @@ const SDashboard: FC = () => {
           </div>
 
           <div className={styles.section}>
-                <p className={styles.sectionTitle}>Active Projects</p>
+                <div className={styles.projectsTopLine}>
+                  <p className={styles.sectionTitle}>Active Projects</p>
+                  <Link to="/projects" className={styles.viewAll}>
+                    View All &gt;
+                  </Link>
+                </div>
                 <div className={styles.projectsGrid}>
                   {dashboardView.activeGroups.map((project, idx) => (
                     <div key={idx} className={styles.projectCard}>
                       <div className={styles.projectHeader}>
-                        <span>{project.groupName}</span>
-                        <span>{project.progress}%</span>
+                        <p>{project.groupName}</p>
+                        <p>{project.progress}%</p>
                       </div>
 
                       <div className={styles.progressBar}>
