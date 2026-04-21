@@ -4,10 +4,10 @@ import { LuLogOut } from "react-icons/lu";
 import { LuSettings } from "react-icons/lu";
 import styles from "./Sidebar.module.css";
 import { LuGraduationCap } from "react-icons/lu";
-import { useState } from "react";
 import { LuMenu } from "react-icons/lu";
 import { LuUser } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 type SidebarProps = {
   menuItems: MenuItem[];
@@ -20,14 +20,14 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   collapsed,
   setCollapsed,
 }) => {
-  const [active, setActive] = useState("Dashboard");
   
+  
+const location = useLocation();
     const navigate = useNavigate();
 
-  const handleClick = (item: MenuItem) => {
-    setActive(item.label);
-    if (item.onClick) item.onClick();
-  };
+    const handleClick = (item: MenuItem) => {
+      navigate(item.path);
+    };
 
   const handleLogout = () => {
     console.log("Logout");
@@ -55,8 +55,8 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               key={index}
               title={collapsed ? item.label : ""}
               className={`${styles.menuItem} ${
-                active === item.label ? styles.active : ""
-              }`}
+  location.pathname === item.path ? styles.active : ""
+}`}
               onClick={() => handleClick(item)}
             >
               <Icon size={18} />
@@ -70,9 +70,9 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         <div
           title={collapsed ? "Profile" : ""}
           className={`${styles.menuItem} ${
-            active === "Profile" ? styles.active : ""
-          }`}
-          onClick={() => setActive("Profile")}
+  location.pathname === "/profile" ? styles.active : ""
+}`}
+         
         >
           <LuUser size={18} />
           <span>{!collapsed && "Profile"}</span>
@@ -81,9 +81,9 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         <div
           title={collapsed ? "Settings" : ""}
           className={`${styles.menuItem} ${
-            active === "Settings" ? styles.active : ""
-          }`}
-          onClick={() => setActive("Settings")}
+  location.pathname === "/settings" ? styles.active : ""
+}`}
+         
         >
           <LuSettings size={18} />
           <span>{!collapsed && "Settings"}</span>
