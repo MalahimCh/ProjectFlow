@@ -48,7 +48,7 @@
 
 .viewAll {
   text-decoration: none;
-  color: inherit;
+  color: #0D3CCF;
   cursor: pointer;
 }
 
@@ -63,4 +63,18 @@
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 16px;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progressText{
+  color: #6A7282;
+}
+
+.progressPercent {
+  color: #0D3CCF;
 }

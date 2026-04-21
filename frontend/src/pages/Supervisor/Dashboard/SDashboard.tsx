@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import styles from "./SDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers,LuMessageSquareText,LuCalendar, LuUserCheck } from "react-icons/lu"
+import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck } from "react-icons/lu"
 
 export const formatSmartDateTime = (isoString: string) => {
   const date = new Date(isoString);
@@ -143,7 +143,10 @@ const SDashboard: FC = () => {
                     <div key={idx} className={styles.projectCard}>
                       <div className={styles.projectHeader}>
                         <p>{project.groupName}</p>
-                        <p>{project.progress}%</p>
+                        <div className={styles.progressHeader}>
+                          <p className={styles.progressText}>Progress</p>
+                          <p className={styles.progressPercent}>{project.progress}%</p>
+                        </div>
                       </div>
 
                       <div className={styles.progressBar}>
