@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import styles from "./SDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck } from "react-icons/lu"
+import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuBookOpen } from "react-icons/lu"
+{/* <LuBookOpen /> */}
 
 export const formatSmartDateTime = (isoString: string) => {
   const date = new Date(isoString);
@@ -53,6 +54,10 @@ const dashboardView = {
     {
       groupName: "Web Dev FYP",
       progress: 40,
+    },
+    {
+      groupName: "Database Systems Group",
+      progress: 80,
     },
     {
       groupName: "Database Systems Group",
@@ -107,6 +112,12 @@ const dashboardView = {
   ],
 };
 
+const getProgressColor = (progress: number) => {
+  if (progress < 50) return "#DC2626";
+  if (progress < 75) return "#F59E0B";
+  return "#16A34A";
+};
+
 const SDashboard: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -141,6 +152,10 @@ const SDashboard: FC = () => {
                 <div className={styles.projectsGrid}>
                   {dashboardView.activeGroups.map((project, idx) => (
                     <div key={idx} className={styles.projectCard}>
+                      <div className={styles.iconWrapper}>
+                        <LuBookOpen className={styles.icon} />
+                      </div>
+
                       <div className={styles.projectHeader}>
                         <p>{project.groupName}</p>
                         <div className={styles.progressHeader}>
@@ -150,9 +165,11 @@ const SDashboard: FC = () => {
                       </div>
 
                       <div className={styles.progressBar}>
-                        <div
-                          className={styles.progressFill}
-                          style={{ width: `${project.progress}%` }}
+                        <div className={styles.progressFill}
+                          style={{
+                            width: `${project.progress}%`,
+                            backgroundColor: getProgressColor(project.progress),
+                          }}
                         />
                       </div>
                     </div>
