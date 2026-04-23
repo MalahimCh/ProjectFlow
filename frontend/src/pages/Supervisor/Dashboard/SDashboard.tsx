@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import styles from "./SDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuBookOpen } from "react-icons/lu"
-{/* <LuBookOpen /> */}
+import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuBookOpen, LuCircleCheck } from "react-icons/lu"
 
 export const formatSmartDateTime = (isoString: string) => {
   const date = new Date(isoString);
@@ -152,8 +151,13 @@ const SDashboard: FC = () => {
                 <div className={styles.projectsGrid}>
                   {dashboardView.activeGroups.map((project, idx) => (
                     <div key={idx} className={styles.projectCard}>
-                      <div className={styles.iconWrapper}>
-                        <LuBookOpen className={styles.icon} />
+                      <div className={styles.cardIcons}>
+                        <div className={styles.bookIconWrapper}>
+                          <LuBookOpen className={styles.bookIcon}/>
+                        </div>
+                        <div className={styles.tickIconWrapper}>
+                          <LuCircleCheck className={styles.tickIcon}/>
+                        </div>
                       </div>
 
                       <div className={styles.projectHeader}>

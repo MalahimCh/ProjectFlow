@@ -17,6 +17,19 @@
   overflow-y: auto;
 }
 
+.section{
+  background: #FFFFFF;
+  border: 1px solid #E5E7Eb;
+  border-radius: 12px;
+  margin:8px;
+  padding: 20px;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
 .statsGrid {
   flex: 1;
   padding: 8px;
@@ -26,19 +39,6 @@
   gap: 16px;
 
   align-content: start;
-}
-
-.section{
-  background: #FFFFFF;
-  border: 1px solid #E5E7Eb;
-  border-radius: 12px;
-  
-  padding: 20px;
-}
-
-.sectionTitle {
-  font-size: 1.2rem;
-  margin-bottom: 12px;
 }
 
 .projectsTopLine {
@@ -69,6 +69,44 @@
   height: 134px; */
 }
 
+.cardIcons {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+}
+
+.bookIconWrapper {
+  width: 36px;
+  height: 36px;
+  background-color: #F9FAFB;
+  border-radius: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.bookIcon {
+  font-size: 18px;
+  color: #0D3CCF;
+}
+
+.tickIconWrapper {
+  width: 36px;
+  height: 36px;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  margin-left: 10px;
+}
+
+.tickIcon {
+  font-size: 18px;
+  color: #0D3CCF;
+}
+
 .progressHeader {
   display: flex;
   justify-content: space-between;
@@ -97,20 +135,4 @@
   width: 0%;
   border-radius: 10px;
   /* transition: width 0.4s ease-in-out; */
-}
-
-.iconWrapper {
-  width: 36px;
-  height: 36px;
-  background-color: #F9FAFB;
-  border-radius: 20%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-}
-
-.icon {
-  font-size: 18px;
-  color: #0D3CCF;
 }
