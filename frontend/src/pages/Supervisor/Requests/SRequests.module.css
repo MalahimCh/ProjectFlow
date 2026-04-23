@@ -1,0 +1,161 @@
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #f6f9ff;
+}
+
+/* right side */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.content {
+  flex: 1;
+  padding: 20px;
+  background: #f6f9ff;
+  overflow-y: auto;
+}
+
+.statsGrid {
+  flex: 1;
+  padding: 8px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+
+  align-content: start;
+}
+
+.sectionHeader {
+  background-color: #fffffd;
+  margin: 8px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.requestList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+.requestCard {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* TOP ROW */
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.studentInfo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: #e0e7ff;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.studentName {
+  font-weight: 600;
+}
+
+.meta {
+  font-size: 12px;
+  color: #666;
+  margin-right: 6px;
+}
+
+.badge {
+  font-size: 11px;
+  background: #e0e7ff;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* STATUS */
+.statusBadge {
+  font-size: 12px;
+  background: #e0e7ff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: #0d3ccf;
+}
+
+/* PROJECT */
+.projectInfo h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.projectInfo p {
+  font-size: 13px;
+  color: #666;
+}
+
+/* DATES */
+.dates {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* ACTIONS */
+.actionsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actionsRow button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #f3f4f6;
+}
+
+/* RIGHT SIDE BUTTONS */
+.rightActions {
+  display: flex;
+  gap: 10px;
+}
+
+.reject {
+  background: white;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+}
+
+.approve {
+  background: #1d4ed8;
+  color: rgb(22, 167, 39);
+}

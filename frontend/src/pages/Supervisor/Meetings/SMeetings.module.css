@@ -1,0 +1,131 @@
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #F6F9FF;
+}
+
+/* right side */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.content {
+  flex: 1;
+  padding: 20px;
+  background:#F6F9FF;
+  overflow-y: auto;
+}
+
+.topSection{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.meet{
+    min-width:250px;
+    background-color: #E0E7FF;
+}
+
+.statsGrid {
+  flex: 1;
+  padding: 8px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+
+  align-content: start;
+}
+
+.sectionHeader{
+    background-color: #FFFFFD;
+    margin:8px;
+     border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding:10px;
+
+}
+
+
+.title{
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+
+.meetingList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meetingCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.meet button {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 350px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal input,
+.modal select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
