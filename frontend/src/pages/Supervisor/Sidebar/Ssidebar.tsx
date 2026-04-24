@@ -1,10 +1,6 @@
-import { LuCalendarCheck } from "react-icons/lu";
 import Sidebar from "../../../components/Sidebar/Sidebar";
-import { LuLayoutDashboard } from "react-icons/lu";
 import type { FunctionComponent } from "react";
-import { LuUsers } from "react-icons/lu";
-import { LuGitPullRequestArrow } from "react-icons/lu";
-import { LuFileSearch } from "react-icons/lu";
+import { LuCalendarCheck, LuLayoutDashboard, LuUsers, LuGitPullRequestArrow, LuFileSearch } from "react-icons/lu";
 
 const supervisorMenu = [
   { label: "Dashboard", icon: LuLayoutDashboard, path: "/supervisor/dashboard" },

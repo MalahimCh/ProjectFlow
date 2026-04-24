@@ -1,13 +1,10 @@
 import { useState, type FC, type InputHTMLAttributes } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { IoMailOutline } from "react-icons/io5";
-import { CiUser, CiLock } from "react-icons/ci";
 import tickIcon from "../../assets/tickIcon.svg";
 import { Link } from "react-router-dom";
 import styles from "./SignUpPage.module.css";
 import type { SignUpFormData } from "./types";
-
+import { LuEye, LuEyeOff, LuMail, LuUser, LuLock } from "react-icons/lu";
 
 const Header: FC = () => {
   return (
@@ -45,12 +42,12 @@ const InputField: FC<InputProps> = ({
         />
         {isPassword &&
           (showPassword ? (
-            <FaRegEyeSlash
+            <LuEyeOff
               className={styles.icon}
               onClick={() => setShowPassword(false)}
             />
           ) : (
-            <FaRegEye
+            <LuEye
               className={styles.icon}
               onClick={() => setShowPassword(true)}
             />
@@ -59,7 +56,6 @@ const InputField: FC<InputProps> = ({
     </div>
   );
 };
-
 
 const SignUpPage: FC = () => {
   const navigate = useNavigate();
@@ -149,7 +145,7 @@ const SignUpPage: FC = () => {
             <InputField
               label="Full Name"
               name="name"
-              leftIcon={CiUser}
+              leftIcon={LuUser}
               value={formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
             />
@@ -157,14 +153,14 @@ const SignUpPage: FC = () => {
               label="Email"
               name="email"
               type="email"
-              leftIcon={IoMailOutline}
+              leftIcon={LuMail}
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
             />
             <InputField
               label="Username"
               name="username"
-              leftIcon={CiUser}
+              leftIcon={LuUser}
               value={formData.username}
               onChange={(e) => handleChange("username", e.target.value)}
             />
@@ -172,7 +168,7 @@ const SignUpPage: FC = () => {
               label="Password"
               name="password"
               type="password"
-              leftIcon={CiLock}
+              leftIcon={LuLock}
               value={formData.password}
               onChange={(e) => handleChange("password", e.target.value)}
             />
@@ -180,7 +176,7 @@ const SignUpPage: FC = () => {
               label="Confirm Password"
               name="confirmPassword"
               type="password"
-              leftIcon={CiLock}
+              leftIcon={LuLock}
               value={formData.confirmPassword}
               onChange={(e) => handleChange("confirmPassword", e.target.value)}
             />

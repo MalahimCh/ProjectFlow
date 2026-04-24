@@ -135,8 +135,6 @@ html, body {
   color: #6a7282;
 }
 
-
-
 .container {
   flex: 1;
   max-width: 420px;
@@ -332,5 +330,3 @@ input:-webkit-autofill {
     padding: 10px;
   }
 }
-
-
