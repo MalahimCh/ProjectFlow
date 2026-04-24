@@ -16,6 +16,7 @@ type Request = {
   lastDate: string;
   proposalLink: string;
   status: "pending" | "accepted" | "rejected";
+  decisionDate?: string;
 };
 
 const initialRequests: Request[] = [
@@ -62,11 +63,29 @@ const SRequests: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [requests, setRequests] = useState<Request[]>(initialRequests);
 
-  const updateStatus = (id: string, status: "accepted" | "rejected") => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status } : r))
-    );
-  };
+  const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).format(date);
+};
+
+const updateStatus = (id: string, status: "accepted" | "rejected") => {
+  const today = formatDate(new Date());
+
+  setRequests((prev) =>
+    prev.map((r) =>
+      r.id === id
+        ? {
+            ...r,
+            status,
+            decisionDate: today,
+          }
+        : r
+    )
+  );
+};
 
   const viewProposal = (link: string) => {
     window.open(link, "_blank");
@@ -153,7 +172,7 @@ const SRequests: FC = () => {
         <p className={styles.projectNameActioned}>{r.projectName}</p>
         <div className={styles.dates}>
           <div className={styles.singleDate}>
-            <LuCalendar /> Approved on: {r.submittedOn}
+            <LuCalendar/> Approved on: {r.decisionDate}
           </div>
         </div>
       </div>
@@ -190,7 +209,7 @@ const SRequests: FC = () => {
         <p className={styles.projectNameActioned}>{r.projectName}</p>
         <div className={styles.dates}>
           <div className={styles.singleDate}>
-            <LuCalendar /> Approved on: {r.submittedOn}
+            <LuCalendar /> Rejected on: {r.decisionDate}
           </div>
         </div>
       </div>
