@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import styles from "./SDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuBookOpen, LuCircleCheck } from "react-icons/lu"
+import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuBookOpen, LuCircleCheck, LuClock, LuTriangleAlert, LuFlag } from "react-icons/lu"
 
 export const formatSmartDateTime = (isoString: string) => {
   const date = new Date(isoString);
@@ -59,8 +59,8 @@ const dashboardView = {
       progress: 80,
     },
     {
-      groupName: "Database Systems Group",
-      progress: 80,
+      groupName: "Flex Clone",
+      progress: 72,
     },
   ],
 
@@ -68,22 +68,22 @@ const dashboardView = {
     {
       meetingType: "Sprint Review",
       projectName: "AI Project",
-      datetime: "2026-04-21T15:00:00.000Z",
+      datetime: "2026-04-25T15:00:00.000Z",
     },
     {
       meetingType: "Client Discussion",
       projectName: "Web Dev FYP",
-      datetime: "2026-04-22T11:00:00.000Z",
+      datetime: "2026-04-27T11:00:00.000Z",
     },
     {
       meetingType: "Team Sync",
       projectName: "Database Systems",
-      datetime: "2026-04-24T17:30:00.000Z",
+      datetime: "2026-04-28T17:30:00.000Z",
     },
     {
       meetingType: "Design Review",
       projectName: "AI Project",
-      datetime: "2026-04-26T14:00:00.000Z",
+      datetime: "2026-04-30T14:00:00.000Z",
     },
   ],
 
@@ -91,22 +91,22 @@ const dashboardView = {
     {
       deadlineType: "UI Prototype",
       projectName: "Web Dev FYP",
-      date: "2026-04-22T00:00:00.000Z",
+      datetime: "2026-04-25T06:59:00.000Z",
     },
     {
       deadlineType: "Report Submission",
       projectName: "AI Project",
-      date: "2026-04-25T00:00:00.000Z",
+      datetime: "2026-04-25T00:00:00.000Z",
     },
     {
       deadlineType: "Database Schema Finalization",
       projectName: "Database Systems",
-      date: "2026-04-26T00:00:00.000Z",
+      datetime: "2026-04-26T00:00:00.000Z",
     },
     {
       deadlineType: "Final Presentation Slides",
       projectName: "AI Project",
-      date: "2026-04-27T00:00:00.000Z",
+      datetime: "2026-04-30T00:00:00.000Z",
     },
   ],
 };
@@ -115,6 +115,84 @@ const getProgressColor = (progress: number) => {
   if (progress < 50) return "#DC2626";
   if (progress < 75) return "#F59E0B";
   return "#16A34A";
+};
+
+const getUpcomingWithinWeek = (items: any[]) => {
+  const now = new Date();
+
+  return items
+    .map((item) => {
+      const rawDate = new Date(item.datetime);
+
+      const diffMs = rawDate.getTime() - now.getTime();
+
+      // If already passed → don't show
+      if (diffMs <= 0) return null;
+
+      const diffDays = Math.floor(
+        diffMs / (1000 * 60 * 60 * 24)
+      );
+
+      // Only within next 7 days
+      if (diffDays > 6) return null;
+
+      const timeString = rawDate.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      let label = "";
+
+      if (diffDays === 0) {
+        label = `Due Today at ${timeString}`;
+      } else if (diffDays === 1) {
+        label = `Due Tomorrow at ${timeString}`;
+      } else {
+        label = `Due in ${diffDays} days`;
+      }
+
+      return { ...item, dueLabel: label, diffDays };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.diffDays - b.diffDays);
+};
+
+const getUpcomingDeadlinesStyled = (items: any[]) => {
+  const now = new Date();
+
+  return items
+    .map((item) => {
+      const rawDate = new Date(item.datetime);
+      const diffMs = rawDate.getTime() - now.getTime();
+
+      if (diffMs <= 0) return null;
+
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 6) return null;
+
+      const timeString = rawDate.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      let label = "";
+      let status = "";
+
+      if (diffDays === 0) {
+        label = `Due Today at ${timeString}`;
+        status = "urgent";
+      } else if (diffDays === 1) {
+        label = `Due Tomorrow at ${timeString}`;
+        status = "urgent";
+      } else {
+        label = `Due in ${diffDays} days`;
+        status = "normal";
+      }
+
+      return { ...item, dueLabel: label, status };
+    })
+    .filter(Boolean);
 };
 
 const SDashboard: FC = () => {
@@ -160,12 +238,13 @@ const SDashboard: FC = () => {
                         </div>
                       </div>
 
-                      <div className={styles.projectHeader}>
+                      <div className={styles.projectName}>
                         <p>{project.groupName}</p>
-                        <div className={styles.progressHeader}>
+                      </div>
+
+                      <div className={styles.progressHeader}>
                           <p className={styles.progressText}>Progress</p>
                           <p className={styles.progressPercent}>{project.progress}%</p>
-                        </div>
                       </div>
 
                       <div className={styles.progressBar}>
@@ -182,46 +261,74 @@ const SDashboard: FC = () => {
           </div>
 
           <div className={styles.twoColumnSection}>
-            {/* Deadlines */}
             <div className={styles.column}>
-              <h2 className={styles.sectionTitle}>Upcoming Deadlines</h2>
-
-              {dashboardView.upcomingDeadlines.map((item, idx) => {
-                const formatted = formatSmartDateTime(item.date);
-
-                return (
-                  <div key={idx} className={styles.taskCard}>
+              <p className={styles.sectionTitle}>Upcoming Deadlines</p>
+              {getUpcomingDeadlinesStyled(dashboardView.upcomingDeadlines).map((item, idx) => (
+                <div
+                  key={idx}
+                  className={`${styles.taskCard} ${
+                    item.status === "urgent"
+                      ? styles.taskCardUrgent
+                      : styles.taskCardNormal
+                  }`}
+                >
+                  <div className={styles.deadlineTop}>
+                    <div>
+                      {item.status === "urgent" ? (
+                        <LuTriangleAlert className={styles.iconUrgent} />
+                      ) : (
+                        <LuFlag className={styles.iconNormal} />
+                      )}
+                    </div>
                     <div className={styles.taskTitle}>{item.deadlineType}</div>
-                    <div className={styles.taskSub}>{item.projectName}</div>
-                    <div className={styles.taskMeta}>
-                      {formatted.label} • {formatted.time}
+                  </div>
+                  <div className={styles.taskSub}>{item.projectName}</div>
+                  
+                  <div
+                    className={
+                      item.status === "urgent"
+                        ? styles.taskMetaUrgent
+                        : styles.taskMetaNormal
+                    }
+                  >
+                    <div>
+                      <LuClock />
+                    </div>
+                  
+                    <div>
+                      {item.dueLabel}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
 
-            {/* Meetings */}
             <div className={styles.column}>
-              <h2 className={styles.sectionTitle}>Upcoming Meetings</h2>
-
-              {dashboardView.upcomingMeetings.map((item, idx) => {
-                const formatted = formatSmartDateTime(item.datetime);
-
-                return (
-                  <div key={idx} className={styles.taskCard}>
-                    <div className={styles.taskTitle}>{item.meetingType}</div>
-                    <div className={styles.taskSub}>{item.projectName}</div>
-                    <div className={styles.taskMeta}>
-                      {formatted.label} • {formatted.time}
+              <div className={styles.projectsTopLine}>
+                  <p className={styles.sectionTitle}>Upcoming Meetings</p>
+                  <Link to="/supervisor/meetings" className={styles.viewAll}>
+                    View All &gt;
+                  </Link>
+              </div>
+              {getUpcomingWithinWeek(dashboardView.upcomingMeetings).map((item, idx) => (
+                <div key={idx} className={styles.taskCard}>
+                  <div className={styles.meetingTop}>
+                    <div className={styles.meetingIcon}>
+                      <LuCalendar/>
                     </div>
+                    <div className={styles.taskTitle}>{item.meetingType}</div>
                   </div>
-                );
-              })}
+                  <div className={styles.taskSub}>{item.projectName}</div>
+                  <div className={styles.meetingTime}>
+                    <div>
+                      <LuClock/>
+                    </div>
+                    <div>{item.dueLabel}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
