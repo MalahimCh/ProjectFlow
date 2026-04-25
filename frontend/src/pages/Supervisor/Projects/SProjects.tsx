@@ -3,44 +3,54 @@ import { type FC, useState } from "react";
 import styles from "./SProjects.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers,LuMessageSquareText,LuCalendar, LuUserCheck } from "react-icons/lu"
+import {
+  LuUsers,
+  //LuCalendar,
+  //LuUserCheck,
+    LuClock,
+    LuLoaderCircle,
+  //LuLink,
+  
+} from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
+
 
 const projects = [
   {
     id: "p1",
-    name: "AI Chatbot System",
-    description: "Final year AI chatbot for student support",
-    members: 4,
-    progress: 70,
+    groupName: "Alpha Innovators",
+    projectName: "AI-Based Healthcare Diagnosis System",
+    members: 3,
+    progress: 65,
+    progressColor: "#FF9F0A",
     deadline: {
-      type: "Milestone Submission",
-      dueDate: "2026-04-25",
-      time: "15:00"
+      type: "Mid-Term Presentation",
+      dueDate: "Mar 22, 2026",
+      time: "2:00 PM",
+      daysLeft: 4
     }
   },
   {
     id: "p2",
-    name: "FYP Management Portal",
-    description: "Web system to manage final year projects",
-    members: 3,
-    progress: 40,
-    deadline: {
-      type: "Report Submission",
-      dueDate: "2026-04-28",
-      time: "11:00"
-    }
+    groupName: "Cloud Warriors",
+    projectName: "Smart City Traffic Management Platform",
+    members: 2,
+    progress: 78,
+    progressColor: "#22C55E",
+    deadline: null
   },
   {
     id: "p3",
-    name: "Smart Attendance System",
-    description: "Face recognition based attendance system",
-    members: 5,
-    progress: 85,
+    groupName: "Mobile Mavericks",
+    projectName: "E-Commerce Mobile App with AR Features",
+    members: 3,
+    progress: 45,
+    progressColor: "#EF4444",
     deadline: {
-      type: "Demo",
-      dueDate: "2026-05-02",
-      time: "10:30"
+      type: "Sprint Review & Demo",
+      dueDate: "Mar 20, 2026",
+      time: "3:30 PM",
+      daysLeft: 2
     }
   }
 ];
@@ -48,9 +58,6 @@ const projects = [
 const SProjects: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
-  const handleProjectClick = (id: string) => {
-  navigate(`/supervisor/projects/${id}`);
-};
 
   return (
     <div className={styles.container}>
@@ -58,52 +65,72 @@ const SProjects: FC = () => {
 
       <div className={styles.main}>
         <Header
-          title="Projects"
-          subtitle="View and manage your projects"
-          userName="Junaid Hussain"
-          userId="CO2024001"
+          title="Groups"
+          subtitle="Welcome back, Muhammad Kamran"
+          userName="Muhammad Kamran"
+          userId="SP2024001"
         />
 
         <div className={styles.content}>
-          
           <div className={styles.statsGrid}>
-            <StatsCard value={2} label="Total Groups" icon={<LuUsers />} bgColor="#EFF6FF" iconColor="#0D3CCF"/>
-            <StatsCard value={3} label="Total Students" icon={<LuMessageSquareText />} bgColor="#FFF7ED" iconColor="#F59E0B"/>
-            <StatsCard value={0} label="Upcoming Deadlines" icon={<LuCalendar />} bgColor="#F0FDF4" iconColor="#16A34A"/>
-            <StatsCard value={6} label="Lagging Groups" icon={<LuUserCheck />} bgColor="#FEF2F2" iconColor="#DC2626"/>
+            <StatsCard value={5} label="Total Groups" icon={<LuUsers />} bgColor="#F0F7FF" iconColor="#0D3CCF"/>
+            <StatsCard value={14} label="Total Students" icon={<LuUsers />} bgColor="#F0FDF4" iconColor="#22C55E"/>
+            <StatsCard value={3} label="Upcoming Deadlines" icon={<LuClock />} bgColor="#FFF7ED" iconColor="#F59E0B"/>
+            <StatsCard value={1} label="Lagging Groups" icon={<LuLoaderCircle />} bgColor="#FEF2F2" iconColor="#DC2626"/>
           </div>
 
-        <div className={styles.sectionHeader}>
-            <p className={styles.title}>All Supervised Groups</p>
-          <div className={styles.projectGrid}>
-  {projects.map((project) => (
-    <div
-      key={project.id}
-      className={styles.projectCard}
-      onClick={() => handleProjectClick(project.id)}
-    >
-      <h3>{project.name}</h3>
+          <div className={styles.sectionHeader}>
+            <div className={styles.titleRow}>
+              <p className={styles.title}>All Supervised Groups</p>
+              <span className={styles.activeBadge}>5 Active Groups</span>
+            </div>
 
-      <p className={styles.desc}>{project.description}</p>
+            <div className={styles.projectGrid}>
+              {projects.map((project) => (
+                <div key={project.id} className={styles.projectCard}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.groupIcon}><LuUsers /></div>
+                    <div className={styles.groupMeta}>
+                      <h3>{project.groupName}</h3>
+                      <span>{project.members} Members</span>
+                    </div>
+                  </div>
 
-      <div className={styles.meta}>
-        <span>👥 {project.members} Members</span>
-        <span>📊 {project.progress}%</span>
-      </div>
+                  <p className={styles.projectName}>{project.projectName}</p>
 
-      <div className={styles.deadline}>
-        <strong>{project.deadline.type}</strong>
-        <p>
-          {project.deadline.dueDate} • {project.deadline.time}
-        </p>
-      </div>
-    </div>
-  ))}
-</div>
+                  {project.deadline && (
+                    <div className={styles.deadlineBox}>
+                      <div className={styles.deadlineHeader}>
+                        <LuClock className={styles.clockIcon} />
+                        <span className={styles.deadlineType}>{project.deadline.type}</span>
+                        <span className={styles.daysBadge}>{project.deadline.daysLeft} days left</span>
+                      </div>
+                      <p className={styles.dueTime}>Due: {project.deadline.dueDate} at {project.deadline.time}</p>
+                    </div>
+                  )}
 
-</div>
+                  <div className={styles.progressContainer}>
+                    <div className={styles.progressLabel}>
+                      <span>Project Progress</span>
+                      <span>{project.progress}%</span>
+                    </div>
+                    <div className={styles.progressBar}>
+                      <div 
+                        className={styles.progressFill} 
+                        style={{ width: `${project.progress}%`, backgroundColor: project.progressColor }}
+                      ></div>
+                    </div>
+                  </div>
 
-
+                  <div className={styles.cardFooter}>
+                    <button onClick={() => navigate(`/supervisor/projects/${project.id}`)} className={styles.viewDetails}>
+                      View Details &gt;
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -8,107 +8,73 @@ import {
   LuMessageSquareText,
   LuCalendar,
   LuUserCheck,
+  LuVideo,
+  LuClock,
+  LuLink,
+  
 } from "react-icons/lu";
 
 type Meeting = {
   id: string;
-  projectId: string;
   projectName: string;
   title: string;
   date: string;
   time: string;
   link: string;
 };
-const projects = [
-  {
-    id: "p1",
-    name: "AI Chatbot System",
-    description: "Final year AI chatbot for student support",
-    members: 4,
-    progress: 70,
-    deadline: {
-      type: "Milestone Submission",
-      dueDate: "2026-04-25",
-      time: "15:00",
-    },
-  },
-  {
-    id: "p2",
-    name: "FYP Management Portal",
-    description: "Web system to manage final year projects",
-    members: 3,
-    progress: 40,
-    deadline: {
-      type: "Report Submission",
-      dueDate: "2026-04-28",
-      time: "11:00",
-    },
-  },
-  {
-    id: "p3",
-    name: "Smart Attendance System",
-    description: "Face recognition based attendance system",
-    members: 5,
-    progress: 85,
-    deadline: {
-      type: "Demo",
-      dueDate: "2026-05-02",
-      time: "10:30",
-    },
-  },
-];
+
+const availableProjects = ["Mobile Mavericks", "Data Dynamics", "Alpha Innovators"];// dummy project to select from 
 
 const SMeetings: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
 
+  const [meetings, setMeetings] = useState<Meeting[]>([
+    {
+      id: "1",
+      projectName: "Mobile Mavericks",
+      title: "Feedback Session",
+      date: "Mar 18, 2026",
+      time: "10:00 AM - 11:00 AM",
+      link: "https://meet.google.com/abc-defg-hij",
+    },
+    {
+      id: "2",
+      projectName: "Data Dynamics",
+      title: "Progress Review",
+      date: "Mar 19, 2026",
+      time: "02:00 PM - 03:00 PM",
+      link: "https://meet.google.com/xyz-mnp-qrs",
+    },
+  ]);
+
   const [formData, setFormData] = useState({
-    projectId: "",
+    projectName: "",
     title: "",
     date: "",
     time: "",
   });
 
-  const [meetings, setMeetings] = useState<Meeting[]>([
-    {
-      id: "m1",
-      projectId: "p1",
-      projectName: "AI Chatbot System",
-      title: "Weekly Sync",
-      date: "2026-04-22",
-      time: "14:00",
-      link: "https://meet.google.com/abc-defg-hij",
-    },
-  ]);
-  const generateMeetLink = () => {
-    const chars = "abcdefghijklmnopqrstuvwxyz";
-    const random = () =>
-      Array.from(
-        { length: 3 },
-        () => chars[Math.floor(Math.random() * chars.length)],
-      ).join("");
-
-    return `https://meet.google.com/${random()}-${random()}-${random()}`;
+  const joinMeeting = (link: string) => {
+    window.open(link, "_blank");
   };
 
-  const handleCreateMeeting = () => {
-    const selectedProject = projects.find((p) => p.id === formData.projectId);
+  //generate dummy meet link
+  const generateMeetLink = () => {
+    return "https://meet.google.com/" + Math.random().toString(36).substring(7);
+  };
 
-    if (
-      !selectedProject ||
-      !formData.title ||
-      !formData.date ||
-      !formData.time
-    ) {
-      alert("Please fill all fields");
+  //create meeting handler
+  const handleCreateMeeting = () => {
+    if (!formData.projectName || !formData.title) {
+      alert("Fill all fields");
       return;
     }
 
     const newMeeting: Meeting = {
       id: Date.now().toString(),
-      projectId: selectedProject.id,
-      projectName: selectedProject.name,
+      projectName: formData.projectName,
       title: formData.title,
       date: formData.date,
       time: formData.time,
@@ -116,28 +82,16 @@ const SMeetings: FC = () => {
     };
 
     setMeetings((prev) => [...prev, newMeeting]);
+    setShowModal(false);
 
-    // reset + close
     setFormData({
-      projectId: "",
+      projectName: "",
       title: "",
       date: "",
       time: "",
     });
-    setShowModal(false);
-  };
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
-  const joinMeeting = (link: string) => {
-    window.open(link, "_blank");
-  };
   return (
     <div className={styles.container}>
       <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -145,129 +99,180 @@ const SMeetings: FC = () => {
       <div className={styles.main}>
         <Header
           title="Meetings"
-          subtitle="View and manage your meetings"
-          userName="Junaid Hussain"
-          userId="CO2024001"
+          subtitle="Welcome back, Muhammad Kamran"
+          userName="Muhammad Kamran"
+          userId="SP2024001"
         />
 
         <div className={styles.content}>
           <div className={styles.topSection}>
-            <div className={styles.meet}>
-              <button onClick={() => setShowModal(true)}>+ New Meeting</button>
 
-              <button
-                onClick={() => {
-                  const link = prompt("Enter meeting link");
-                  if (link) joinMeeting(link);
-                }}
-              >
-                Join with Code
-              </button>
+            <div className={styles.meet}>
+              <div className={styles.meetHeader}>
+                <div className={styles.meetIconTitle}>
+                  <LuVideo className={styles.videoIcon} />
+                  <span>Meet</span>
+                </div>
+                
+              </div>
+
+              <div className={styles.meetActionsPrimary}>
+                <button
+                  className={styles.primaryBtn}
+                  onClick={() => {
+                    const link = prompt("Enter meeting link");
+                    if (link) joinMeeting(link);
+                  }}
+                >
+                  Join
+                </button>
+
+                <button
+                  className={styles.outlineBtn}
+                  onClick={() => setShowModal(true)}
+                >
+                  + New meeting
+                </button>
+              </div>
             </div>
+
             <div className={styles.statsGrid}>
               <StatsCard
-                value={2}
-                label="Total Groups"
-                icon={<LuUsers />}
-                bgColor="#EFF6FF"
-                iconColor="#0D3CCF"
+                value={4}
+                label="Upcoming Meetings"
+                icon={<LuCalendar />}
+                bgColor="#EEF2FF"
+                iconColor="#2563EB"
               />
               <StatsCard
                 value={3}
-                label="Total Students"
+                label="This Week"
+                icon={<LuUsers />}
+                bgColor="#ECFDF5"
+                iconColor="#16A34A"
+              />
+              <StatsCard
+                value={8}
+                label="Completed This Month"
                 icon={<LuMessageSquareText />}
                 bgColor="#FFF7ED"
                 iconColor="#F59E0B"
               />
               <StatsCard
-                value={0}
-                label="Upcoming Deadlines"
-                icon={<LuCalendar />}
-                bgColor="#F0FDF4"
-                iconColor="#16A34A"
-              />
-              <StatsCard
-                value={6}
-                label="Lagging Groups"
+                value={11}
+                label="Total This Year"
                 icon={<LuUserCheck />}
-                bgColor="#FEF2F2"
-                iconColor="#DC2626"
+                bgColor="#EFF6FF"
+                iconColor="#2563EB"
               />
             </div>
           </div>
 
           <div className={styles.sectionHeader}>
-            <p className={styles.title}>Upcoming Meetings</p>
-            <div className={styles.meetingList}>
-              {meetings.map((m) => (
-                <div key={m.id} className={styles.meetingCard}>
-                  <div>
-                    <h4>{m.projectName}</h4>
-                    <p>{m.title}</p>
-                    <p>
-                      {m.date} | {m.time}
-                    </p>
-                  </div>
 
-                  <div>
-                    <a href={m.link} target="_blank">
-                      {m.link}
-                    </a>
-
-                    <button onClick={() => joinMeeting(m.link)}>Join</button>
-                  </div>
-                </div>
-              ))}
+            <div className={styles.sectionTop}>
+              <p className={styles.title}>Upcoming Meetings</p>
+              <span className={styles.badge}>
+                {meetings.length} Scheduled { }
+              </span>
             </div>
+
+      <div className={styles.meetingList}>
+  {meetings.map((m) => (
+    <div key={m.id} className={styles.meetingCard}>
+      
+      {/* details */}
+      <div className={styles.meetingInfo}>
+        <div className={styles.titleRow}>
+          <h4>{m.projectName}</h4>
+          <span className={styles.sessionBadge}>{m.title}</span>
+        </div>
+        
+         {/* Row 2: Date */}
+  <div className={styles.dateTimeRow}>
+    <LuCalendar /> <span>{m.date}</span>
+  </div>
+
+  {/* Row 3: Time */}
+  <div className={styles.dateTimeRow}>
+    <LuClock /> <span>{m.time}</span>
+  </div>
+
+        <div className={styles.linkRow}>
+          <LuLink /> <span>{m.link}</span>
+        </div>
+      </div>
+
+      {/* join meeting */}
+      <div className={styles.meetingActions}>
+        <button className={styles.joinBtn} onClick={() => joinMeeting(m.link)}>
+          Join Meeting
+        </button>
+       
+      </div>
+
+    </div>
+  ))}
+</div>
           </div>
 
-          {showModal && (
-            <div className={styles.overlay}>
-              <div className={styles.modal}>
-                <h3>Create Meeting</h3>
+         {/* MODAL SECTION */}
+{showModal && (
+  <div className={styles.overlay}>
+    <div className={styles.modal}>
+      <h3 className={styles.modalTitle}>Create Meeting</h3>
 
-                <select
-                  name="projectId"
-                  value={formData.projectId}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Project</option>
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+      <div className={styles.inputGroup}>
+        <select
+          className={styles.selectInput}
+          value={formData.projectName}
+          onChange={(e) =>
+            setFormData({ ...formData, projectName: e.target.value })
+          }
+        >
+          <option value="" disabled>Select Project</option>
+          {availableProjects.map((project) => (
+            <option key={project} value={project}>
+              {project}
+            </option>
+          ))}
+        </select>
 
-                <input
-                  type="text"
-                  name="title"
-                  placeholder="Meeting Title"
-                  value={formData.title}
-                  onChange={handleChange}
-                />
+        <input
+          type="text"
+          placeholder="Meeting Title"
+          className={styles.textInput}
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+        />
 
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                />
+        <input
+          type="date"
+          className={styles.dateInput}
+          value={formData.date}
+          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+        />
 
-                <input
-                  type="time"
-                  name="time"
-                  value={formData.time}
-                  onChange={handleChange}
-                />
+        <input
+          type="time"
+          className={styles.timeInput}
+          value={formData.time}
+          onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+        />
+      </div>
 
-                <div className={styles.modalActions}>
-                  <button onClick={handleCreateMeeting}>Create</button>
-                  <button onClick={() => setShowModal(false)}>Cancel</button>
-                </div>
-              </div>
-            </div>
-          )}
+      <div className={styles.modalActions}>
+        <button className={styles.cancelBtn} onClick={() => setShowModal(false)}>
+          Cancel
+        </button>
+        <button className={styles.confirmBtn} onClick={handleCreateMeeting}>
+          Create
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
         </div>
       </div>
     </div>

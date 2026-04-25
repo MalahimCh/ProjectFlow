@@ -1,131 +1,308 @@
 .container {
   display: flex;
   height: 100vh;
-  background-color: #F6F9FF;
+  background-color: #f8faff;
 }
 
-/* right side */
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
+
 .content {
   flex: 1;
-  padding: 20px;
-  background:#F6F9FF;
+  padding: 24px;
   overflow-y: auto;
 }
 
-.topSection{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+/* TOP SECTION */
+.topSection {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
-.meet{
-    min-width:250px;
-    background-color: #E0E7FF;
-}
-
-.statsGrid {
-  flex: 1;
-  padding: 8px;
-
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-
-  align-content: start;
-}
-
-.sectionHeader{
-    background-color: #FFFFFD;
-    margin:8px;
-     border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  padding:10px;
-
-}
-
-
-.title{
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-}
-
-
-.meetingList {
+/* MEET CARD */
+.meet {
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #eef2f6;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  justify-content: space-between;
 }
+
+.meetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.meetIconTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.videoIcon {
+  color: #2563eb;
+  font-size: 20px;
+}
+
+.moreIcon {
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 12px;
+  background: #0047d4;
+  color: white;
+  border-radius: 20px;
+  border: none;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.outlineBtn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: #2563eb;
+  border-radius: 20px;
+  border: 1px solid #2563eb;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* STATS GRID */
+.statsGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* UPCOMING SECTION */
+.sectionHeader {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #eef2f6;
+  padding: 24px;
+}
+
+.sectionTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.badge {
+  font-size: 12px;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* MEETING CARD */
 
 .meetingCard {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  background: white;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-}
-
-.meet button {
-  display: block;
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 8px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  z-index: 1000;
-}
-
-.modal {
-  background: white;
   padding: 20px;
+  background: #ffffff;
+  border: 1px solid #eef2f6;
   border-radius: 12px;
-  width: 350px;
+  margin-bottom: 16px;
+  font-family: 'Inter', sans-serif;
+}
 
+.meetingInfo {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-.modal input,
-.modal select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+.titleRow h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
 }
 
+
+.sessionBadge {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.dateTimeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* Actions styling */
+.meetingActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.joinBtn {
+  background: #0055ff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+
+
+/* MODAL OVERLAY */
+/* create meeting tab*/
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* MODAL CONTAINER */
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.modalTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 24px;
+}
+
+/* INPUT GROUP - Stacks inputs vertically */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  margin-top: 10px;
+  margin-bottom: 24px;
+}
+
+/* STYLING ALL INPUTS */
+.selectInput,
+.textInput,
+.dateInput,
+.timeInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.selectInput:focus,
+.textInput:focus,
+.dateInput:focus,
+.timeInput:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* BUTTONS */
 .modalActions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
-.modal button {
-  padding: 8px 12px;
+.cancelBtn {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: 600;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #e2e8f0;
+}
+
+.confirmBtn {
+  background: #2563eb;
+  /* Blue from your dashboard */
+  color: white;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.confirmBtn:hover {
+  opacity: 0.9;
 }
