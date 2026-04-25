@@ -211,7 +211,6 @@ const SDashboard: FC = () => {
         />
 
         <div className={styles.content}>
-          
           <div className={styles.statsGrid}>
             <StatsCard value={2} label="Active Groups" icon={<LuUsers />} bgColor="#EFF6FF" iconColor="#0D3CCF"/>
             <StatsCard value={3} label="Pending Requests" icon={<LuMessageSquareText />} bgColor="#FEF2F2" iconColor="#DC2626"/>

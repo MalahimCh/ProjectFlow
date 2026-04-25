@@ -135,8 +135,6 @@ html, body {
   color: #6a7282;
 }
 
-
-
 .container {
   flex: 1;
   max-width: 420px;
@@ -221,8 +219,6 @@ input:-webkit-autofill {
   cursor: pointer;
 }
 
-
-
 .button {
   margin-top: 5px;
   padding: 14px;
@@ -272,6 +268,7 @@ input:-webkit-autofill {
   color: #d92d20;
   font-size: 13px;
 }
+
 .errorBox {
   display: flex;
   align-items: center;
@@ -345,5 +342,3 @@ input:-webkit-autofill {
     padding: 10px;
   }
 }
-
-

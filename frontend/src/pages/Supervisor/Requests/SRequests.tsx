@@ -3,12 +3,7 @@ import { type FC, useState } from "react";
 import styles from "./SRequests.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import {
-  LuUsers,
-  LuMessageSquareText,
-  LuCalendar,
-  LuUserCheck,
-} from "react-icons/lu";
+import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuUser, LuClock, LuFileText, LuCircleX, LuCircleCheck } from "react-icons/lu";
 
 type Request = {
   id: string;
@@ -21,6 +16,7 @@ type Request = {
   lastDate: string;
   proposalLink: string;
   status: "pending" | "accepted" | "rejected";
+  decisionDate?: string;
 };
 
 const initialRequests: Request[] = [
@@ -28,24 +24,37 @@ const initialRequests: Request[] = [
     id: "r1",
     studentName: "Ali Raza",
     rollNo: "23L-0948",
-    section: "BSCS-8A",
+    section: "BCS-8A",
     projectName: "AI Chatbot System",
-    description: "AI chatbot for student queries using NLP",
-    submittedOn: "2026-04-20",
-    lastDate: "2026-04-25",
+    description: "AI chatbot for student queries using NLP.",
+    submittedOn: "2026-04-18",
+    lastDate: "2026-05-31",
     proposalLink: "https://example.com/proposal1.pdf",
     status: "pending",
   },
   {
     id: "r2",
+    studentName: "Abdullah Tahir",
+    rollNo: "23L-0602",
+    section: "BCS-6H",
+    projectName: "FYP Management System",
+    description:
+      "Web-based platform that manages FYP proposals, approvals and progress tracking in one centralized system.",
+    submittedOn: "2026-04-19",
+    lastDate: "2026-05-31",
+    proposalLink: "https://example.com/proposal2.pdf",
+    status: "pending",
+  },
+  {
+    id: "r3",
     studentName: "Sara Khan",
     rollNo: "23L-0949",
-    section: "BSCS-8B",
+    section: "BDS-8B",
     projectName: "Smart Attendance System",
-    description: "Face recognition attendance system",
-    submittedOn: "2026-04-19",
-    lastDate: "2026-04-24",
-    proposalLink: "https://example.com/proposal2.pdf",
+    description: "Face recognition attendance system.",
+    submittedOn: "2026-04-21",
+    lastDate: "2026-05-31",
+    proposalLink: "https://example.com/proposal3.pdf",
     status: "pending",
   },
 ];
@@ -54,18 +63,168 @@ const SRequests: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [requests, setRequests] = useState<Request[]>(initialRequests);
 
-  const updateStatus = (id: string, status: "accepted" | "rejected") => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status } : r)),
-    );
-  };
+  const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).format(date);
+};
+
+const updateStatus = (id: string, status: "accepted" | "rejected") => {
+  const today = formatDate(new Date());
+
+  setRequests((prev) =>
+    prev.map((r) =>
+      r.id === id
+        ? {
+            ...r,
+            status,
+            decisionDate: today,
+          }
+        : r
+    )
+  );
+};
 
   const viewProposal = (link: string) => {
     window.open(link, "_blank");
   };
+
   const pending = requests.filter((r) => r.status === "pending").length;
   const accepted = requests.filter((r) => r.status === "accepted").length;
   const rejected = requests.filter((r) => r.status === "rejected").length;
+
+  const renderPendingCard = (r: Request) => (
+    <>
+      <div className={styles.studentInfo}>
+        <div className={styles.userIcon}><LuUser /></div>
+        <div>
+          <p className={styles.studentName}>{r.studentName}</p>
+          <span className={styles.studentRollNo}>{r.rollNo}</span>
+          <span className={styles.studentSection}>{r.section}</span>
+        </div>
+      </div>
+
+      <div className={styles.projectInfo}>
+        <p className={styles.projectName}>{r.projectName}</p>
+        <p className={styles.projectDescp}>{r.description}</p>
+
+        <div className={styles.dates}>
+          <div className={styles.singleDate}>
+            <LuCalendar /> Submitted: {r.submittedOn}
+          </div>
+          <div className={styles.singleDate}>
+            <LuClock /> Deadline: {r.lastDate}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.actionsRow}>
+        <button
+          className={styles.proposalButton}
+          onClick={() => viewProposal(r.proposalLink)}
+        >
+          <LuFileText />
+          <p>View Proposal</p>
+        </button>
+
+        {r.status === "pending" && (
+          <div className={styles.rightActions}>
+            <button
+              className={styles.reject}
+              onClick={() => updateStatus(r.id, "rejected")}
+            >
+              <LuCircleX />
+              <p>Reject</p>
+            </button>
+
+            <button
+              className={styles.approve}
+              onClick={() => updateStatus(r.id, "accepted")}
+            >
+              <LuCircleCheck />
+              <p>Approve</p>
+            </button>
+          </div>
+        )}
+      </div>
+    </>
+  );
+
+  const renderAcceptedCard = (r: Request) => (
+    <>
+      <div className={styles.actionedTop}>
+        <div className={styles.studentInfo}>
+          <div className={styles.userIcon}><LuUser /></div>
+          <div>
+            <p className={styles.studentName}>{r.studentName}</p>
+            <span className={styles.studentRollNo}>{r.rollNo}</span>
+            <span className={styles.studentSection}>{r.section}</span>
+          </div>
+        </div>
+        <div>
+          <p className={styles.approveLabel}>Approved</p>
+        </div>
+      </div>
+
+      <div className={styles.projectInfo}>
+        <p className={styles.projectNameActioned}>{r.projectName}</p>
+        <div className={styles.dates}>
+          <div className={styles.singleDate}>
+            <LuCalendar/> Approved on: {r.decisionDate}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.actionsRow}>
+        <button
+          className={styles.proposalButton}
+          onClick={() => viewProposal(r.proposalLink)}
+        >
+          <LuFileText />
+          <p>View Proposal</p>
+        </button>
+      </div>
+    </>
+  );
+
+  const renderRejectedCard = (r: Request) => (
+    <>
+      <div className={styles.actionedTop}>
+        <div className={styles.studentInfo}>
+          <div className={styles.userIcon}><LuUser /></div>
+          <div>
+            <p className={styles.studentName}>{r.studentName}</p>
+            <span className={styles.studentRollNo}>{r.rollNo}</span>
+            <span className={styles.studentSection}>{r.section}</span>
+          </div>
+        </div>
+        <div>
+          <p className={styles.rejectLabel}>Rejected</p>
+        </div>
+      </div>
+
+      <div className={styles.projectInfo}>
+        <p className={styles.projectNameActioned}>{r.projectName}</p>
+        <div className={styles.dates}>
+          <div className={styles.singleDate}>
+            <LuCalendar /> Rejected on: {r.decisionDate}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.actionsRow}>
+        <button
+          className={styles.proposalButton}
+          onClick={() => viewProposal(r.proposalLink)}
+        >
+          <LuFileText />
+          <p>View Proposal</p>
+        </button>
+      </div>
+    </>
+  );
 
   return (
     <div className={styles.container}>
@@ -81,99 +240,66 @@ const SRequests: FC = () => {
 
         <div className={styles.content}>
           <div className={styles.statsGrid}>
-            <StatsCard
-              value={pending}
-              label="Pending Requests"
-              icon={<LuUsers />}
-              bgColor="#EFF6FF"
-              iconColor="#0D3CCF"
-            />
-            <StatsCard
-              value={accepted}
-              label="Accepted"
-              icon={<LuMessageSquareText />}
-              bgColor="#F0FDF4"
-              iconColor="#16A34A"
-            />
-            <StatsCard
-              value={rejected}
-              label="Rejected"
-              icon={<LuCalendar />}
-              bgColor="#FEF2F2"
-              iconColor="#DC2626"
-            />
-            <StatsCard
-              value={requests.length}
-              label="Total Requests"
-              icon={<LuUserCheck />}
-              bgColor="#FFF7ED"
-              iconColor="#F59E0B"
-            />
+            <StatsCard value={pending} label="Pending Requests" icon={<LuUsers />} bgColor="#EFF6FF" iconColor="#0D3CCF" />
+            <StatsCard value={accepted} label="Accepted" icon={<LuMessageSquareText />} bgColor="#F0FDF4" iconColor="#16A34A" />
+            <StatsCard value={rejected} label="Rejected" icon={<LuCalendar />} bgColor="#FEF2F2" iconColor="#DC2626" />
+            <StatsCard value={requests.length} label="Total Requests" icon={<LuUserCheck />} bgColor="#FFF7ED" iconColor="#F59E0B" />
           </div>
 
-          <div className={styles.sectionHeader}>
-            <p className={styles.title}>Pending Requests</p>
+          <div className={styles.request}>
+            <div className={styles.requestHeader}>
+              <p className={styles.requestTitle}>Pending Requests</p>
+              <p className={styles.requestCountText}>
+                {pending} Awaiting Requests
+              </p>
+            </div>
 
             <div className={styles.requestList}>
-              {requests.map((r) => (
-                <div key={r.id} className={styles.requestCard}>
-                  {/* TOP ROW */}
-                  <div className={styles.topRow}>
-                    <div className={styles.studentInfo}>
-                      <div className={styles.avatar}>👤</div>
-
-                      <div>
-                        <p className={styles.studentName}>{r.studentName}</p>
-                        <span className={styles.meta}>{r.rollNo}</span>
-                        <span className={styles.badge}>{r.section}</span>
-                      </div>
-                    </div>
-
-                    <div className={styles.statusBadge}>
-                      {r.status === "pending" ? "Awaiting Review" : r.status}
-                    </div>
+              {requests
+                .filter((r) => r.status === "pending")
+                .map((r) => (
+                  <div key={r.id} className={styles.requestCard}>
+                    {renderPendingCard(r)}
                   </div>
-
-                  {/* PROJECT INFO */}
-                  <div className={styles.projectInfo}>
-                    <h4>{r.projectName}</h4>
-                    <p>{r.description}</p>
-                  </div>
-
-                  {/* DATES */}
-                  <div className={styles.dates}>
-                    <span>📅 Submitted: {r.submittedOn}</span>
-                    <span>⏰ Deadline: {r.lastDate}</span>
-                  </div>
-
-                  {/* ACTIONS */}
-                  <div className={styles.actionsRow}>
-                    <button onClick={() => viewProposal(r.proposalLink)}>
-                      📄 View Proposal
-                    </button>
-
-                    {r.status === "pending" && (
-                      <div className={styles.rightActions}>
-                        <button
-                          className={styles.reject}
-                          onClick={() => updateStatus(r.id, "rejected")}
-                        >
-                          Reject
-                        </button>
-
-                        <button
-                          className={styles.approve}
-                          onClick={() => updateStatus(r.id, "accepted")}
-                        >
-                          Approve
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
+
+          {requests.filter((r) => r.status === "accepted").length > 0 && (
+            <div className={styles.request}>
+              <div className={styles.requestHeader}>
+                <p className={styles.requestTitle}>Approved Requests</p>
+              </div>
+
+              <div className={styles.requestList}>
+                {requests
+                  .filter((r) => r.status === "accepted")
+                  .map((r) => (
+                    <div key={r.id} className={styles.requestCard}>
+                      {renderAcceptedCard(r)}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {requests.filter((r) => r.status === "rejected").length > 0 && (
+            <div className={styles.request}>
+              <div className={styles.requestHeader}>
+                <p className={styles.requestTitle}>Rejected Requests</p>
+              </div>
+
+              <div className={styles.requestList}>
+                {requests
+                  .filter((r) => r.status === "rejected")
+                  .map((r) => (
+                    <div key={r.id} className={styles.requestCard}>
+                      {renderRejectedCard(r)}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -4,66 +4,87 @@
   background-color: #f6f9ff;
 }
 
-/* right side */
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
+
 .content {
   flex: 1;
-  padding: 20px;
+  padding: 30px;
   background: #f6f9ff;
   overflow-y: auto;
 }
 
 .statsGrid {
   flex: 1;
-  padding: 8px;
+  margin-bottom: 20px;
 
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
-
   align-content: start;
 }
 
-.sectionHeader {
-  background-color: #fffffd;
-  margin: 8px;
+.request {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  padding: 10px;
+  margin-bottom: 20px;
+  padding: 20px;
 }
 
-.title {
-  font-size: 18px;
+.requestHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin: 0 0 16px 0;
+}
+
+.requestTitle {
+  font-size: 16px;
   font-weight: 600;
-  color: #333;
+  margin: 0px;
+}
+
+.requestCount {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+
+  padding-inline: 6px;
+  border-radius: 6px;
+  background-color: #EFF6FF;
+  height: 20px;
+  margin: 0px;
+}
+
+.requestCountText {
+  font-size: 12px;
+  color: #0D3CCf;
+  background-color: #EFF6FF;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin: 0px;
 }
 
 .requestList {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 20px;
 }
+
 .requestCard {
-  background: white;
+  background: #FFFFFF;
   padding: 16px;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #E5E7EB;
 
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-/* TOP ROW */
-.topRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .studentInfo {
@@ -72,10 +93,12 @@
   align-items: center;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-  background: #e0e7ff;
+.userIcon {
+  font-size: 16px;
+  color:#0D3CCF;
+  width: 30px;
+  height: 30px;
+  background: #EFF6FF;
   border-radius: 50%;
 
   display: flex;
@@ -85,50 +108,60 @@
 
 .studentName {
   font-weight: 600;
+  margin: 0;
 }
 
-.meta {
+.studentRollNo {
   font-size: 12px;
   color: #666;
   margin-right: 6px;
 }
 
-.badge {
-  font-size: 11px;
-  background: #e0e7ff;
-  padding: 2px 6px;
+.studentSection {
+  color:#0D3CCF;
+  font-size: 10px;
+  font-weight: 500;
+  background: #EFF6FF;
+  padding: 2px 4px;
   border-radius: 6px;
 }
 
-/* STATUS */
-.statusBadge {
+.projectInfo {
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.projectName {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+
+.projectDescp {
   font-size: 12px;
-  background: #e0e7ff;
-  padding: 4px 8px;
-  border-radius: 8px;
-  color: #0d3ccf;
+  color: #6A7282;
+  margin: 0 0 12px 0;
 }
 
-/* PROJECT */
-.projectInfo h4 {
-  margin: 0;
-  font-size: 15px;
-}
-
-.projectInfo p {
-  font-size: 13px;
-  color: #666;
-}
-
-/* DATES */
 .dates {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   font-size: 12px;
-  color: #666;
+  color: #6A7282;
+  margin: 0 0 6px 0;
 }
 
-/* ACTIONS */
+.singleDate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.dates span {
+  display: flex;
+  align-items: center;
+}
+
 .actionsRow {
   display: flex;
   justify-content: space-between;
@@ -136,26 +169,75 @@
 }
 
 .actionsRow button {
-  padding: 6px 10px;
+  padding: 4px 8px;
   border-radius: 6px;
-  border: none;
   cursor: pointer;
-  background: #f3f4f6;
+}
+.actionsRow p {
+  margin: 0px;
+  font-size: 12px;
 }
 
-/* RIGHT SIDE BUTTONS */
+.proposalButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+}
+
 .rightActions {
   display: flex;
   gap: 10px;
 }
 
 .reject {
-  background: white;
-  border: 1px solid #ef4444;
-  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  background: #FFFFFF;
+  border: 1px solid #DC2626;
+  color: #DC2626;
 }
 
 .approve {
-  background: #1d4ed8;
-  color: rgb(22, 167, 39);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  border: none;
+  background: #16A34A;
+  color: #FFFFFF
+}
+
+.actionedTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projectNameActioned {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.approveLabel {
+  font-size: 12px;
+  color: #16A34A;
+  background-color: #F0FDF4;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin: 0px;
+}
+
+.rejectLabel {
+  font-size: 12px;
+  color: #DC2626;
+  background-color: #FEF2F2;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin: 0px;
 }

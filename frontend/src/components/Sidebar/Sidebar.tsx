@@ -1,13 +1,8 @@
 import type { FunctionComponent } from "react";
 import type { MenuItem } from "./types";
-import { LuLogOut } from "react-icons/lu";
-import { LuSettings } from "react-icons/lu";
 import styles from "./Sidebar.module.css";
-import { LuGraduationCap } from "react-icons/lu";
-import { LuMenu } from "react-icons/lu";
-import { LuUser } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { LuLogOut, LuSettings, LuMenu, LuUser, LuGraduationCap } from "react-icons/lu";
 
 type SidebarProps = {
   menuItems: MenuItem[];
@@ -31,7 +26,7 @@ const location = useLocation();
 
   const handleLogout = () => {
     console.log("Logout");
-    navigate("/");
+    navigate("/Login");
   };
   return (
     <div className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
