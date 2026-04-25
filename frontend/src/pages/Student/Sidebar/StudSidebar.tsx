@@ -3,22 +3,16 @@ import Sidebar from "../../../components/Sidebar/Sidebar";
 import { LuLayoutDashboard } from "react-icons/lu";
 import type { FunctionComponent } from "react";
 import { LuUsers } from "react-icons/lu";
-import { LuGitPullRequestArrow } from "react-icons/lu";
 import { LuFileSearch } from "react-icons/lu";
 
 const studMenu = [
   {
     label: "Dashboard",
     icon: LuLayoutDashboard,
-    path: "/supervisor/dashboard",
+    path: "/student/dashboard",
   },
-  { label: "Projects", icon: LuUsers, path: "/supervisor/projects" },
-  { label: "Meetings", icon: LuCalendarCheck, path: "/supervisor/meetings" },
-  {
-    label: "Requests",
-    icon: LuGitPullRequestArrow,
-    path: "/supervisor/requests",
-  },
+  { label: "Project", icon: LuUsers, path: "/student/project" },
+  { label: "Meetings", icon: LuCalendarCheck, path: "/student/meetings" },
   { label: "FYP Repository", icon: LuFileSearch, path: "/repository" },
 ];
 
