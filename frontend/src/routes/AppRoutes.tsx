@@ -9,10 +9,12 @@ import SMeetings from "../pages/Supervisor/Meetings/SMeetings";
 import SRequests from "../pages/Supervisor/Requests/SRequests";
 
 import InitDashboard from "../pages/Student/Dashboard/InitDashboard";
-import StudDashboard from "../pages/Student/Dashboard/StudDashboard";
 import FindTeam from "../pages/Student/FindTeam/FindTeam";
 import FindSupervisor from "../pages/Student/FindSupervisors/FindSupervisor";
 import PendingRequest from "../pages/Student/PendingRequest/PendingRequest";
+
+import StudDashboard from "../pages/Student/Dashboard/StudDashboard";
+import StudMeetings from "../pages/Student/Meetings/studMeetings";
 
 const AppRoutes = () => {
   return (
@@ -32,10 +34,12 @@ const AppRoutes = () => {
       />
 
       <Route path="/student/initialdashboard" element={<InitDashboard />} />
-      <Route path="/student/dashboard" element={<StudDashboard />} />
       <Route path="/student/findteam" element={<FindTeam />} />
       <Route path="/student/findsupervisor" element={<FindSupervisor />} />
       <Route path="/student/requests" element={<PendingRequest />} />
+
+      <Route path="/student/dashboard" element={<StudDashboard />} />
+      <Route path="/student/meetings" element={<StudMeetings />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" />} />
