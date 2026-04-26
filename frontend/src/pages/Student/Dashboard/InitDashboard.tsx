@@ -4,12 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./InitDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import {
-  LuUsers,
-  LuCircleAlert,
-  LuMessageSquareText,
-  LuCalendar,
-} from "react-icons/lu";
+import { LuUsers, LuCircleAlert, LuMessageSquareText, LuCalendar, LuCheck, LuUserPlus } from "react-icons/lu";
 
 /* ================= MOCK DATA ================= */
 
@@ -18,20 +13,29 @@ import {
 const mockData = {
   group: {
     members: [
-      {
-        id: "1",
-        name: "Malahim Chaudhary",
-        reg: "2020-CS-123",
-        isLeader: true,
-      },
-      { id: "2", name: "Minahil Mudassar", reg: "2020-CS-145" },
-      { id: "3", name: "Abdullah Tahir", reg: "2020-CS-167" },
+      { id: "1", name: "Malahim Chaudhary", reg: "23L-0840", isLeader: true },
+      { id: "2", name: "Minahil Mudassar", reg: "23L-0877" },
+      { id: "3", name: "Abdullah Tahir", reg: "23L-0602" },
     ],
   },
 
+  // supervisor: {
+  //   name: "none",
+  //   requestedOn: "none",
+  //   status: "none"
+  // },
+
+  // supervisor: {
+  //   name: "Mr. Muhammad Kamran",
+  //   requestedOn: "Mar 28, 2026",
+  //   acceptedOn: "none",
+  //   status: "pending", // "none" | "pending" | "accepted"
+  // },
+
   supervisor: {
-    name: "Dr. Muhammad Kamran",
-    requestedOn: "March 28, 2026",
+    name: "Mr. Muhammad Kamran",
+    requestedOn: "Mar 28, 2026",
+    acceptedOn: "Apr 22, 2026",
     status: "accepted", // "none" | "pending" | "accepted"
   },
 };
@@ -83,47 +87,37 @@ const InitDashboard: FC = () => {
           title="Dashboard"
           subtitle="Welcome back, Malahim Chaudhary"
           userName="Malahim Chaudhary"
-          userId="CO2024001"
+          userId="ST2024001"
         />
 
         <div className={styles.content}>
           {/* ================= STATS ================= */}
           <div className={styles.statsGrid}>
-            <StatsCard
-              value={`${groupCount} / 3`}
-              label="Group Members"
-              icon={<LuUsers />}
-              bgColor="#EFF6FF"
-              iconColor="#0D3CCF"
-            />
-
-            <StatsCard
-              value={pendingRequests}
-              label="Pending Requests"
-              icon={<LuMessageSquareText />}
-              bgColor="#FEF2F2"
-              iconColor="#DC2626"
-            />
-
-            <StatsCard
-              value={supervisorStatus}
-              label="Supervisor Status"
-              icon={<LuCalendar />}
-              bgColor="#F0FDF4"
-              iconColor="#16A34A"
-            />
+            <StatsCard value={`${groupCount} / 3`} label="Group Members" icon={<LuUsers />} bgColor="#EFF6FF" iconColor="#0D3CCF"/>
+            <StatsCard value={pendingRequests} label="Pending Requests" icon={<LuMessageSquareText />} bgColor="#FEF2F2" iconColor="#DC2626"/>
+            <StatsCard value={supervisorStatus} label="Supervisor Status" icon={<LuCalendar />} bgColor="#F0FDF4" iconColor="#16A34A"/>
           </div>
 
           {/* ================= BANNER ================= */}
           <div
             className={`${styles.completeGroup} ${
-              hasSupervisorAssigned ? styles.successBox : ""
+              hasSupervisorAssigned ? styles.successBox
+                : hasSupervisorRequested ? styles.pendingBox : ""
             }`}
           >
             <div className={styles.row}>
               <div className={styles.left}>
-                <span className={styles.icon}>
-                  {hasSupervisorAssigned ? "✓" : <LuCircleAlert />}
+                <span
+                  className={`${styles.icon} ${
+                    hasSupervisorAssigned ? styles.successIcon
+                      : hasSupervisorRequested ? styles.pendingIcon : styles.primaryIcon
+                  }`}
+                >
+                  {!isGroupComplete ? (
+                    <LuCircleAlert />
+                  ) : (
+                    <LuCheck />
+                  )}
                 </span>
 
                 <div>
@@ -132,8 +126,7 @@ const InitDashboard: FC = () => {
                     <>
                       <p className={styles.title}>Complete Your Group</p>
                       <p className={styles.subtitle}>
-                        You need {3 - members.length} more members to complete
-                        your group.
+                        You need {3 - members.length} more members to complete your group.
                       </p>
                     </>
                   )}
@@ -163,8 +156,7 @@ const InitDashboard: FC = () => {
                     <>
                       <p className={styles.title}>Group Ready for Submission</p>
                       <p className={styles.subtitle}>
-                        Your group is complete and supervisor has accepted.
-                        Submit your group for coordinator approval.
+                        Your group is complete and supervisor has accepted. Submit your group for coordinator approval.
                       </p>
                     </>
                   )}
@@ -175,8 +167,7 @@ const InitDashboard: FC = () => {
               {!isGroupComplete && (
                 <button
                   className={styles.action}
-                  onClick={FindTeamMembersButtonClick}
-                >
+                  onClick={FindTeamMembersButtonClick}>
                   Find Team Members
                 </button>
               )}
@@ -184,23 +175,21 @@ const InitDashboard: FC = () => {
               {isGroupComplete && noSupervisor && (
                 <button
                   className={styles.action}
-                  onClick={RequestSupervisorButtonClick}
-                >
+                  onClick={RequestSupervisorButtonClick}>
                   Request Supervisor
                 </button>
               )}
 
               {isGroupComplete && hasSupervisorRequested && (
-                <button className={styles.action} disabled>
-                  Waiting Approval
+                <button className={styles.pendingBtn} disabled>
+                  Awaiting Approval
                 </button>
               )}
 
               {isGroupComplete && hasSupervisorAssigned && (
                 <button
                   className={styles.successBtn}
-                  onClick={SubmitButtonClicked}
-                >
+                  onClick={SubmitButtonClicked}>
                   Submit Group
                 </button>
               )}
@@ -210,32 +199,55 @@ const InitDashboard: FC = () => {
           {/* ================= GROUP ================= */}
           {members.length > 0 && (
             <div className={styles.card}>
-              <h3>My Group</h3>
-
-              {members.map((m) => (
-                <div key={m.id} className={styles.listItem}>
-                  <div className={styles.avatar}>
-                    {m.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </div>
-
-                  <div className={styles.info}>
-                    <p className={styles.name}>{m.name}</p>
-                    <p className={styles.reg}>{m.reg}</p>
-                  </div>
-
-                  {m.isLeader && <span className={styles.badge}>Leader</span>}
-                </div>
-              ))}
+              <div className={styles.cardHeader}>
+                <p className={styles.cardHeading}>My Group</p>
+              </div>
+              <div className={styles.memberList}>
+                {[...members, ...Array(3 - members.length).fill(null)].map(
+                  (member, index) => (
+                    <div
+                      key={member ? member.id : `empty-${index}`}
+                      className={
+                        member ? styles.listItem : `${styles.listItem} ${styles.emptyWrapper}`
+                      }
+                    >
+                      {member ? (
+                        <>
+                          <div className={styles.avatar}>
+                            {member.name
+                              .split(" ")
+                              .map((n: string) => n[0])
+                              .join("")}
+                          </div>
+                            
+                          <div className={styles.info}>
+                            <p className={styles.name}>{member.name}</p>
+                            <p className={styles.reg}>{member.reg}</p>
+                          </div>
+                            
+                          {member.isLeader && (
+                            <span className={styles.badge}>Leader</span>
+                          )}
+                        </>
+                      ) : (
+                        <div className={styles.emptySlot}>
+                          <LuUserPlus className={styles.emptyIcon}/>
+                          <p className={styles.emptyText}>Empty Slot</p>
+                        </div>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
             </div>
           )}
 
           {/* ================= SUPERVISOR ================= */}
           {supervisor && supervisor.status !== "none" && (
             <div className={styles.card}>
-              <h3>Supervisor</h3>
+              <div className={styles.cardHeader}>
+                <p className={styles.cardHeading}>Supervisor</p>
+              </div>
 
               <div className={styles.listItem}>
                 <div>
@@ -243,7 +255,7 @@ const InitDashboard: FC = () => {
 
                   <p className={styles.reg}>
                     {hasSupervisorAssigned
-                      ? "Assigned Supervisor"
+                      ? `Accepted on ${supervisor.acceptedOn}`
                       : `Requested on ${supervisor.requestedOn}`}
                   </p>
                 </div>

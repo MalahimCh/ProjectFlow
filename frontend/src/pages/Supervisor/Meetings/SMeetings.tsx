@@ -3,16 +3,7 @@ import { type FC, useState } from "react";
 import styles from "./SMeetings.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import {
-  LuUsers,
-  LuMessageSquareText,
-  LuCalendar,
-  LuUserCheck,
-  LuVideo,
-  LuClock,
-  LuLink,
-  
-} from "react-icons/lu";
+import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuVideo, LuClock, LuLink } from "react-icons/lu";
 
 type Meeting = {
   id: string;
@@ -106,14 +97,12 @@ const SMeetings: FC = () => {
 
         <div className={styles.content}>
           <div className={styles.topSection}>
-
             <div className={styles.meet}>
               <div className={styles.meetHeader}>
                 <div className={styles.meetIconTitle}>
                   <LuVideo className={styles.videoIcon} />
                   <span>Meet</span>
                 </div>
-                
               </div>
 
               <div className={styles.meetActionsPrimary}>
@@ -137,39 +126,14 @@ const SMeetings: FC = () => {
             </div>
 
             <div className={styles.statsGrid}>
-              <StatsCard
-                value={4}
-                label="Upcoming Meetings"
-                icon={<LuCalendar />}
-                bgColor="#EEF2FF"
-                iconColor="#2563EB"
-              />
-              <StatsCard
-                value={3}
-                label="This Week"
-                icon={<LuUsers />}
-                bgColor="#ECFDF5"
-                iconColor="#16A34A"
-              />
-              <StatsCard
-                value={8}
-                label="Completed This Month"
-                icon={<LuMessageSquareText />}
-                bgColor="#FFF7ED"
-                iconColor="#F59E0B"
-              />
-              <StatsCard
-                value={11}
-                label="Total This Year"
-                icon={<LuUserCheck />}
-                bgColor="#EFF6FF"
-                iconColor="#2563EB"
-              />
+              <StatsCard value={4} label="Upcoming Meetings" icon={<LuCalendar />} bgColor="#EEF2FF" iconColor="#2563EB"/>
+              <StatsCard value={3} label="This Week" icon={<LuUsers />} bgColor="#ECFDF5" iconColor="#16A34A"/>
+              <StatsCard value={8} label="Completed This Month" icon={<LuMessageSquareText />} bgColor="#FFF7ED" iconColor="#F59E0B"/>
+              <StatsCard value={11} label="Total This Year" icon={<LuUserCheck />} bgColor="#EFF6FF" iconColor="#2563EB"/>
             </div>
           </div>
 
           <div className={styles.sectionHeader}>
-
             <div className={styles.sectionTop}>
               <p className={styles.title}>Upcoming Meetings</p>
               <span className={styles.badge}>
