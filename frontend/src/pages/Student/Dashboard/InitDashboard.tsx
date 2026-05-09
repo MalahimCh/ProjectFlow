@@ -6,10 +6,6 @@ import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
 import { LuUsers, LuCircleAlert, LuMessageSquareText, LuCalendar, LuCheck, LuUserPlus } from "react-icons/lu";
 
-/* ================= MOCK DATA ================= */
-
-// 👉 CHANGE THESE STATES TO TEST UI
-
 const mockData = {
   group: {
     members: [
