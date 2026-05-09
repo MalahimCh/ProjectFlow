@@ -4,13 +4,9 @@ import { Link } from "react-router-dom";
 import styles from "./StudDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import {
-  LuCalendar,
-  LuCircleCheck,
-  LuClock,
-  LuTriangleAlert,
-  LuFlag,
-} from "react-icons/lu";
+import { LuCircleCheck, LuClock, LuCalendar, LuFlag, LuBell } from "react-icons/lu";
+
+/* ================= MOCK DATA ================= */
 
 const dashboardData = {
   project: {
@@ -18,7 +14,7 @@ const dashboardData = {
     domain: "Artificial Intelligence",
     supervisor: "Dr. Ahmed Hassan",
     progress: 65,
-    team: ["Malahim Chaudhary", "Ali Khan", "Sara Ahmed"],
+    team: ["Malahim Chaudhary", "Abdullah Tahir", "Minahil Mudassar"],
   },
 
   stats: {
@@ -28,117 +24,41 @@ const dashboardData = {
   },
 
   deadlines: [
-    {
-      title: "UI Prototype Submission",
-      datetime: "2026-04-25T06:59:00.000Z",
-    },
-    {
-      title: "Final Report Draft",
-      datetime: "2026-04-26T00:00:00.000Z",
-    },
-    {
-      title: "Presentation Slides",
-      datetime: "2026-04-30T00:00:00.000Z",
-    },
+    { title: "Progress Report",      due: "Mar 18, 2026", daysLeft: 0  },
+    { title: "SRS Document",         due: "Mar 18, 2026", daysLeft: 7  },
+    { title: "Plagiarism Report",    due: "Apr 24, 2026", daysLeft: 29 },
   ],
 
-  meetings: [
+  announcements: [
     {
-      title: "Sprint Review",
-      datetime: "2026-04-25T15:00:00.000Z",
+      id: "1",
+      title: "System Maintenance Scheduled",
+      body: "Platform downtime from 11 PM to 1 AM tonight",
+      postedAt: "2 hours ago",
     },
     {
-      title: "Supervisor Meeting",
-      datetime: "2026-04-27T11:00:00.000Z",
+      id: "2",
+      title: "New Project Guidelines Released",
+      body: "Updated documentation and submission requirements available",
+      postedAt: "yesterday",
     },
   ],
 };
 
-const getProgressColor = (progress: number) => {
-  if (progress < 50) return "#DC2626";
-  if (progress < 75) return "#F59E0B";
-  return "#16A34A";
+const getProgressColor = (_progress: number) => "#0D3CCF";
+
+const getDeadlineLabel = (daysLeft: number) => {
+  if (daysLeft === 0) return { text: "Due Today", color: "#DC2626" };
+  if (daysLeft === 1) return { text: "1 Day left", color: "#F59E0B" };
+  return { text: `${daysLeft} Days left`, color: "#6A7282" };
 };
 
-const getUpcomingWithinWeek = (items: any[]) => {
-  const now = new Date();
-
-  return items
-    .map((item) => {
-      const rawDate = new Date(item.datetime);
-
-      const diffMs = rawDate.getTime() - now.getTime();
-
-      // If already passed → don't show
-      if (diffMs <= 0) return null;
-
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-      // Only within next 7 days
-      if (diffDays > 6) return null;
-
-      const timeString = rawDate.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      let label = "";
-
-      if (diffDays === 0) {
-        label = `Due Today at ${timeString}`;
-      } else if (diffDays === 1) {
-        label = `Due Tomorrow at ${timeString}`;
-      } else {
-        label = `Due in ${diffDays} days`;
-      }
-
-      return { ...item, dueLabel: label, diffDays };
-    })
-    .filter(Boolean)
-    .sort((a, b) => a.diffDays - b.diffDays);
-};
-
-const getUpcomingDeadlinesStyled = (items: any[]) => {
-  const now = new Date();
-
-  return items
-    .map((item) => {
-      const rawDate = new Date(item.datetime);
-      const diffMs = rawDate.getTime() - now.getTime();
-
-      if (diffMs <= 0) return null;
-
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-      if (diffDays > 6) return null;
-
-      const timeString = rawDate.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      let label = "";
-      let status = "";
-
-      if (diffDays === 0) {
-        label = `Due Today at ${timeString}`;
-        status = "urgent";
-      } else if (diffDays === 1) {
-        label = `Due Tomorrow at ${timeString}`;
-        status = "urgent";
-      } else {
-        label = `Due in ${diffDays} days`;
-        status = "normal";
-      }
-
-      return { ...item, dueLabel: label, status };
-    })
-    .filter(Boolean);
-};
+/* ================= COMPONENT ================= */
 
 const StudDashboard: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const project = dashboardData.project;
+
   return (
     <div className={styles.container}>
       <StudSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -148,10 +68,12 @@ const StudDashboard: FC = () => {
           title="Dashboard"
           subtitle="Welcome back, Malahim Chaudhary"
           userName="Malahim Chaudhary"
-          userId="CO2024001"
+          userId="ST2024001"
         />
 
         <div className={styles.content}>
+
+          {/* ── Stats ── */}
           <div className={styles.statsGrid}>
             <StatsCard
               value={`${dashboardData.stats.progress}%`}
@@ -160,7 +82,6 @@ const StudDashboard: FC = () => {
               bgColor="#EFF6FF"
               iconColor="#0D3CCF"
             />
-
             <StatsCard
               value={dashboardData.stats.pendingTasks}
               label="Pending Tasks"
@@ -168,7 +89,6 @@ const StudDashboard: FC = () => {
               bgColor="#FEF2F2"
               iconColor="#DC2626"
             />
-
             <StatsCard
               value={dashboardData.stats.meetings}
               label="Scheduled Meetings"
@@ -178,28 +98,39 @@ const StudDashboard: FC = () => {
             />
           </div>
 
-          <div className={styles.section}>
-            <p className={styles.sectionTitle}>Project Overview</p>
+          {/* ── Project Overview ── */}
+          <div className={styles.card}>
+            <p className={styles.cardHeading}>Project Overview</p>
 
-            <div className={styles.projectOverviewCard}>
-              <p className={styles.projectTitle}>{project.title}</p>
-
-              <p className={styles.projectMeta}>
-                <strong>Domain:</strong> {project.domain}
-              </p>
-
-              <p className={styles.projectMeta}>
-                <strong>Supervisor:</strong> {project.supervisor}
-              </p>
-
-              <p className={styles.projectMeta}>
-                <strong>Team Members:</strong> {project.team.join(", ")}
-              </p>
-              <div className={styles.progressHeader}>
-                <p className={styles.progressText}>Overall Progress</p>
-                <p className={styles.progressPercent}>{project.progress}%</p>
+            <div className={styles.metaGrid}>
+              <div className={styles.metaItem}>
+                <p className={styles.metaLabel}>Title</p>
+                <p className={styles.metaValue}>{project.title}</p>
               </div>
+              <div className={styles.metaItem}>
+                <p className={styles.metaLabel}>Members</p>
+                <p className={styles.metaValue}>{project.team.join(", ")}</p>
+              </div>
+              <div className={styles.metaItem}>
+                <p className={styles.metaLabel}>Domain</p>
+                <p className={styles.metaValue}>{project.domain}</p>
+              </div>
+              <div className={styles.metaItem}>
+                <p className={styles.metaLabel}>Supervisor</p>
+                <p className={styles.metaValue}>{project.supervisor}</p>
+              </div>
+            </div>
 
+            <div className={styles.progressSection}>
+              <div className={styles.progressInfo}>
+                <span className={styles.progressLabel}>Overall Progress</span>
+                <span
+                  className={styles.progressPercent}
+                  style={{ color: getProgressColor(project.progress) }}
+                >
+                  {project.progress}%
+                </span>
+              </div>
               <div className={styles.progressBar}>
                 <div
                   className={styles.progressFill}
@@ -212,80 +143,78 @@ const StudDashboard: FC = () => {
             </div>
           </div>
 
-          <div className={styles.twoColumnSection}>
-            <div className={styles.column}>
-              <p className={styles.sectionTitle}>Upcoming Deadlines</p>
-              {getUpcomingDeadlinesStyled(dashboardData.deadlines).map(
-                (item, idx) => (
-                  <div
-                    key={idx}
-                    className={`${styles.taskCard} ${
-                      item.status === "urgent"
-                        ? styles.taskCardUrgent
-                        : styles.taskCardNormal
-                    }`}
-                  >
-                    <div className={styles.deadlineTop}>
-                      <div>
-                        {item.status === "urgent" ? (
-                          <LuTriangleAlert className={styles.iconUrgent} />
-                        ) : (
-                          <LuFlag className={styles.iconNormal} />
-                        )}
-                      </div>
-                      <div className={styles.taskTitle}>{item.title}</div>
-                    </div>
-                    <div className={styles.taskSub}>
-                      {dashboardData.project.title}
-                    </div>
+          {/* ── Bottom two columns ── */}
+          <div className={styles.twoCol}>
 
-                    <div
-                      className={
-                        item.status === "urgent"
-                          ? styles.taskMetaUrgent
-                          : styles.taskMetaNormal
-                      }
-                    >
-                      <div>
-                        <LuClock />
-                      </div>
+            {/* Upcoming Deadlines */}
+            <div className={`${styles.colCard} ${styles.colCardDeadlines}`}>
+              <p className={styles.cardHeading}>Upcoming Deadlines</p>
 
-                      <div>{item.dueLabel}</div>
-                    </div>
-                  </div>
-                ),
+              {dashboardData.deadlines.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <LuFlag size={24} color="#D1D5DB" />
+                  <p className={styles.emptyText}>No upcoming deadlines</p>
+                </div>
+              ) : (
+                <div className={styles.deadlineList}>
+                  {dashboardData.deadlines.map((item, idx) => {
+                    const { text, color } = getDeadlineLabel(item.daysLeft);
+                    return (
+                      <div key={idx} className={styles.deadlineItem}>
+                        <div className={styles.deadlineLeft}>
+                          <div className={styles.clockCircle}>
+                            <LuClock size={14} color="#0D3CCF" />
+                          </div>
+                          <div>
+                            <p className={styles.deadlineTitle}>{item.title}</p>
+                            <p className={styles.deadlineDue}>Due: {item.due}</p>
+                          </div>
+                        </div>
+                        <span className={styles.deadlineStatus} style={{ color }}>
+                          {text}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
 
-            <div className={styles.column}>
-              <div className={styles.projectsTopLine}>
-                <p className={styles.sectionTitle}>Upcoming Meetings</p>
+            {/* Recent Announcements */}
+            <div className={`${styles.colCard} ${styles.colCardAnnouncements}`}>
+              <div className={styles.colCardHeader}>
+                <p className={styles.cardHeading}>Recent Announcements</p>
                 <Link to="/student/meetings" className={styles.viewAll}>
                   View All &gt;
                 </Link>
               </div>
-              {getUpcomingWithinWeek(dashboardData.meetings).map(
-                (item, idx) => (
-                  <div key={idx} className={styles.taskCard}>
-                    <div className={styles.meetingTop}>
-                      <div className={styles.meetingIcon}>
-                        <LuCalendar />
+
+              {dashboardData.announcements.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <LuBell size={24} color="#D1D5DB" />
+                  <p className={styles.emptyText}>No announcements</p>
+                </div>
+              ) : (
+                <div className={styles.announcementList}>
+                  {dashboardData.announcements.map((a) => (
+                    <div key={a.id} className={styles.announcementItem}>
+                      <div className={styles.annIcon}>
+                        <LuCalendar size={14} color="#0D3CCF" />
                       </div>
-                      <div className={styles.taskTitle}>{item.title}</div>
-                    </div>
-                    <div className={styles.taskSub}>
-                      {dashboardData.project.title}
-                    </div>
-                    <div className={styles.meetingTime}>
-                      <div>
-                        <LuClock />
+                      <div className={styles.annBody}>
+                        <p className={styles.annTitle}>{a.title}</p>
+                        <p className={styles.annSubtitle}>{a.body}</p>
+                        <div className={styles.annMeta}>
+                          <LuClock size={11} color="#0D3CCF" />
+                          <span className={styles.annTime}>Posted {a.postedAt}</span>
+                        </div>
                       </div>
-                      <div>{item.dueLabel}</div>
                     </div>
-                  </div>
-                ),
+                  ))}
+                </div>
               )}
             </div>
+
           </div>
         </div>
       </div>

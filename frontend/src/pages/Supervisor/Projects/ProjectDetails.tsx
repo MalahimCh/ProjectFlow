@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useState } from "react";
 import styles from "./ProjectDetails.module.css";
 import SSidebar from "../Sidebar/Ssidebar";
@@ -10,7 +10,6 @@ import {
   LuSquarePen,
   LuEllipsisVertical,
   LuMessageSquareText,
-  LuChevronRight,
 } from "react-icons/lu";
 
 const ProjectDetails = () => {
