@@ -132,19 +132,18 @@ const updateStatus = (id: string, status: "accepted" | "rejected") => {
         {r.status === "pending" && (
           <div className={styles.rightActions}>
             <button
-              className={styles.reject}
-              onClick={() => updateStatus(r.id, "rejected")}
-            >
-              <LuCircleX />
-              <p>Reject</p>
-            </button>
-
-            <button
               className={styles.approve}
               onClick={() => updateStatus(r.id, "accepted")}
             >
               <LuCircleCheck />
               <p>Approve</p>
+            </button>
+            <button
+              className={styles.reject}
+              onClick={() => updateStatus(r.id, "rejected")}
+            >
+              <LuCircleX />
+              <p>Reject</p>
             </button>
           </div>
         )}

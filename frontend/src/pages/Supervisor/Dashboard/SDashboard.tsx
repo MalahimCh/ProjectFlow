@@ -198,6 +198,9 @@ const getUpcomingDeadlinesStyled = (items: any[]) => {
 const SDashboard: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
+  const deadlines = getUpcomingDeadlinesStyled(dashboardView.upcomingDeadlines);
+  const meetings = getUpcomingWithinWeek(dashboardView.upcomingMeetings);
+
   return (
     <div className={styles.container}>
       <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -262,44 +265,45 @@ const SDashboard: FC = () => {
           <div className={styles.twoColumnSection}>
             <div className={styles.column}>
               <p className={styles.sectionTitle}>Upcoming Deadlines</p>
-              {getUpcomingDeadlinesStyled(dashboardView.upcomingDeadlines).map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`${styles.taskCard} ${
-                    item.status === "urgent"
-                      ? styles.taskCardUrgent
-                      : styles.taskCardNormal
-                  }`}
-                >
-                  <div className={styles.deadlineTop}>
-                    <div>
-                      {item.status === "urgent" ? (
-                        <LuTriangleAlert className={styles.iconUrgent} />
-                      ) : (
-                        <LuFlag className={styles.iconNormal} />
-                      )}
-                    </div>
-                    <div className={styles.taskTitle}>{item.deadlineType}</div>
-                  </div>
-                  <div className={styles.taskSub}>{item.projectName}</div>
-                  
-                  <div
-                    className={
-                      item.status === "urgent"
-                        ? styles.taskMetaUrgent
-                        : styles.taskMetaNormal
-                    }
-                  >
-                    <div>
-                      <LuClock />
-                    </div>
-                  
-                    <div>
-                      {item.dueLabel}
-                    </div>
-                  </div>
+              {deadlines.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <LuFlag className={styles.emptyIcon} />
+                  <p className={styles.emptyText}>No upcoming deadlines</p>
                 </div>
-              ))}
+              ) : (
+                deadlines.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className={`${styles.taskCard} ${
+                      item.status === "urgent"
+                        ? styles.taskCardUrgent
+                        : styles.taskCardNormal
+                    }`}
+                  >
+                    <div className={styles.deadlineTop}>
+                      <div>
+                        {item.status === "urgent" ? (
+                          <LuTriangleAlert className={styles.iconUrgent} />
+                        ) : (
+                          <LuFlag className={styles.iconNormal} />
+                        )}
+                      </div>
+                      <div className={styles.taskTitle}>{item.deadlineType}</div>
+                    </div>
+                    <div className={styles.taskSub}>{item.projectName}</div>
+                    <div
+                      className={
+                        item.status === "urgent"
+                          ? styles.taskMetaUrgent
+                          : styles.taskMetaNormal
+                      }
+                    >
+                      <div><LuClock /></div>
+                      <div>{item.dueLabel}</div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className={styles.column}>
@@ -309,23 +313,28 @@ const SDashboard: FC = () => {
                     View All &gt;
                   </Link>
               </div>
-              {getUpcomingWithinWeek(dashboardView.upcomingMeetings).map((item, idx) => (
-                <div key={idx} className={styles.taskCard}>
-                  <div className={styles.meetingTop}>
-                    <div className={styles.meetingIcon}>
-                      <LuCalendar/>
-                    </div>
-                    <div className={styles.taskTitle}>{item.meetingType}</div>
-                  </div>
-                  <div className={styles.taskSub}>{item.projectName}</div>
-                  <div className={styles.meetingTime}>
-                    <div>
-                      <LuClock/>
-                    </div>
-                    <div>{item.dueLabel}</div>
-                  </div>
+              {meetings.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <LuCalendar className={styles.emptyIcon} />
+                  <p className={styles.emptyText}>No upcoming meetings</p>
                 </div>
-              ))}
+              ) : (
+                meetings.map((item, idx) => (
+                  <div key={idx} className={styles.taskCard}>
+                    <div className={styles.meetingTop}>
+                      <div className={styles.meetingIcon}>
+                        <LuCalendar/>
+                      </div>
+                      <div className={styles.taskTitle}>{item.meetingType}</div>
+                    </div>
+                    <div className={styles.taskSub}>{item.projectName}</div>
+                    <div className={styles.meetingTime}>
+                      <div><LuClock/></div>
+                      <div>{item.dueLabel}</div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

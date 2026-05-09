@@ -3,12 +3,21 @@ import { useState } from "react";
 import styles from "./ProjectDetails.module.css";
 import SSidebar from "../Sidebar/Ssidebar";
 import Header from "../../../components/Header/Header";
+import {
+  LuCalendar,
+  LuClock,
+  LuFileText,
+  LuSquarePen,
+  LuEllipsisVertical,
+  LuMessageSquareText,
+  LuChevronRight,
+} from "react-icons/lu";
 
 const ProjectDetails = () => {
   const { projectId: _projectId } = useParams();
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<"stream" | "work" | "grade">(
-    "stream",
+    "stream"
   );
 
   const project = {
@@ -41,6 +50,7 @@ const ProjectDetails = () => {
       },
     ],
   };
+
   return (
     <div className={styles.container}>
       <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -54,215 +64,262 @@ const ProjectDetails = () => {
         />
 
         <div className={styles.content}>
-          <div className={styles.content}>
-            {/* Project Overview Card */}
-            <section className={styles.overviewCard}>
-              <div className={styles.overviewHeader}>
-                <div>
-                  <p className={styles.overviewLabel}>Final Year Project</p>
-                  <h1 className={styles.projectTitle}>{project.name}</h1>
-                </div>
-                <div className={styles.progressBadge}>
-                  {project.progress}% Complete
-                </div>
+          {/* Overview Card */}
+          <div className={styles.overviewCard}>
+            <p className={styles.projectTitle}>{project.name}</p>
+            <div className={styles.projectMeta}>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Members</span>
+                <span className={styles.metaValue}>{project.members}</span>
               </div>
-
-              <div className={styles.projectMeta}>
-                <div className={styles.metaItem}>
-                  <span className={styles.metaLabel}>Team Members</span>
-                  <span className={styles.metaValue}>{project.members}</span>
-                </div>
-                <div className={styles.metaItem}>
-                  <span className={styles.metaLabel}>Supervisor</span>
-                  <span className={styles.metaValue}>{project.supervisor}</span>
-                </div>
-                <div className={styles.metaItem}>
-                  <span className={styles.metaLabel}>Deadline</span>
-                  <span className={styles.metaValue}>{project.deadline}</span>
-                </div>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Supervisor</span>
+                <span className={styles.metaValue}>{project.supervisor}</span>
               </div>
-
-              <div className={styles.progressSection}>
-                <div className={styles.progressInfo}>
-                  <span>Overall Progress</span>
-                  <span>{project.progress}%</span>
-                </div>
-                <div className={styles.progressBar}>
-                  <div
-                    className={styles.progressFill}
-                    style={{ width: `${project.progress}%` }}
-                  />
-                </div>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Deadline</span>
+                <span className={styles.metaValue}>{project.deadline}</span>
               </div>
-            </section>
+            </div>
+            <div className={styles.progressSection}>
+              <div className={styles.progressInfo}>
+                <span>Overall Progress</span>
+                <span className={styles.progressPercent}>{project.progress}%</span>
+              </div>
+              <div className={styles.progressBar}>
+                <div
+                  className={styles.progressFill}
+                  style={{ width: `${project.progress}%` }}
+                />
+              </div>
+            </div>
+          </div>
 
-            {/* Tabs Navigation */}
-            <nav className={styles.tabsWrapper}>
-              <button
-                className={
-                  activeTab === "stream" ? styles.activeTab : styles.tab
-                }
-                onClick={() => setActiveTab("stream")}
-              >
-                Stream
-              </button>
-              <button
-                className={activeTab === "work" ? styles.activeTab : styles.tab}
-                onClick={() => setActiveTab("work")}
-              >
-                Work
-              </button>
-              <button
-                className={
-                  activeTab === "grade" ? styles.activeTab : styles.tab
-                }
-                onClick={() => setActiveTab("grade")}
-              >
-                Grades
-              </button>
-            </nav>
+          {/* Tabs */}
+          <div className={styles.tabsWrapper}>
+            <button
+              className={activeTab === "stream" ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab("stream")}
+            >
+              Stream
+            </button>
+            <button
+              className={activeTab === "work" ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab("work")}
+            >
+              Work
+            </button>
+            <button
+              className={activeTab === "grade" ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab("grade")}
+            >
+              Grade
+            </button>
+          </div>
 
-            {/* Tab Content */}
-            <section className={styles.tabContent}>
-              {/* STREAM TAB */}
-              {activeTab === "stream" && (
-                <div className={styles.streamGrid}>
-                  <aside className={styles.streamSidebar}>
-                    <div className={styles.card}>
-                      <h3 className={styles.cardTitle}>Upcoming</h3>
-                      <p className={styles.upcomingTitle}>Progress Report</p>
-                      <p className={styles.upcomingDate}>Due Mar 20, 2026</p>
-                      <button className={styles.linkButton}>
-                        View Details
-                      </button>
+          {/* Stream Tab */}
+          {activeTab === "stream" && (
+            <div className={styles.streamGrid}>
+              {/* Sidebar */}
+              <div className={styles.streamSidebar}>
+                <div className={styles.sidebarCard}>
+                  <p className={styles.sidebarTitle}>Upcoming</p>
+                  <div className={styles.upcomingItem}>
+                    <p className={styles.upcomingName}>Progress Report</p>
+                    <div className={styles.upcomingDate}>
+                      <LuClock size={12} />
+                      <span>Due Mar 20, 2026</span>
                     </div>
-                  </aside>
-
-                  <div className={styles.streamFeed}>
-                    <div className={styles.shareBox}>
-                      📝 Share an update with your team
-                    </div>
-
-                    <article className={styles.postCard}>
-                      <div className={styles.postHeader}>
-                        <div className={styles.avatar}>MK</div>
-                        <div>
-                          <h4 className={styles.postAuthor}>Muhammad Kamran</h4>
-                          <p className={styles.postDate}>Today at 9:30 AM</p>
-                        </div>
-                      </div>
-
-                      <div className={styles.postContent}>
-                        <h5>Final Year Project - Important Deadlines Update</h5>
-                        <p>
-                          Please note the following critical deadlines: Final
-                          documentation due May 10, Project presentations May
-                          15–17.
-                        </p>
-                      </div>
-
-                      <button className={styles.replyButton}>↩ Reply</button>
-                    </article>
+                    <button className={styles.viewButton}>View</button>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {/* WORK TAB */}
-              {activeTab === "work" && (
-                <div className={styles.workSections}>
-                  <section className={styles.card}>
-                    <h3 className={styles.cardTitle}>Proposals</h3>
+              {/* Feed */}
+              <div className={styles.streamFeed}>
+                {/* Share Box */}
+                <button className={styles.shareBox}>
+                  <LuSquarePen size={14} />
+                  <span>Share with your team</span>
+                </button>
 
-                    <div className={styles.fileItem}>
-                      <div>
-                        <p className={styles.fileName}>
-                          Project Proposal v3.pdf
-                        </p>
-                        <p className={styles.fileMeta}>
-                          Last modified: Mar 10, 2026
-                        </p>
-                      </div>
-                      <span className={styles.fileSize}>2.4 MB</span>
+                {/* Post Card 1 - expanded */}
+                <div className={styles.postCard}>
+                  <div className={styles.postHeader}>
+                    <div className={styles.avatarCircle}>MK</div>
+                    <div className={styles.postMeta}>
+                      <p className={styles.postAuthor}>Muhammad Kamran</p>
+                      <p className={styles.postTime}>Today at 9:30 AM</p>
                     </div>
-
-                    <div className={styles.fileItem}>
-                      <div>
-                        <p className={styles.fileName}>Initial Proposal.pdf</p>
-                        <p className={styles.fileMeta}>
-                          Last modified: Feb 5, 2026
-                        </p>
-                      </div>
-                      <span className={styles.fileSize}>1.8 MB</span>
-                    </div>
-                  </section>
-
-                  <section className={styles.card}>
-                    <h3 className={styles.cardTitle}>Documents</h3>
-
-                    <div className={styles.fileItem}>
-                      <div>
-                        <p className={styles.fileName}>
-                          SRS_Document_Final.pdf
-                        </p>
-                        <p className={styles.fileMeta}>
-                          Last modified: Mar 12, 2026
-                        </p>
-                      </div>
-                      <span className={styles.fileSize}>3.2 MB</span>
-                    </div>
-                  </section>
+                    <button className={styles.moreBtn}>
+                      <LuEllipsisVertical size={16} />
+                    </button>
+                  </div>
+                  <div className={styles.postBody}>
+                    <p className={styles.postHeading}>
+                      Final Year Project - Important Deadlines Update
+                    </p>
+                    <p className={styles.postText}>Dear Students,</p>
+                    <p className={styles.postText}>
+                      Please note the following critical deadlines for your FYP:
+                    </p>
+                    <ul className={styles.postList}>
+                      <li>Final documentation due: May 10, 2026</li>
+                      <li>Project presentations: May 15-17, 2026</li>
+                      <li>Code repository submission: May 9, 2026</li>
+                    </ul>
+                    <p className={styles.postText}>
+                      Make sure all deliverables are completed on time. Late
+                      submissions will not be accepted.
+                    </p>
+                  </div>
+                  <button className={styles.replyButton}>
+                    <LuMessageSquareText size={14} />
+                    <span>Comment</span>
+                  </button>
                 </div>
-              )}
 
-              {/* GRADE TAB */}
-              {activeTab === "grade" && (
-                <section className={styles.gradeCard}>
-                  <table className={styles.gradeTable}>
-                    <thead>
-                      <tr>
-                        <th>Team Member</th>
-                        {[
-                          "Proposal",
-                          "SRS Doc",
-                          "Mid-Term Pres.",
-                          "Progress Report",
-                          "Literature Review",
-                        ].map((title, i) => (
-                          <th key={i}>{title}</th>
+                {/* Post Card 2 - compact */}
+                <div className={styles.postCard}>
+                  <div className={styles.postHeader}>
+                    <div className={styles.avatarCircleGreen}>
+                      <LuFileText size={16} />
+                    </div>
+                    <div className={styles.postMeta}>
+                      <p className={styles.postAuthor}>
+                        Muhammad Kamran posted:{" "}
+                        <span className={styles.postTitleInline}>
+                          FYP Presentation Guidelines
+                        </span>
+                      </p>
+                      <p className={styles.postTime}>Yesterday</p>
+                    </div>
+                    <button className={styles.moreBtn}>
+                      <LuEllipsisVertical size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Post Card 3 - compact */}
+                <div className={styles.postCard}>
+                  <div className={styles.postHeader}>
+                    <div className={styles.avatarCircleGreen}>
+                      <LuFileText size={16} />
+                    </div>
+                    <div className={styles.postMeta}>
+                      <p className={styles.postAuthor}>
+                        Muhammad Kamran posted:{" "}
+                        <span className={styles.postTitleInline}>
+                          Mid-Term Report Template
+                        </span>
+                      </p>
+                      <p className={styles.postTime}>2 days ago</p>
+                    </div>
+                    <button className={styles.moreBtn}>
+                      <LuEllipsisVertical size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Work Tab */}
+          {activeTab === "work" && (
+            <div className={styles.workSections}>
+              <div className={styles.request}>
+                <div className={styles.requestHeader}>
+                  <p className={styles.requestTitle}>Proposals</p>
+                </div>
+                <div className={styles.requestList}>
+                  {[
+                    { name: "Project Proposal v3.pdf", date: "Mar 10, 2026", size: "2.4 MB" },
+                    { name: "Initial Proposal.pdf", date: "Feb 5, 2026", size: "1.8 MB" },
+                  ].map((file, i) => (
+                    <div key={i} className={styles.fileCard}>
+                      <div className={styles.fileIcon}>
+                        <LuFileText size={16} />
+                      </div>
+                      <div className={styles.fileInfo}>
+                        <p className={styles.fileName}>{file.name}</p>
+                        <div className={styles.fileMeta}>
+                          <LuCalendar size={12} />
+                          <span>Last modified: {file.date}</span>
+                        </div>
+                      </div>
+                      <span className={styles.fileSize}>{file.size}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className={styles.request}>
+                <div className={styles.requestHeader}>
+                  <p className={styles.requestTitle}>Documents</p>
+                </div>
+                <div className={styles.requestList}>
+                  {[
+                    { name: "SRS_Document_Final.pdf", date: "Mar 12, 2026", size: "3.2 MB" },
+                  ].map((file, i) => (
+                    <div key={i} className={styles.fileCard}>
+                      <div className={styles.fileIcon}>
+                        <LuFileText size={16} />
+                      </div>
+                      <div className={styles.fileInfo}>
+                        <p className={styles.fileName}>{file.name}</p>
+                        <div className={styles.fileMeta}>
+                          <LuCalendar size={12} />
+                          <span>Last modified: {file.date}</span>
+                        </div>
+                      </div>
+                      <span className={styles.fileSize}>{file.size}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Grade Tab */}
+          {activeTab === "grade" && (
+            <div className={styles.request}>
+              <div className={styles.requestHeader}>
+                <p className={styles.requestTitle}>Grade Overview</p>
+              </div>
+              <div className={styles.gradeCard}>
+                <table className={styles.gradeTable}>
+                  <thead>
+                    <tr>
+                      <th>Team Member</th>
+                      {["Proposal", "SRS Doc", "Mid-Term Pres.", "Progress Report", "Literature Review"].map(
+                        (title, i) => <th key={i}>{title}</th>
+                      )}
+                      <th>Average</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {project.grades.map((member, idx) => (
+                      <tr key={idx}>
+                        <td>
+                          <div className={styles.memberInfo}>
+                            <div className={styles.avatarSmall}>{member.initials}</div>
+                            {member.name}
+                          </div>
+                        </td>
+                        {member.scores.map((score, i) => (
+                          <td key={i}>{score}</td>
                         ))}
-                        <th>Average</th>
+                        <td>
+                          <strong>{member.avg}</strong>
+                          <span className={styles.gradeLabel}>{member.grade}</span>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {project.grades.map((member, idx) => (
-                        <tr key={idx}>
-                          <td>
-                            <div className={styles.memberInfo}>
-                              <div className={styles.avatarSmall}>
-                                {member.initials}
-                              </div>
-                              {member.name}
-                            </div>
-                          </td>
-
-                          {member.scores.map((score, i) => (
-                            <td key={i}>{score}</td>
-                          ))}
-
-                          <td>
-                            <strong>{member.avg}</strong>
-                            <span className={styles.gradeLabel}>
-                              {member.grade}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </section>
-              )}
-            </section>
-          </div>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
