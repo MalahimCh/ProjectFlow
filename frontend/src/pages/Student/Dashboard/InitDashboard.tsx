@@ -4,7 +4,14 @@ import { useNavigate } from "react-router-dom";
 import styles from "./InitDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers, LuCircleAlert, LuMessageSquareText, LuCalendar, LuCheck, LuUserPlus } from "react-icons/lu";
+import {
+  LuUsers,
+  LuCircleAlert,
+  LuMessageSquareText,
+  LuCalendar,
+  LuCheck,
+  LuUserPlus,
+} from "react-icons/lu";
 
 const mockData = {
   group: {
@@ -18,7 +25,7 @@ const mockData = {
   // supervisor: {
   //   name: "none",
   //   requestedOn: "none",
-  //   status: "none"
+  //   status: "none",
   // },
 
   // supervisor: {
@@ -89,31 +96,51 @@ const InitDashboard: FC = () => {
         <div className={styles.content}>
           {/* ================= STATS ================= */}
           <div className={styles.statsGrid}>
-            <StatsCard value={`${groupCount} / 3`} label="Group Members" icon={<LuUsers />} bgColor="#EFF6FF" iconColor="#0D3CCF"/>
-            <StatsCard value={pendingRequests} label="Pending Requests" icon={<LuMessageSquareText />} bgColor="#FEF2F2" iconColor="#DC2626"/>
-            <StatsCard value={supervisorStatus} label="Supervisor Status" icon={<LuCalendar />} bgColor="#F0FDF4" iconColor="#16A34A"/>
+            <StatsCard
+              value={`${groupCount} / 3`}
+              label="Group Members"
+              icon={<LuUsers />}
+              bgColor="#EFF6FF"
+              iconColor="#0D3CCF"
+            />
+            <StatsCard
+              value={pendingRequests}
+              label="Pending Requests"
+              icon={<LuMessageSquareText />}
+              bgColor="#FEF2F2"
+              iconColor="#DC2626"
+            />
+            <StatsCard
+              value={supervisorStatus}
+              label="Supervisor Status"
+              icon={<LuCalendar />}
+              bgColor="#F0FDF4"
+              iconColor="#16A34A"
+            />
           </div>
 
           {/* ================= BANNER ================= */}
           <div
             className={`${styles.completeGroup} ${
-              hasSupervisorAssigned ? styles.successBox
-                : hasSupervisorRequested ? styles.pendingBox : ""
+              hasSupervisorAssigned
+                ? styles.successBox
+                : hasSupervisorRequested
+                  ? styles.pendingBox
+                  : ""
             }`}
           >
             <div className={styles.row}>
               <div className={styles.left}>
                 <span
                   className={`${styles.icon} ${
-                    hasSupervisorAssigned ? styles.successIcon
-                      : hasSupervisorRequested ? styles.pendingIcon : styles.primaryIcon
+                    hasSupervisorAssigned
+                      ? styles.successIcon
+                      : hasSupervisorRequested
+                        ? styles.pendingIcon
+                        : styles.primaryIcon
                   }`}
                 >
-                  {!isGroupComplete ? (
-                    <LuCircleAlert />
-                  ) : (
-                    <LuCheck />
-                  )}
+                  {!isGroupComplete ? <LuCircleAlert /> : <LuCheck />}
                 </span>
 
                 <div>
@@ -122,7 +149,8 @@ const InitDashboard: FC = () => {
                     <>
                       <p className={styles.title}>Complete Your Group</p>
                       <p className={styles.subtitle}>
-                        You need {3 - members.length} more members to complete your group.
+                        You need {3 - members.length} more members to complete
+                        your group.
                       </p>
                     </>
                   )}
@@ -152,7 +180,8 @@ const InitDashboard: FC = () => {
                     <>
                       <p className={styles.title}>Group Ready for Submission</p>
                       <p className={styles.subtitle}>
-                        Your group is complete and supervisor has accepted. Submit your group for coordinator approval.
+                        Your group is complete and supervisor has accepted.
+                        Submit your group for coordinator approval.
                       </p>
                     </>
                   )}
@@ -163,7 +192,8 @@ const InitDashboard: FC = () => {
               {!isGroupComplete && (
                 <button
                   className={styles.action}
-                  onClick={FindTeamMembersButtonClick}>
+                  onClick={FindTeamMembersButtonClick}
+                >
                   Find Team Members
                 </button>
               )}
@@ -171,7 +201,8 @@ const InitDashboard: FC = () => {
               {isGroupComplete && noSupervisor && (
                 <button
                   className={styles.action}
-                  onClick={RequestSupervisorButtonClick}>
+                  onClick={RequestSupervisorButtonClick}
+                >
                   Request Supervisor
                 </button>
               )}
@@ -185,7 +216,8 @@ const InitDashboard: FC = () => {
               {isGroupComplete && hasSupervisorAssigned && (
                 <button
                   className={styles.successBtn}
-                  onClick={SubmitButtonClicked}>
+                  onClick={SubmitButtonClicked}
+                >
                   Submit Group
                 </button>
               )}
@@ -204,7 +236,9 @@ const InitDashboard: FC = () => {
                     <div
                       key={member ? member.id : `empty-${index}`}
                       className={
-                        member ? styles.listItem : `${styles.listItem} ${styles.emptyWrapper}`
+                        member
+                          ? styles.listItem
+                          : `${styles.listItem} ${styles.emptyWrapper}`
                       }
                     >
                       {member ? (
@@ -215,24 +249,24 @@ const InitDashboard: FC = () => {
                               .map((n: string) => n[0])
                               .join("")}
                           </div>
-                            
+
                           <div className={styles.info}>
                             <p className={styles.name}>{member.name}</p>
                             <p className={styles.reg}>{member.reg}</p>
                           </div>
-                            
+
                           {member.isLeader && (
                             <span className={styles.badge}>Leader</span>
                           )}
                         </>
                       ) : (
                         <div className={styles.emptySlot}>
-                          <LuUserPlus className={styles.emptyIcon}/>
+                          <LuUserPlus className={styles.emptyIcon} />
                           <p className={styles.emptyText}>Empty Slot</p>
                         </div>
                       )}
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </div>

@@ -27,8 +27,8 @@
 }
 
 .completeGroup {
-  background-color: #EFF6FF;
-  border: 1px solid #0D3CCF;
+  background-color: #eff6ff;
+  border: 1px solid #0d3ccf;
   border-radius: 12px;
   padding: 20px;
   margin: 20px 0 0 0;
@@ -60,15 +60,15 @@
 }
 
 .primaryIcon {
-  background-color: #0D3CCF;
+  background-color: #0d3ccf;
 }
 
 .pendingIcon {
-  background-color: #F59E0B;
+  background-color: #f59e0b;
 }
 
 .successIcon {
-  background-color: #16A34A;
+  background-color: #16a34a;
 }
 
 .title {
@@ -85,7 +85,7 @@
 }
 
 .action {
-  background-color: #0D3CCF;
+  background-color: #0d3ccf;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -98,26 +98,25 @@
 
 .successBox {
   background-color: #ecfdf5;
-  border: 1px solid #16A34A;
+  border: 1px solid #16a34a;
 }
 
 .pendingBox {
-  background-color: #FFF7ED;
-  border: 1px solid #F59E0B;
+  background-color: #fff7ed;
+  border: 1px solid #f59e0b;
 }
 
 .pendingBtn {
-  background-color: #F59E0B;
-  color: #FFFFFF;
+  background-color: #f59e0b;
+  color: #ffffff;
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
-  cursor: not-allowed;
 }
 
 .successBtn {
-  background-color: #16A34A;
-  color: #FFFFFF;
+  background-color: #16a34a;
+  color: #ffffff;
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
@@ -126,10 +125,10 @@
 
 .card {
   margin: 20px 0 0 0;
-  background: #F9FAFB;
+  background: #f9fafb;
   padding: 20px;
   border-radius: 12px;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
 }
 
 .cardHeader {
@@ -157,8 +156,8 @@
   align-items: center;
   justify-content: space-between;
 
-  background: #F9FAFB;
-  border: 1px solid #E5E7EB;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   padding: 12px;
   border-radius: 12px;
   margin: 0px;
@@ -170,8 +169,8 @@
   align-items: center;
   justify-content: center;
 
-  background: #F9FAFB;
-  border: 1px dashed #E5E7EB;
+  background: #f9fafb;
+  border: 1px dashed #e5e7eb;
   padding: 12px;
   border-radius: 12px;
   margin: 0px;
@@ -183,7 +182,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #6A7282;
+  color: #6a7282;
 }
 
 .emptyIcon {
@@ -202,8 +201,8 @@
   justify-content: center;
 
   font-size: 14px;
-  background: #0D3CCF;
-  color: #FFFFFF;
+  background: #0d3ccf;
+  color: #ffffff;
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -230,16 +229,16 @@
   font-size: 12px;
   padding: 2px 6px;
   border-radius: 6px;
-  background: #EFF6FF;
-  color: #0D3CCF;
+  background: #eff6ff;
+  color: #0d3ccf;
 }
 
 .accepted {
   background: #dcfce7;
-  color: #16A34A;
+  color: #16a34a;
 }
 
 .pending {
-  background: #FFF7ED;
+  background: #fff7ed;
   color: #d97706;
 }

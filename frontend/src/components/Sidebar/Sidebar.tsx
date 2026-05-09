@@ -2,11 +2,17 @@ import type { FunctionComponent } from "react";
 import type { MenuItem } from "./types";
 import styles from "./Sidebar.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
-import { LuLogOut, LuSettings, LuMenu, LuUser, LuGraduationCap } from "react-icons/lu";
+import {
+  LuLogOut,
+  LuSettings,
+  LuMenu,
+  LuUser,
+  LuGraduationCap,
+} from "react-icons/lu";
 
 type SidebarProps = {
   menuItems: MenuItem[];
-   collapsed: boolean;
+  collapsed: boolean;
   setCollapsed: (val: boolean) => void;
 };
 
@@ -15,18 +21,16 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   collapsed,
   setCollapsed,
 }) => {
-  
-  
-const location = useLocation();
-    const navigate = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    const handleClick = (item: MenuItem) => {
-      navigate(item.path);
-    };
+  const handleClick = (item: MenuItem) => {
+    navigate(item.path);
+  };
 
   const handleLogout = () => {
     console.log("Logout");
-    navigate("/Login");
+    navigate("/login");
   };
   return (
     <div className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
@@ -50,8 +54,8 @@ const location = useLocation();
               key={index}
               title={collapsed ? item.label : ""}
               className={`${styles.menuItem} ${
-  location.pathname === item.path ? styles.active : ""
-}`}
+                location.pathname === item.path ? styles.active : ""
+              }`}
               onClick={() => handleClick(item)}
             >
               <Icon size={18} />
@@ -65,9 +69,8 @@ const location = useLocation();
         <div
           title={collapsed ? "Profile" : ""}
           className={`${styles.menuItem} ${
-  location.pathname === "/profile" ? styles.active : ""
-}`}
-         
+            location.pathname === "/profile" ? styles.active : ""
+          }`}
         >
           <LuUser size={18} />
           <span>{!collapsed && "Profile"}</span>
@@ -76,9 +79,8 @@ const location = useLocation();
         <div
           title={collapsed ? "Settings" : ""}
           className={`${styles.menuItem} ${
-  location.pathname === "/settings" ? styles.active : ""
-}`}
-         
+            location.pathname === "/settings" ? styles.active : ""
+          }`}
         >
           <LuSettings size={18} />
           <span>{!collapsed && "Settings"}</span>
