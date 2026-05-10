@@ -18,6 +18,7 @@ import PendingRequest from "../pages/Student/PendingRequest/PendingRequest";
 
 import StudDashboard from "../pages/Student/Dashboard/StudDashboard";
 import StudMeetings from "../pages/Student/Meetings/studMeetings";
+import StudProject from "../pages/Student/Project/StudProject";
 
 import CoordDashboard from "../pages/Coordinator/Dashboard/CoordDashboard";
 import CoordDeadlines from "../pages/Coordinator/Deadlines/CoordDeadlines";
@@ -62,6 +63,7 @@ const AppRoutes = () => {
 
       <Route path="/student/dashboard" element={<StudDashboard />} />
       <Route path="/student/meetings" element={<StudMeetings />} />
+      <Route path="/student/project" element={<StudProject />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" />} />

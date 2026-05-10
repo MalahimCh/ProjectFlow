@@ -1,6 +1,6 @@
 import StudSidebar from "../Sidebar/StudSidebar";
 import { type FC, useState } from "react";
-import styles from "./studMeetings.module.css";
+import styles from "./StudMeetings.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
 import {
@@ -21,11 +21,11 @@ type Meeting = {
   link: string;
 };
 
-const projectName = "ProjectFlow"; // single project
-
 const StudMeetings: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [joinLink, setJoinLink] = useState("");
 
   const [meetings, setMeetings] = useState<Meeting[]>([
     {
@@ -43,7 +43,6 @@ const StudMeetings: FC = () => {
       link: "https://meet.google.com/xyz-mnp-qrs",
     },
   ]);
-
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -54,13 +53,35 @@ const StudMeetings: FC = () => {
     window.open(link, "_blank");
   };
 
-  const generateMeetLink = () => {
-    return "https://meet.google.com/" + Math.random().toString(36).substring(7);
+  const handleJoinConfirm = () => {
+    if (!joinLink.trim()) return;
+    joinMeeting(joinLink.trim());
+    setShowJoinModal(false);
+    setJoinLink("");
+  };
+
+  const [meetLinkInput, setMeetLinkInput] = useState("");
+  const [meetLinkStep, setMeetLinkStep] = useState<1 | 2>(1);
+
+  const handleOpenCreateModal = () => {
+    setMeetLinkStep(1);
+    setMeetLinkInput("");
+    setFormData({
+      title: "",
+      date: "",
+      time: "",
+    });
+    setShowCreateModal(true);
+  };
+
+  const handleGenerateLink = () => {
+    window.open("https://meet.google.com/new", "_blank");
+    setMeetLinkStep(2);
   };
 
   const handleCreateMeeting = () => {
-    if (!formData.title) {
-      alert("Fill all fields");
+    if (!formData.title || !meetLinkInput.trim()) {
+      alert("Fill all fields and paste the meeting link.");
       return;
     }
 
@@ -69,12 +90,13 @@ const StudMeetings: FC = () => {
       title: formData.title,
       date: formData.date,
       time: formData.time,
-      link: generateMeetLink(),
+      link: meetLinkInput.trim(),
     };
 
     setMeetings((prev) => [...prev, newMeeting]);
-    setShowModal(false);
-
+    setShowCreateModal(false);
+    setMeetLinkStep(1);
+    setMeetLinkInput("");
     setFormData({
       title: "",
       date: "",
@@ -89,8 +111,8 @@ const StudMeetings: FC = () => {
       <div className={styles.main}>
         <Header
           title="Meetings"
-          subtitle="Welcome back, Malahim Chaudhary"
-          userName="Malahim Chaudhary"
+          subtitle="Welcome back, Muhammad Kamran"
+          userName="Muhammad Kamran"
           userId="SP2024001"
         />
 
@@ -107,17 +129,14 @@ const StudMeetings: FC = () => {
               <div className={styles.meetActionsPrimary}>
                 <button
                   className={styles.primaryBtn}
-                  onClick={() => {
-                    const link = prompt("Enter meeting link");
-                    if (link) joinMeeting(link);
-                  }}
+                  onClick={() => setShowJoinModal(true)}
                 >
                   Join
                 </button>
 
                 <button
                   className={styles.outlineBtn}
-                  onClick={() => setShowModal(true)}
+                  onClick={handleOpenCreateModal}
                 >
                   + New meeting
                 </button>
@@ -159,27 +178,21 @@ const StudMeetings: FC = () => {
           <div className={styles.sectionHeader}>
             <div className={styles.sectionTop}>
               <p className={styles.title}>Upcoming Meetings</p>
-              <span className={styles.badge}>
-                {meetings.length} Scheduled {}
-              </span>
+              <span className={styles.badge}>{meetings.length} Scheduled</span>
             </div>
 
             <div className={styles.meetingList}>
               {meetings.map((m) => (
                 <div key={m.id} className={styles.meetingCard}>
-                  {/* details */}
                   <div className={styles.meetingInfo}>
                     <div className={styles.titleRow}>
-                      <h4>{projectName}</h4>
-                      <span className={styles.sessionBadge}>{m.title}</span>
+                      <h4>{m.title}</h4>
                     </div>
 
-                    {/* Row 2: Date */}
                     <div className={styles.dateTimeRow}>
                       <LuCalendar /> <span>{m.date}</span>
                     </div>
 
-                    {/* Row 3: Time */}
                     <div className={styles.dateTimeRow}>
                       <LuClock /> <span>{m.time}</span>
                     </div>
@@ -189,7 +202,6 @@ const StudMeetings: FC = () => {
                     </div>
                   </div>
 
-                  {/* join meeting */}
                   <div className={styles.meetingActions}>
                     <button
                       className={styles.joinBtn}
@@ -203,10 +215,73 @@ const StudMeetings: FC = () => {
             </div>
           </div>
 
-          {/* MODAL SECTION */}
-          {showModal && (
-            <div className={styles.overlay}>
-              <div className={styles.modal}>
+          {/* ── JOIN MEETING MODAL ── */}
+          {showJoinModal && (
+            <div
+              className={styles.overlay}
+              onClick={() => {
+                setShowJoinModal(false);
+                setJoinLink("");
+              }}
+            >
+              <div
+                className={styles.modal}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className={styles.modalTitle}>Join Meeting</h3>
+                <p className={styles.modalSubtitle}>
+                  Paste a meeting link to join instantly.
+                </p>
+
+                <div className={styles.inputGroup}>
+                  <div className={styles.inputWithIcon}>
+                    <LuLink size={15} className={styles.inputIcon} />
+                    <input
+                      type="text"
+                      placeholder="https://meet.google.com/abc-xyz"
+                      className={styles.textInput}
+                      value={joinLink}
+                      onChange={(e) => setJoinLink(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleJoinConfirm()
+                      }
+                      autoFocus
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.modalActions}>
+                  <button
+                    className={styles.cancelBtn}
+                    onClick={() => {
+                      setShowJoinModal(false);
+                      setJoinLink("");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className={styles.confirmBtn}
+                    onClick={handleJoinConfirm}
+                    disabled={!joinLink.trim()}
+                  >
+                    Join
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── CREATE MEETING MODAL ── */}
+          {showCreateModal && (
+            <div
+              className={styles.overlay}
+              onClick={() => setShowCreateModal(false)}
+            >
+              <div
+                className={styles.modal}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <h3 className={styles.modalTitle}>Create Meeting</h3>
 
                 <div className={styles.inputGroup}>
@@ -237,18 +312,58 @@ const StudMeetings: FC = () => {
                       setFormData({ ...formData, time: e.target.value })
                     }
                   />
+
+                  {/* Step 1 — generate link button */}
+                  {meetLinkStep === 1 && (
+                    <button
+                      className={styles.generateLinkBtn}
+                      onClick={handleGenerateLink}
+                    >
+                      <LuVideo size={14} />
+                      Open Google Meet to get link
+                    </button>
+                  )}
+
+                  {/* Step 2 — paste the real link back */}
+                  {meetLinkStep === 2 && (
+                    <div className={styles.pasteLinkWrapper}>
+                      <p className={styles.pasteLinkHint}>
+                        Copy the link from the Google Meet tab and paste it
+                        below.
+                      </p>
+                      <div className={styles.inputWithIcon}>
+                        <LuLink size={15} className={styles.inputIcon} />
+                        <input
+                          type="text"
+                          placeholder="https://meet.google.com/abc-defg-hij"
+                          className={styles.textInput}
+                          value={meetLinkInput}
+                          onChange={(e) => setMeetLinkInput(e.target.value)}
+                          autoFocus
+                        />
+                      </div>
+                      <button
+                        className={styles.generateLinkBtn}
+                        style={{ marginTop: 8 }}
+                        onClick={handleGenerateLink}
+                      >
+                        Re-open Google Meet
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.modalActions}>
                   <button
                     className={styles.cancelBtn}
-                    onClick={() => setShowModal(false)}
+                    onClick={() => setShowCreateModal(false)}
                   >
                     Cancel
                   </button>
                   <button
                     className={styles.confirmBtn}
                     onClick={handleCreateMeeting}
+                    disabled={meetLinkStep === 1 || !meetLinkInput.trim()}
                   >
                     Create
                   </button>
