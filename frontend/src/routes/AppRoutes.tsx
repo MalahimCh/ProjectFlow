@@ -16,12 +16,25 @@ import PendingRequest from "../pages/Student/PendingRequest/PendingRequest";
 import StudDashboard from "../pages/Student/Dashboard/StudDashboard";
 import StudMeetings from "../pages/Student/Meetings/studMeetings";
 
+import CoordDashboard from "../pages/Coordinator/Dashboard/CoordDashboard";
+import CoordDeadlines from "../pages/Coordinator/Deadlines/CoordDeadlines";
+import CoordRubrics from "../pages/Coordinator/Rubric/CoordRubric";
+import CoordEvaluations from "../pages/Coordinator/Evaluations/CoordEvaluations";
+import CoordWorkload from "../pages/Coordinator/Workload/CoordWorkload";
+
 const AppRoutes = () => {
   return (
     <Routes>
       {/* Auth routes */}
       <Route path="/" element={<SignUpPage />} />
       <Route path="/login" element={<SignInPage />} />
+
+      {/* Coordinator routes */}
+      <Route path="/coordinator/dashboard" element={<CoordDashboard />} />
+      <Route path="/coordinator/deadlines" element={<CoordDeadlines />} />
+      <Route path="/coordinator/rubrics" element={<CoordRubrics />} />
+      <Route path="/coordinator/evaluations" element={<CoordEvaluations />} />
+      <Route path="/coordinator/workload" element={<CoordWorkload />} />
 
       {/* Supervisor routes */}
       <Route path="/supervisor/dashboard" element={<SDashboard />} />
@@ -33,6 +46,7 @@ const AppRoutes = () => {
         element={<ProjectDetails />}
       />
 
+      {/* Student routes */}
       <Route path="/student/initialdashboard" element={<InitDashboard />} />
       <Route path="/student/findteam" element={<FindTeam />} />
       <Route path="/student/findsupervisor" element={<FindSupervisor />} />
