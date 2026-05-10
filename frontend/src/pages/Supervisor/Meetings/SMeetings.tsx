@@ -14,12 +14,13 @@ type Meeting = {
   link: string;
 };
 
-const availableProjects = ["Mobile Mavericks", "Data Dynamics", "Alpha Innovators"];// dummy project to select from 
+const availableProjects = ["Mobile Mavericks", "Data Dynamics", "Alpha Innovators"];
 
 const SMeetings: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal]     = useState(false);
+  const [joinLink, setJoinLink]               = useState("");
 
   const [meetings, setMeetings] = useState<Meeting[]>([
     {
@@ -51,15 +52,31 @@ const SMeetings: FC = () => {
     window.open(link, "_blank");
   };
 
-  //generate dummy meet link
-  const generateMeetLink = () => {
-    return "https://meet.google.com/" + Math.random().toString(36).substring(7);
+  const handleJoinConfirm = () => {
+    if (!joinLink.trim()) return;
+    joinMeeting(joinLink.trim());
+    setShowJoinModal(false);
+    setJoinLink("");
   };
 
-  //create meeting handler
+  const [meetLinkInput, setMeetLinkInput] = useState("");
+  const [meetLinkStep, setMeetLinkStep]   = useState<1 | 2>(1);
+
+  const handleOpenCreateModal = () => {
+    setMeetLinkStep(1);
+    setMeetLinkInput("");
+    setFormData({ projectName: "", title: "", date: "", time: "" });
+    setShowCreateModal(true);
+  };
+
+  const handleGenerateLink = () => {
+    window.open("https://meet.google.com/new", "_blank");
+    setMeetLinkStep(2);
+  };
+
   const handleCreateMeeting = () => {
-    if (!formData.projectName || !formData.title) {
-      alert("Fill all fields");
+    if (!formData.projectName || !formData.title || !meetLinkInput.trim()) {
+      alert("Fill all fields and paste the meeting link.");
       return;
     }
 
@@ -69,18 +86,14 @@ const SMeetings: FC = () => {
       title: formData.title,
       date: formData.date,
       time: formData.time,
-      link: generateMeetLink(),
+      link: meetLinkInput.trim(),
     };
 
     setMeetings((prev) => [...prev, newMeeting]);
-    setShowModal(false);
-
-    setFormData({
-      projectName: "",
-      title: "",
-      date: "",
-      time: "",
-    });
+    setShowCreateModal(false);
+    setMeetLinkStep(1);
+    setMeetLinkInput("");
+    setFormData({ projectName: "", title: "", date: "", time: "" });
   };
 
   return (
@@ -108,17 +121,14 @@ const SMeetings: FC = () => {
               <div className={styles.meetActionsPrimary}>
                 <button
                   className={styles.primaryBtn}
-                  onClick={() => {
-                    const link = prompt("Enter meeting link");
-                    if (link) joinMeeting(link);
-                  }}
+                  onClick={() => setShowJoinModal(true)}
                 >
                   Join
                 </button>
 
                 <button
                   className={styles.outlineBtn}
-                  onClick={() => setShowModal(true)}
+                  onClick={handleOpenCreateModal}
                 >
                   + New meeting
                 </button>
@@ -126,117 +136,202 @@ const SMeetings: FC = () => {
             </div>
 
             <div className={styles.statsGrid}>
-              <StatsCard value={4} label="Upcoming Meetings" icon={<LuCalendar />} bgColor="#EEF2FF" iconColor="#2563EB"/>
-              <StatsCard value={3} label="This Week" icon={<LuUsers />} bgColor="#ECFDF5" iconColor="#16A34A"/>
-              <StatsCard value={8} label="Completed This Month" icon={<LuMessageSquareText />} bgColor="#FFF7ED" iconColor="#F59E0B"/>
-              <StatsCard value={11} label="Total This Year" icon={<LuUserCheck />} bgColor="#EFF6FF" iconColor="#2563EB"/>
+              <StatsCard value={4}  label="Upcoming Meetings"     icon={<LuCalendar />}         bgColor="#EEF2FF" iconColor="#2563EB" />
+              <StatsCard value={3}  label="This Week"             icon={<LuUsers />}             bgColor="#ECFDF5" iconColor="#16A34A" />
+              <StatsCard value={8}  label="Completed This Month"  icon={<LuMessageSquareText />} bgColor="#FFF7ED" iconColor="#F59E0B" />
+              <StatsCard value={11} label="Total This Year"        icon={<LuUserCheck />}         bgColor="#EFF6FF" iconColor="#2563EB" />
             </div>
           </div>
 
           <div className={styles.sectionHeader}>
             <div className={styles.sectionTop}>
               <p className={styles.title}>Upcoming Meetings</p>
-              <span className={styles.badge}>
-                {meetings.length} Scheduled { }
-              </span>
+              <span className={styles.badge}>{meetings.length} Scheduled</span>
             </div>
 
-      <div className={styles.meetingList}>
-  {meetings.map((m) => (
-    <div key={m.id} className={styles.meetingCard}>
-      
-      {/* details */}
-      <div className={styles.meetingInfo}>
-        <div className={styles.titleRow}>
-          <h4>{m.projectName}</h4>
-          <span className={styles.sessionBadge}>{m.title}</span>
-        </div>
-        
-         {/* Row 2: Date */}
-  <div className={styles.dateTimeRow}>
-    <LuCalendar /> <span>{m.date}</span>
-  </div>
+            <div className={styles.meetingList}>
+              {meetings.map((m) => (
+                <div key={m.id} className={styles.meetingCard}>
+                  <div className={styles.meetingInfo}>
+                    <div className={styles.titleRow}>
+                      <h4>{m.projectName}</h4>
+                      <span className={styles.sessionBadge}>{m.title}</span>
+                    </div>
 
-  {/* Row 3: Time */}
-  <div className={styles.dateTimeRow}>
-    <LuClock /> <span>{m.time}</span>
-  </div>
+                    <div className={styles.dateTimeRow}>
+                      <LuCalendar /> <span>{m.date}</span>
+                    </div>
 
-        <div className={styles.linkRow}>
-          <LuLink /> <span>{m.link}</span>
-        </div>
-      </div>
+                    <div className={styles.dateTimeRow}>
+                      <LuClock /> <span>{m.time}</span>
+                    </div>
 
-      {/* join meeting */}
-      <div className={styles.meetingActions}>
-        <button className={styles.joinBtn} onClick={() => joinMeeting(m.link)}>
-          Join Meeting
-        </button>
-       
-      </div>
+                    <div className={styles.linkRow}>
+                      <LuLink /> <span>{m.link}</span>
+                    </div>
+                  </div>
 
-    </div>
-  ))}
-</div>
+                  <div className={styles.meetingActions}>
+                    <button
+                      className={styles.joinBtn}
+                      onClick={() => joinMeeting(m.link)}
+                    >
+                      Join Meeting
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-         {/* MODAL SECTION */}
-{showModal && (
-  <div className={styles.overlay}>
-    <div className={styles.modal}>
-      <h3 className={styles.modalTitle}>Create Meeting</h3>
+          {/* ── JOIN MEETING MODAL ── */}
+          {showJoinModal && (
+            <div className={styles.overlay} onClick={() => { setShowJoinModal(false); setJoinLink(""); }}>
+              <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                <h3 className={styles.modalTitle}>Join Meeting</h3>
+                <p className={styles.modalSubtitle}>
+                  Paste a meeting link to join instantly.
+                </p>
 
-      <div className={styles.inputGroup}>
-        <select
-          className={styles.selectInput}
-          value={formData.projectName}
-          onChange={(e) =>
-            setFormData({ ...formData, projectName: e.target.value })
-          }
-        >
-          <option value="" disabled>Select Project</option>
-          {availableProjects.map((project) => (
-            <option key={project} value={project}>
-              {project}
-            </option>
-          ))}
-        </select>
+                <div className={styles.inputGroup}>
+                  <div className={styles.inputWithIcon}>
+                    <LuLink size={15} className={styles.inputIcon} />
+                    <input
+                      type="text"
+                      placeholder="https://meet.google.com/abc-xyz"
+                      className={styles.textInput}
+                      value={joinLink}
+                      onChange={(e) => setJoinLink(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleJoinConfirm()}
+                      autoFocus
+                    />
+                  </div>
+                </div>
 
-        <input
-          type="text"
-          placeholder="Meeting Title"
-          className={styles.textInput}
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        />
+                <div className={styles.modalActions}>
+                  <button
+                    className={styles.cancelBtn}
+                    onClick={() => { setShowJoinModal(false); setJoinLink(""); }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className={styles.confirmBtn}
+                    onClick={handleJoinConfirm}
+                    disabled={!joinLink.trim()}
+                  >
+                    Join
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
-        <input
-          type="date"
-          className={styles.dateInput}
-          value={formData.date}
-          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-        />
+          {/* ── CREATE MEETING MODAL ── */}
+          {showCreateModal && (
+            <div className={styles.overlay} onClick={() => setShowCreateModal(false)}>
+              <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                <h3 className={styles.modalTitle}>Create Meeting</h3>
 
-        <input
-          type="time"
-          className={styles.timeInput}
-          value={formData.time}
-          onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-        />
-      </div>
+                <div className={styles.inputGroup}>
+                  <select
+                    className={styles.selectInput}
+                    value={formData.projectName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, projectName: e.target.value })
+                    }
+                  >
+                    <option value="" disabled>Select Project</option>
+                    {availableProjects.map((project) => (
+                      <option key={project} value={project}>{project}</option>
+                    ))}
+                  </select>
 
-      <div className={styles.modalActions}>
-        <button className={styles.cancelBtn} onClick={() => setShowModal(false)}>
-          Cancel
-        </button>
-        <button className={styles.confirmBtn} onClick={handleCreateMeeting}>
-          Create
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                  <input
+                    type="text"
+                    placeholder="Meeting Title"
+                    className={styles.textInput}
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                  />
 
+                  <input
+                    type="date"
+                    className={styles.dateInput}
+                    value={formData.date}
+                    onChange={(e) =>
+                      setFormData({ ...formData, date: e.target.value })
+                    }
+                  />
+
+                  <input
+                    type="time"
+                    className={styles.timeInput}
+                    value={formData.time}
+                    onChange={(e) =>
+                      setFormData({ ...formData, time: e.target.value })
+                    }
+                  />
+
+                  {/* Step 1 — generate link button */}
+                  {meetLinkStep === 1 && (
+                    <button
+                      className={styles.generateLinkBtn}
+                      onClick={handleGenerateLink}
+                    >
+                      <LuVideo size={14} />
+                      Open Google Meet to get link
+                    </button>
+                  )}
+
+                  {/* Step 2 — paste the real link back */}
+                  {meetLinkStep === 2 && (
+                    <div className={styles.pasteLinkWrapper}>
+                      <p className={styles.pasteLinkHint}>
+                        Copy the link from the Google Meet tab and paste it below.
+                      </p>
+                      <div className={styles.inputWithIcon}>
+                        <LuLink size={15} className={styles.inputIcon} />
+                        <input
+                          type="text"
+                          placeholder="https://meet.google.com/abc-defg-hij"
+                          className={styles.textInput}
+                          value={meetLinkInput}
+                          onChange={(e) => setMeetLinkInput(e.target.value)}
+                          autoFocus
+                        />
+                      </div>
+                      <button
+                        className={styles.generateLinkBtn}
+                        style={{ marginTop: 8 }}
+                        onClick={handleGenerateLink}
+                      >
+                        Re-open Google Meet
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.modalActions}>
+                  <button
+                    className={styles.cancelBtn}
+                    onClick={() => setShowCreateModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className={styles.confirmBtn}
+                    onClick={handleCreateMeeting}
+                    disabled={meetLinkStep === 1 || !meetLinkInput.trim()}
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
