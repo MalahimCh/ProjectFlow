@@ -3,16 +3,7 @@ import { type FC, useState } from "react";
 import styles from "./CoordDeadlines.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import {
-  LuCalendarDays,
-  LuClock3,
-  LuCircleCheck,
-  LuPlus,
-  LuPencil,
-  LuTrash2,
-  LuCalendar,
-  LuX,
-} from "react-icons/lu";
+import { LuCalendarDays, LuClock3, LuCircleCheck, LuPlus, LuPencil, LuTrash2, LuCalendar, LuX } from "react-icons/lu";
 
 interface Deadline {
   id: number;
