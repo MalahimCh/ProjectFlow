@@ -1,0 +1,243 @@
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.content {
+  flex: 1;
+  padding: 30px;
+  background: #f6f9ff;
+  overflow-y: auto;
+}
+
+.statsGrid {
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* Search */
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+}
+
+.searchIcon {
+  color: #6b7280;
+  font-size: 18px;
+}
+
+.searchBox input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  background: transparent;
+}
+
+/* Table */
+.tableCard {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  margin-bottom: 24px;
+}
+
+.projectsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.projectsTable th,
+.projectsTable td {
+  padding: 18px 20px;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.projectsTable th {
+  background: #f8fafc;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.projectsTable td {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.projectsTable tr:last-child td {
+  border-bottom: none;
+}
+
+/* Progress */
+.progressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progressBar {
+  width: 120px;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  border-radius: inherit;
+}
+
+/* Buttons */
+.viewBtn {
+  background: #0d3ccf;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.viewBtn:hover {
+  background: #0b33af;
+}
+
+/* Details Card */
+.detailsCard {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.detailsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.detailsHeader h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #0f172a;
+}
+
+.detailsHeader p {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.closeBtn {
+  border: none;
+  background: #f1f5f9;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  background: #e2e8f0;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tabs button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: #f8fafc;
+  color: #475569;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.activeTab {
+  background: #0d3ccf !important;
+  color: white !important;
+}
+
+/* Tab Content */
+.tabContent {
+  color: #334155;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.reportList {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.reportList li {
+  margin-bottom: 10px;
+}
+
+/* Evaluations */
+.evaluations {
+  display: grid;
+  gap: 16px;
+}
+
+.evaluationCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px;
+  background: #f8fafc;
+}
+
+.evaluationCard h4 {
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+.evaluationCard p {
+  margin: 0 0 12px;
+  color: #64748b;
+}
+
+.evaluationCard span {
+  display: inline-block;
+  background: #dcfce7;
+  color: #166534;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}

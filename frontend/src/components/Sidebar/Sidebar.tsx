@@ -71,6 +71,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
           className={`${styles.menuItem} ${
             location.pathname === "/profile" ? styles.active : ""
           }`}
+          onClick={() => navigate("/profile")}
         >
           <LuUser size={18} />
           <span>{!collapsed && "Profile"}</span>
@@ -81,16 +82,13 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
           className={`${styles.menuItem} ${
             location.pathname === "/settings" ? styles.active : ""
           }`}
+          onClick={() => navigate("/settings")}
         >
           <LuSettings size={18} />
           <span>{!collapsed && "Settings"}</span>
         </div>
 
-        <div
-          title={collapsed ? "Logout" : ""}
-          className={styles.logout}
-          onClick={() => console.log("Logout")}
-        >
+        <div title={collapsed ? "Logout" : ""} className={styles.logout}>
           <div className={styles.menuItem} onClick={handleLogout}>
             <LuLogOut size={18} />
             <span>{!collapsed && "Logout"}</span>

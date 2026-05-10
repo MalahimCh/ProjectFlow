@@ -6,7 +6,6 @@ import StatsCard from "../../../components/StatsCard/StatsCard";
 import {
   LuUsers,
   LuSearch,
-  LuBriefcase,
   LuTriangleAlert,
   LuCircleCheck,
   LuChevronDown,

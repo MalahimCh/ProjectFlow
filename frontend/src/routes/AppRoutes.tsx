@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignUpPage from "../pages/SignUp/SignUpPage";
 import SignInPage from "../pages/SignIn/SignInPage";
+import Settings from "../pages/Settings/Settings";
+import Profile from "../pages/Profile/Profile";
 
 import SDashboard from "../pages/Supervisor/Dashboard/SDashboard";
 import SProjects from "../pages/Supervisor/Projects/SProjects";
@@ -21,6 +23,7 @@ import CoordDeadlines from "../pages/Coordinator/Deadlines/CoordDeadlines";
 import CoordRubrics from "../pages/Coordinator/Rubric/CoordRubric";
 import CoordEvaluations from "../pages/Coordinator/Evaluations/CoordEvaluations";
 import CoordWorkload from "../pages/Coordinator/Workload/CoordWorkload";
+import CoordProjects from "../pages/Coordinator/Projects/CoordProjects";
 
 const AppRoutes = () => {
   return (
@@ -28,9 +31,12 @@ const AppRoutes = () => {
       {/* Auth routes */}
       <Route path="/" element={<SignUpPage />} />
       <Route path="/login" element={<SignInPage />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/settings" element={<Settings />} />
 
       {/* Coordinator routes */}
       <Route path="/coordinator/dashboard" element={<CoordDashboard />} />
+      <Route path="/coordinator/projects" element={<CoordProjects />} />
       <Route path="/coordinator/deadlines" element={<CoordDeadlines />} />
       <Route path="/coordinator/rubrics" element={<CoordRubrics />} />
       <Route path="/coordinator/evaluations" element={<CoordEvaluations />} />
