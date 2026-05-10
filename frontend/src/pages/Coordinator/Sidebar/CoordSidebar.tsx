@@ -7,6 +7,7 @@ import {
   LuClipboardCheck,
   LuLayoutList,
   LuFileUser,
+  LuFileSearch,
 } from "react-icons/lu";
 
 const coordMenu = [
@@ -32,6 +33,7 @@ const coordMenu = [
     icon: LuFileUser,
     path: "/coordinator/workload",
   },
+  { label: "FYP Repository", icon: LuFileSearch, path: "/repository" },
 ];
 
 type CoordSidebarProps = {

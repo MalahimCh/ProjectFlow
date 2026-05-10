@@ -3,6 +3,7 @@ import SignUpPage from "../pages/SignUp/SignUpPage";
 import SignInPage from "../pages/SignIn/SignInPage";
 import Settings from "../pages/Settings/Settings";
 import Profile from "../pages/Profile/Profile";
+import Repository from "../pages/Repository/Repository";
 
 import SDashboard from "../pages/Supervisor/Dashboard/SDashboard";
 import SProjects from "../pages/Supervisor/Projects/SProjects";
@@ -33,6 +34,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<SignInPage />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/repository" element={<Repository />} />
 
       {/* Coordinator routes */}
       <Route path="/coordinator/dashboard" element={<CoordDashboard />} />
