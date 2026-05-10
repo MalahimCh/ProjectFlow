@@ -13,10 +13,6 @@ import {
   LuUserPlus,
 } from "react-icons/lu";
 
-/* ================= MOCK DATA ================= */
-
-// 👉 CHANGE THESE STATES TO TEST UI
-
 const mockData = {
   group: {
     members: [
