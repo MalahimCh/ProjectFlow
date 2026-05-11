@@ -4,6 +4,7 @@ import tickIcon from "../../assets/tickIcon.svg";
 import { Link } from "react-router-dom";
 import styles from "./SignUpPage.module.css";
 import type { SignUpFormData } from "./types";
+import { registerUser } from "../../services/authService";
 import { LuEye, LuEyeOff, LuMail, LuUser, LuLock } from "react-icons/lu";
 
 const Header: FC = () => {
@@ -36,7 +37,9 @@ const InputField: FC<InputProps> = ({
         {LeftIcon && <LeftIcon className={styles.icon} />}
         <input
           className={styles.input}
-          type={isPassword ? (showPassword ? "text" : "password") : type || "text"}
+          type={
+            isPassword ? (showPassword ? "text" : "password") : type || "text"
+          }
           placeholder={label}
           {...inputProps}
         />
@@ -63,7 +66,6 @@ const SignUpPage: FC = () => {
   const [formData, setFormData] = useState<SignUpFormData>({
     name: "",
     email: "",
-    username: "",
     password: "",
     confirmPassword: "",
   });
@@ -76,7 +78,7 @@ const SignUpPage: FC = () => {
   };
 
   const validate = (): boolean => {
-    if (!formData.name || !formData.email || !formData.password || !formData.username) {
+    if (!formData.name || !formData.email || !formData.password) {
       setError("All fields are required");
       return false;
     }
@@ -92,14 +94,24 @@ const SignUpPage: FC = () => {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
-    console.log("Form Data:", formData);
-    // API call
-    navigate("/login");
-  };
 
+    if (!validate()) return;
+
+    try {
+      await registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: "student",
+      });
+
+      navigate("/student/initialdashboard");
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Registration failed");
+    }
+  };
   return (
     <div className={styles.signupPage}>
       <Header />
@@ -109,13 +121,24 @@ const SignUpPage: FC = () => {
           <h2 className={styles.title}>Join Our</h2>
           <h2 className={styles.subtitle}>Community Today</h2>
           <p className={styles.description}>
-            Create your account to get started with managing your final year project. Access powerful tools for collaboration, progress tracking, and milestone management.
+            Create your account to get started with managing your final year
+            project. Access powerful tools for collaboration, progress tracking,
+            and milestone management.
           </p>
           <ul className={styles.features}>
             {[
-              ["Powerful Collaboration Tools", "Work seamlessly with your team members"],
-              ["Progress Tracking", "Monitor your project milestones in real-time"],
-              ["Milestone Management", "Set and achieve your project goals efficiently"],
+              [
+                "Powerful Collaboration Tools",
+                "Work seamlessly with your team members",
+              ],
+              [
+                "Progress Tracking",
+                "Monitor your project milestones in real-time",
+              ],
+              [
+                "Milestone Management",
+                "Set and achieve your project goals efficiently",
+              ],
             ].map(([title, desc], i) => (
               <li key={i}>
                 <div className={styles.featureItem}>
@@ -156,13 +179,6 @@ const SignUpPage: FC = () => {
               leftIcon={LuMail}
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
-            />
-            <InputField
-              label="Username"
-              name="username"
-              leftIcon={LuUser}
-              value={formData.username}
-              onChange={(e) => handleChange("username", e.target.value)}
             />
             <InputField
               label="Password"

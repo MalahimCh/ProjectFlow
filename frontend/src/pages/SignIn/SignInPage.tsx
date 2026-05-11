@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import styles from "./SignInPage.module.css";
 import type { SignInFormData } from "./types";
 import { LuEye, LuEyeOff, LuMail, LuLock } from "react-icons/lu";
+import { loginUser } from "../../services/authService";
 
 const Header: FC = () => {
   return (
@@ -36,7 +37,9 @@ const InputField: FC<InputProps> = ({
         {LeftIcon && <LeftIcon className={styles.icon} />}
         <input
           className={styles.input}
-          type={isPassword ? (showPassword ? "text" : "password") : type || "text"}
+          type={
+            isPassword ? (showPassword ? "text" : "password") : type || "text"
+          }
           placeholder={label}
           {...inputProps}
         />
@@ -58,8 +61,7 @@ const InputField: FC<InputProps> = ({
 };
 
 const SignInPage: FC = () => {
-  
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<SignInFormData>({
     email: "",
@@ -69,7 +71,7 @@ const SignInPage: FC = () => {
   const [error, setError] = useState<string>("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleChange = (field: keyof SignInFormData, value: string) => {          
+  const handleChange = (field: keyof SignInFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -82,12 +84,27 @@ const SignInPage: FC = () => {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) return;
-    console.log("Form Data:", formData);
-    // API call
-    navigate("/dashboard");
+
+    try {
+      const res = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (res === "supervisor") {
+        navigate("/supervisor/dashboard");
+      } else if (res === "student") {
+        navigate("/student/dashboard");
+      } else {
+        navigate("/coordinator/dashboard");
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Login failed");
+    }
   };
 
   return (
@@ -99,13 +116,24 @@ const SignInPage: FC = () => {
           <h2 className={styles.title}>Final Year Project</h2>
           <h2 className={styles.subtitle}>Management System</h2>
           <p className={styles.description}>
-            Streamline your final year project workflow with our comprehensive management system. 
-            Track progress, collaborate with supervisors, and manage your project milestones efficiently.</p>
+            Streamline your final year project workflow with our comprehensive
+            management system. Track progress, collaborate with supervisors, and
+            manage your project milestones efficiently.
+          </p>
           <ul className={styles.features}>
             {[
-              ["Powerful Collaboration Tools", "Work seamlessly with your team members"],
-              ["Progress Tracking", "Monitor your project milestones in real-time"],
-              ["Milestone Management", "Set and achieve your project goals efficiently"],
+              [
+                "Powerful Collaboration Tools",
+                "Work seamlessly with your team members",
+              ],
+              [
+                "Progress Tracking",
+                "Monitor your project milestones in real-time",
+              ],
+              [
+                "Milestone Management",
+                "Set and achieve your project goals efficiently",
+              ],
             ].map(([title, desc], i) => (
               <li key={i}>
                 <div className={styles.featureItem}>
@@ -132,7 +160,6 @@ const SignInPage: FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
-        
             <InputField
               label="Email"
               name="email"
@@ -151,19 +178,19 @@ const SignInPage: FC = () => {
             />
 
             <div className={styles.optionsRow}>
-                <div className={styles.rememberMe}>
-                    <input
-                    type="checkbox"
-                    id="remember"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    />
-                    <label htmlFor="remember">Remember me</label>
-                </div>
+              <div className={styles.rememberMe}>
+                <input
+                  type="checkbox"
+                  id="remember"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <label htmlFor="remember">Remember me</label>
+              </div>
 
-                <Link to="/forgot-password" className={styles.forgotPassword}>
-                    Forgot password?
-                </Link>
+              <Link to="/forgot-password" className={styles.forgotPassword}>
+                Forgot password?
+              </Link>
             </div>
 
             {error && (
@@ -173,7 +200,7 @@ const SignInPage: FC = () => {
               </div>
             )}
 
-            <button type="submit" className={styles.button} >
+            <button type="submit" className={styles.button}>
               Sign In
             </button>
 
