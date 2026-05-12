@@ -1,35 +1,37 @@
 import StudentProfile from "../../database/models/studentProfile.model.js";
+import UserProfile from "../../database/models/userProfile.model.js";
 
 export const createStudentProfile = async (req, res) => {
   try {
-    const { rollNumber, gpa, interests, batchYear } = req.body;
-
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized: user not found in token",
-      });
-    }
-
-    const profile = await StudentProfile.create({
-      user: userId,
+    const {
       rollNumber,
       gpa,
       interests,
       batchYear,
-    });
+      department,
+      phone,
+      address,
+    } = req.body;
+    const userId = req.user?.id;
 
-    return res.status(201).json({
-      success: true,
-      profile,
-    });
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const [profile, userProfile] = await Promise.all([
+      StudentProfile.create({
+        user: userId,
+        rollNumber,
+        gpa,
+        interests,
+        batchYear,
+      }),
+      UserProfile.create({ user: userId, department, phone, address }),
+    ]);
+
+    return res.status(201).json({ success: true, profile, userProfile });
   } catch (err) {
-    console.error("CREATE PROFILE ERROR:", err);
-    return res.status(500).json({
-      success: false,
-      message: err.message, // 👈 important for debugging
-    });
+    console.error("CREATE STUDENT PROFILE ERROR:", err);
+    return res.status(500).json({ success: false, message: err.message });
   }
 };

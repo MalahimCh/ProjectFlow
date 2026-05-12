@@ -18,10 +18,7 @@ export const registerUser = async (data: {
   return res.data;
 };
 
-export const loginUser = async (data: {
-  email: string;
-  password: string;
-}) => {
+export const loginUser = async (data: { email: string; password: string }) => {
   const res = await api.post("/auth/login", data);
 
   const accessToken = res.data.data.accessToken;
@@ -38,13 +35,16 @@ export const loginUser = async (data: {
   return res.data;
 };
 
+export const getUser = async () => {
+  const email = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user")!).email
+    : null;
+  const res = await api.get("/auth/me", { params: { email } });
+  return res.data.data.userR;
+};
+
 export const logoutUser = async () => {
   await api.post("/auth/logout");
   localStorage.removeItem("accessToken");
   localStorage.removeItem("user");
-};
-
-export const getCurrentUser = async () => {
-  const res = await api.get("/auth/me");
-  return res.data.data.user;
 };

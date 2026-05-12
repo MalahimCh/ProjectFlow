@@ -14,10 +14,9 @@ const supervisorProfileSchema = new mongoose.Schema(
       trim: true,
     },
 
-    maxWorkload: {
-      type: Number,
-      default: 5,
-      min: 1,
+    specialization: {
+      type: String,
+      trim: true,
     },
 
     interests: [
@@ -26,15 +25,22 @@ const supervisorProfileSchema = new mongoose.Schema(
         trim: true,
       },
     ],
+
+    workload: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 4,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const SupervisorProfile = mongoose.model(
   "SupervisorProfile",
-  supervisorProfileSchema
+  supervisorProfileSchema,
 );
 
 export default SupervisorProfile;

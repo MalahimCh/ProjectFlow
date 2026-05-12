@@ -2,7 +2,7 @@
 .container {
   display: flex;
   height: 100vh;
-  background-color: #F6F9FF;
+  background-color: #f6f9ff;
 }
 
 .main {
@@ -15,16 +15,16 @@
 .content {
   flex: 1;
   padding: 30px;
-  background: #F6F9FF;
+  background: #f6f9ff;
   overflow-y: auto;
 }
 
-/* ── Top bar (filter + search) ───────────────────────── */
+/* ── Top bar ─────────────────────────────────────────── */
 .topBar {
   display: flex;
   align-items: center;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 0 16px;
   height: 44px;
@@ -34,12 +34,12 @@
 .barDivider {
   width: 1px;
   height: 20px;
-  background: #E5E7EB;
+  background: #e5e7eb;
   margin: 0 14px;
   flex-shrink: 0;
 }
 
-/* ── Filter button ───────────────────────────────────── */
+/* ── Filter ──────────────────────────────────────────── */
 .filterWrapper {
   position: relative;
   flex-shrink: 0;
@@ -60,12 +60,12 @@
 }
 
 .filterBtn:hover {
-  color: #0D3CCF;
+  color: #0d3ccf;
 }
 
 .filterBadge {
-  background: #0D3CCF;
-  color: #FFFFFF;
+  background: #0d3ccf;
+  color: #ffffff;
   font-size: 10px;
   font-weight: 700;
   width: 16px;
@@ -76,16 +76,14 @@
   justify-content: center;
 }
 
-/* ── Filter dropdown ─────────────────────────────────── */
 .filterDropdown {
   position: absolute;
   top: calc(100% + 12px);
   left: 0;
   z-index: 100;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 0;
   width: 248px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   overflow: hidden;
@@ -96,17 +94,13 @@
   flex-direction: column;
   gap: 2px;
   padding: 14px 16px;
-  border-bottom: 1px solid #F3F4F6;
-}
-
-.filterSection:last-of-type {
-  border-bottom: none;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .filterLabel {
   font-size: 10px;
   font-weight: 700;
-  color: #9CA3AF;
+  color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin: 0 0 8px 0;
@@ -125,15 +119,15 @@
 }
 
 .filterOption:hover {
-  background: #F6F9FF;
-  color: #0D3CCF;
+  background: #f6f9ff;
+  color: #0d3ccf;
 }
 
 .checkbox {
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  border: 1.5px solid #D1D5DB;
+  border: 1.5px solid #d1d5db;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,9 +136,9 @@
 }
 
 .checkboxActive {
-  background: #0D3CCF;
-  border-color: #0D3CCF;
-  color: #FFFFFF;
+  background: #0d3ccf;
+  border-color: #0d3ccf;
+  color: #ffffff;
 }
 
 .clearBtn {
@@ -154,21 +148,21 @@
   gap: 6px;
   width: 100%;
   padding: 11px 16px;
-  background: #FEF2F2;
+  background: #fef2f2;
   border: none;
-  border-top: 1px solid #FEE2E2;
+  border-top: 1px solid #fee2e2;
   font-size: 12px;
   font-weight: 600;
-  color: #DC2626;
+  color: #dc2626;
   cursor: pointer;
   transition: background 0.12s;
 }
 
 .clearBtn:hover {
-  background: #FEE2E2;
+  background: #fee2e2;
 }
 
-/* ── Search input ────────────────────────────────────── */
+/* ── Search ──────────────────────────────────────────── */
 .searchInner {
   flex: 1;
   display: flex;
@@ -186,7 +180,7 @@
 }
 
 .searchInner input::placeholder {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* ── Grid ────────────────────────────────────────────── */
@@ -198,8 +192,8 @@
 
 /* ── Card ────────────────────────────────────────────── */
 .card {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -207,23 +201,23 @@
   gap: 10px;
 }
 
-/* Card top */
+/* ── Card top ────────────────────────────────────────── */
 .cardTop {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: #0D3CCF;
-  color: #FFFFFF;
+  background: #0d3ccf;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -231,17 +225,21 @@
 .cardMeta {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
 }
 
 .name {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #111827;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* designation + dept tag on same row */
 .subRow {
   display: flex;
   align-items: center;
@@ -249,19 +247,25 @@
   flex-wrap: wrap;
 }
 
-.rank {
-  font-size: 12px;
-  color: #6A7282;
+.designation {
+  font-size: 12.5px;
+  color: #6b7280;
+  font-weight: 400;
 }
 
+/* Department tag — blue pill like in screenshot */
 .deptTag {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #0d3ccf;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 6px;
+  padding: 1px 8px;
+  white-space: nowrap;
 }
 
-/* Info rows (email, specialization) */
+/* ── Info rows ───────────────────────────────────────── */
 .infoRow {
   display: flex;
   align-items: center;
@@ -269,7 +273,7 @@
 }
 
 .infoIcon {
-  color: #6A7282;
+  color: #9ca3af;
   flex-shrink: 0;
 }
 
@@ -280,27 +284,39 @@
 
 .infoLabel {
   font-size: 11px;
-  color: #6A7282;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin: 0 0 5px 0;
 }
 
-/* Interest / specialization tags */
+/* ── Tags ────────────────────────────────────────────── */
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 }
 
+/* Specialization tags — blue */
 .tag {
-  background: #EFF6FF;
-  color: #0D3CCF;
-  padding: 3px 10px;
-  font-size: 12px;
+  background: #eff6ff;
+  color: #0d3ccf;
+  border: 1px solid #bfdbfe;
+  padding: 2px 9px;
+  font-size: 11.5px;
   font-weight: 500;
   border-radius: 6px;
 }
 
-/* Workload row */
+/* Interest tags — neutral gray-blue to distinguish from specialization */
+.tagInterest {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+/* ── Workload ─────────────────────────────────────────── */
 .workloadRow {
   display: flex;
   align-items: center;
@@ -313,6 +329,8 @@
 
 .workloadLabel {
   flex: 1;
+  font-size: 13px;
+  color: #374151;
 }
 
 .workloadCount {
@@ -320,11 +338,10 @@
   font-weight: 700;
 }
 
-/* Progress bar */
 .progressBar {
   width: 100%;
   height: 6px;
-  background: #E5E7EB;
+  background: #e5e7eb;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -335,12 +352,12 @@
   transition: width 0.3s ease;
 }
 
-/* Button */
+/* ── Button ──────────────────────────────────────────── */
 .button {
   margin-top: 2px;
   width: 100%;
-  background: #0D3CCF;
-  color: #FFFFFF;
+  background: #0d3ccf;
+  color: #ffffff;
   border: none;
   padding: 10px;
   border-radius: 8px;
@@ -351,10 +368,11 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
+  transition: background 0.15s;
 }
 
 .button:hover {
-  background: #0B32B0;
+  background: #0b32b0;
 }
 
 /* ── Empty state ─────────────────────────────────────── */
@@ -371,12 +389,12 @@
 .emptyText {
   font-size: 14px;
   font-weight: 600;
-  color: #6A7282;
+  color: #6a7282;
   margin: 0;
 }
 
 .emptySub {
   font-size: 12px;
-  color: #9CA3AF;
+  color: #9ca3af;
   margin: 0;
 }

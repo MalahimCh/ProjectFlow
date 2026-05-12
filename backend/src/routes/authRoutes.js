@@ -5,13 +5,13 @@ import {
   refreshAccessToken,
   logout,
   logoutAll,
-  getMe,
   changePassword,
   forgotPassword,
   resetPassword,
 } from "../controllers/authController.js";
 import { authenticate } from "../middleware/authenticate.js";
 import validate from "../middleware/validate.js";
+import { getUser } from "../helpers/getUser.js";
 import {
   registerValidator,
   loginValidator,
@@ -34,7 +34,12 @@ router.post("/login", loginValidator, validate, login);
 router.post("/refresh", refreshAccessToken);
 
 // POST /api/auth/forgot-password
-router.post("/forgot-password", forgotPasswordValidator, validate, forgotPassword);
+router.post(
+  "/forgot-password",
+  forgotPasswordValidator,
+  validate,
+  forgotPassword,
+);
 
 // POST /api/auth/reset-password
 router.post("/reset-password", resetPasswordValidator, validate, resetPassword);
@@ -42,7 +47,7 @@ router.post("/reset-password", resetPasswordValidator, validate, resetPassword);
 // ─── Protected Routes (valid access token required) ───────────────────────────
 
 // GET /api/auth/me
-router.get("/me", authenticate, getMe);
+router.get("/me", authenticate, getUser);
 
 // POST /api/auth/logout — logs out current device
 router.post("/logout", authenticate, logout);
@@ -56,7 +61,7 @@ router.patch(
   authenticate,
   changePasswordValidator,
   validate,
-  changePassword
+  changePassword,
 );
 
 export default router;

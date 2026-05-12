@@ -1,7 +1,8 @@
-import { type FC, useMemo, useState } from "react";
+import { type FC, useEffect, useMemo, useState } from "react";
 import CoordSidebar from "../Coordinator/Sidebar/CoordSidebar";
 import SSidebar from "../Supervisor/Sidebar/Ssidebar";
 import StudSidebar from "../Student/Sidebar/StudSidebar";
+import InitSidebar from "../Student/Sidebar/InitSidebar";
 import Header from "../../components/Header/Header";
 import {
   LuSearch,
@@ -12,8 +13,9 @@ import {
   LuBookOpen,
 } from "react-icons/lu";
 import styles from "./Repository.module.css";
+import { getUser } from "../../services/authService";
 
-type UserRole = "coordinator" | "supervisor" | "student";
+type UserRole = "istudent" | "coordinator" | "supervisor" | "student";
 
 type Project = {
   id: number;
@@ -31,9 +33,21 @@ const Repository: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [role, setRole] = useState<UserRole>("student"); // default role
 
-  // Change this to test different sidebars
-  const role: UserRole = "coordinator";
+  // Fetch user role once when component mounts
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        const userRole = await getUser();
+        setRole(userRole as UserRole);
+      } catch (error) {
+        console.error("Failed to fetch user role:", error);
+      }
+    };
+
+    fetchRole();
+  }, []);
 
   // Hardcoded project data
   const projects: Project[] = [
@@ -61,39 +75,22 @@ const Repository: FC = () => {
       year: "2026",
       rating: 4.9,
     },
-    {
-      id: 3,
-      title: "Smart Attendance System",
-      description:
-        "Face recognition-based attendance system for university classrooms.",
-      domain: "Computer Vision",
-      supervisor: "Dr. Bilal Aslam",
-      students: ["Usman Tariq", "Hassan Shah"],
-      technologies: ["Python", "OpenCV", "Flask"],
-      year: "2024",
-      rating: 4.6,
-    },
-    {
-      id: 4,
-      title: "Blockchain Voting Platform",
-      description: "Secure and transparent voting system built on blockchain.",
-      domain: "Blockchain",
-      supervisor: "Dr. Fatima Noor",
-      students: ["Areeba Khan", "Zain Ali"],
-      technologies: ["Solidity", "React", "Ethereum"],
-      year: "2025",
-      rating: 4.7,
-    },
   ];
 
   const renderSidebar = () => {
     switch (role) {
+      case "istudent":
+        return (
+          <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+        );
       case "student":
         return (
           <StudSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
         );
+
       case "supervisor":
         return <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />;
+
       case "coordinator":
       default:
         return (
@@ -121,8 +118,6 @@ const Repository: FC = () => {
         <Header
           title="FYP Repository"
           subtitle="Browse previous Final Year Projects and ratings"
-          userName="Junaid Hussain"
-          userId="CO2024001"
         />
 
         <div className={styles.content}>

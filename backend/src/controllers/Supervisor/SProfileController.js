@@ -1,21 +1,35 @@
 import SupervisorProfile from "../../database/models/supervisorProfile.model.js";
+import UserProfile from "../../database/models/userProfile.model.js";
 
 export const createSupervisorProfile = async (req, res) => {
   try {
-    const { designation, maxWorkload, interests } = req.body;
-
-    const profile = await SupervisorProfile.create({
-      user: req.user._id,
+    const {
       designation,
-      maxWorkload,
+      specialization,
       interests,
-    });
+      department,
+      phone,
+      address,
+    } = req.body;
+    const userId = req.user?.id;
 
-    return res.status(201).json({
-      success: true,
-      profile,
-    });
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const [profile, userProfile] = await Promise.all([
+      SupervisorProfile.create({
+        user: userId,
+        designation,
+        specialization,
+        interests,
+      }),
+      UserProfile.create({ user: userId, department, phone, address }),
+    ]);
+
+    return res.status(201).json({ success: true, profile, userProfile });
   } catch (err) {
-    return res.status(500).json({ success: false });
+    console.error("CREATE SUPERVISOR PROFILE ERROR:", err);
+    return res.status(500).json({ success: false, message: err.message });
   }
 };

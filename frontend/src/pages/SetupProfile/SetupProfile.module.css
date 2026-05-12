@@ -1,88 +1,335 @@
+/* ── Page shell ── */
 .container {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #f6f9ff;
+  padding: 40px 16px;
 }
 
+/* ── Card ── */
 .card {
-  width: 420px;
+  width: 100%;
+  max-width: 480px;
   background: #ffffff;
-  padding: 28px;
-  border-radius: 12px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.header {
+  padding: 24px 24px 0;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0d3ccf;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 3px 10px;
+  margin-bottom: 10px;
 }
 
 .title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 6px;
+  margin: 0 0 4px;
 }
 
 .subtitle {
   font-size: 13px;
   color: #6b7280;
-  margin-bottom: 18px;
+  margin: 0 0 20px;
 }
 
-.inputBox {
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin: 0 24px;
+  gap: 0;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+  cursor: pointer;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  position: relative;
+  top: 1px;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.tab.active {
+  color: #0d3ccf;
+  border-bottom-color: #0d3ccf;
+}
+
+.tab.completed {
+  color: #6b7280;
+}
+
+.tabDot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.tab.active .tabDot {
+  background: #0d3ccf;
+  border-color: #0d3ccf;
+  color: #fff;
+}
+
+.tab.completed .tabDot {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+/* ── Body ── */
+.body {
+  padding: 20px 24px 24px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.fieldGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.fieldGroupFull {
+  margin-bottom: 10px;
+}
+
+/* ── Input ── */
+.inputWrap {
   display: flex;
   align-items: center;
   gap: 10px;
-
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-
-  padding: 10px 12px;
-  margin-bottom: 12px;
+  padding: 0 12px;
+  height: 42px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
-.inputBox input {
-  border: none;
-  outline: none;
+.inputWrap:focus-within {
+  border-color: #0d3ccf;
+  background: #fff;
+}
+
+.inputIcon {
+  color: #9ca3af;
+  font-size: 15px;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.inputWrap:focus-within .inputIcon {
+  color: #0d3ccf;
+}
+
+.inputWrap input {
   flex: 1;
   background: transparent;
-  font-size: 14px;
+  border: none;
+  outline: none;
+  font-size: 13.5px;
+  color: #111827;
+  width: 100%;
+}
+
+.inputWrap input::placeholder {
+  color: #9ca3af;
+}
+
+/* ── Tag input ── */
+.tagInputWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-height: 42px;
+  cursor: text;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.tagInputWrap:focus-within {
+  border-color: #0d3ccf;
+  background: #fff;
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0d3ccf;
+  line-height: 1.4;
+}
+
+.tagRemove {
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #0d3ccf;
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.tagRemove:hover {
+  opacity: 1;
+}
+
+.tagInput {
+  flex: 1;
+  min-width: 80px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 13.5px;
   color: #111827;
 }
 
-.icon {
-  color: #0d3ccf;
-  font-size: 18px;
+.tagInput::placeholder {
+  color: #9ca3af;
+}
+
+.tagHint {
+  font-size: 11.5px;
+  color: #9ca3af;
+  margin-top: 5px;
+  padding-left: 2px;
+}
+
+/* ── Actions ── */
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btnBack {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
-}
-
-.button {
-  width: 100%;
-  margin-top: 10px;
-
-  background: #0d3ccf;
-  color: white;
-
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-
-  font-size: 14px;
-  font-weight: 600;
-
+  gap: 6px;
+  padding: 10px 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 13.5px;
+  font-weight: 500;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
-.button:hover {
+.btnBack:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.btnNext {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 16px;
+  background: #0d3ccf;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnNext:hover:not(:disabled) {
   background: #0b34b0;
 }
 
+.btnNext:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Error ── */
+.error {
+  font-size: 12.5px;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+}
+
+/* ── Loading ── */
 .loading {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #f6f9ff;
   color: #6b7280;
+  font-size: 14px;
 }

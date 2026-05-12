@@ -9,17 +9,7 @@ const userProfileSchema = new mongoose.Schema(
       unique: true, // one-to-one
     },
 
-    avatarUrl: {
-      type: String,
-      default: "",
-    },
-
     department: {
-      type: String,
-      trim: true,
-    },
-
-    bio: {
       type: String,
       trim: true,
     },
@@ -28,10 +18,14 @@ const userProfileSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    address: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const UserProfile = mongoose.model("UserProfile", userProfileSchema);
