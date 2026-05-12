@@ -6,6 +6,7 @@ import {
   logout,
   logoutAll,
   changePassword,
+  getRollNumber,
   forgotPassword,
   resetPassword,
 } from "../controllers/authController.js";
@@ -63,5 +64,8 @@ router.patch(
   validate,
   changePassword,
 );
+
+// GET /api/auth/roll-number
+router.get("/roll-number", authenticate, getRollNumber);
 
 export default router;

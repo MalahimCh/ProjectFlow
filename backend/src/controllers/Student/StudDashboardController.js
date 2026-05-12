@@ -1,44 +1,65 @@
 import GroupMember from "../../database/models/groupMember.model.js";
 import GroupRequest from "../../database/models/groupRequest.model.js";
 import SupervisorRequest from "../../database/models/supervisorRequest.model.js";
+import StudentProfile from "../../database/models/studentProfile.model.js";
 
 export const getInitDashboard = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // ─── Default values (EMPTY STATE SAFE) ────────────────────────────────
+    // Default values
     let groupId = null;
     let members = [];
     let supervisorRequest = null;
     let pendingRequests = 0;
 
-    // ─── Check if user is in a group ─────────────────────────────────────
+    // Check whether current student belongs to a group
     const userMembership = await GroupMember.findOne({
       student: userId,
     });
 
-    // ─── If user belongs to a group, fetch all related data ──────────────
+    // If the student is in a group, load related data
     if (userMembership) {
       groupId = userMembership.group;
 
-      // Get all group members
+      // Fetch all members of the group
       members = await GroupMember.find({
         group: groupId,
-      }).populate("student", "name reg");
+      })
+        .populate("student", "name email")
+        .lean();
 
-      // Supervisor request
+      // Fetch supervisor request for this group
       supervisorRequest = await SupervisorRequest.findOne({
         group: groupId,
-      }).populate("supervisor", "name");
-
-      // Pending requests count
-      pendingRequests = await GroupRequest.countDocuments({
-        group: groupId,
-        status: "pending",
-      });
+      })
+        .populate("supervisor", "name")
+        .lean();
     }
 
-    // ─── Build response (ALWAYS RETURN DASHBOARD) ────────────────────────
+    // Count pending invitations sent by this group
+    pendingRequests = await GroupRequest.countDocuments({
+      group: groupId,
+      status: "pending",
+    });
+    // Build members data with roll number from StudentProfile
+    const membersData = await Promise.all(
+      members.map(async (member) => {
+        const profile = await StudentProfile.findOne({
+          user: member.student?._id || member.student?.id,
+        })
+          .select("rollNumber")
+          .lean();
+
+        return {
+          id: member.student?._id?.toString() || member.student?.id || null,
+          name: member.student?.name || "Unknown",
+          reg: profile?.rollNumber || "",
+          isLeader: member.role === "leader",
+        };
+      }),
+    );
+
     const response = {
       stats: {
         pendingRequests,
@@ -46,18 +67,14 @@ export const getInitDashboard = async (req, res) => {
 
       group: {
         maxMembers: 3,
-        members: members.map((m) => ({
-          id: m.student?.id,
-          name: m.student?.name,
-          reg: m.student?.reg,
-          isLeader: m.role === "leader",
-        })),
+        currentMembers: membersData.length,
+        members: membersData,
       },
 
       supervisor: supervisorRequest
         ? {
             status: supervisorRequest.status,
-            name: supervisorRequest.supervisor?.name,
+            name: supervisorRequest.supervisor?.name || null,
             requestedOn: supervisorRequest.createdAt,
             acceptedOn:
               supervisorRequest.status === "accepted"
@@ -74,7 +91,7 @@ export const getInitDashboard = async (req, res) => {
       data: response,
     });
   } catch (err) {
-    console.error(err);
+    console.error("INIT DASHBOARD ERROR:", err);
 
     return res.status(500).json({
       success: false,

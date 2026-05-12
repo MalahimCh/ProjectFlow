@@ -3,7 +3,8 @@ import api from "./api";
 
 export const getSupervisorRequests = async () => {
   const res = await api.get("/supervisor/requests");
-  return res.data.data;
+
+  return res.data?.data ?? [];
 };
 
 export const acceptSupervisorRequest = async (requestId: string) => {

@@ -7,28 +7,34 @@ const supervisorRequestSchema = new mongoose.Schema(
       ref: "Group",
       required: true,
     },
-
     supervisor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-
     status: {
       type: String,
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
-
     message: {
       type: String,
       trim: true,
       maxlength: 1000,
     },
+    // ✅ NEW
+    fypName: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+    },
+    fypDescription: {
+      type: String,
+      trim: true,
+      maxlength: 2000,
+    },
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
 // Optional: prevent duplicate pending requests to same supervisor

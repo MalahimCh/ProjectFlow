@@ -38,8 +38,6 @@ const studentProfileSchema = new mongoose.Schema(
   },
 );
 
-studentProfileSchema.index({ rollNumber: 1 });
-
 studentProfileSchema.set("toJSON", {
   transform(doc, ret) {
     ret.id = ret._id.toString();

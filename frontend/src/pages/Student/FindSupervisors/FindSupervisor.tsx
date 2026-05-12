@@ -33,6 +33,11 @@ type Supervisor = {
   maxLoad: number;
 };
 
+type RequestModal = {
+  supervisorId: string;
+  supervisorName: string;
+} | null;
+
 /* ================= HELPERS ================= */
 const getInitials = (name: string) =>
   name
@@ -63,7 +68,14 @@ const FindSupervisor: FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [modal, setModal] = useState<RequestModal>(null);
+  const [fypName, setFypName] = useState("");
+  const [fypDescription, setFypDescription] = useState("");
+  const [message, setMessage] = useState("");
+
   const filterRef = useRef<HTMLDivElement>(null);
+
+  /* ── fetch group ── */
   useEffect(() => {
     const fetchGroup = async () => {
       try {
@@ -73,10 +85,10 @@ const FindSupervisor: FC = () => {
         console.error("Failed to fetch group", err);
       }
     };
-
     fetchGroup();
   }, []);
 
+  /* ── fetch supervisors ── */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -94,6 +106,7 @@ const FindSupervisor: FC = () => {
     fetchData();
   }, []);
 
+  /* ── close filter on outside click ── */
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
@@ -104,28 +117,10 @@ const FindSupervisor: FC = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  /* ── filter logic ── */
   const clearFilters = () => setAvailableOnly(false);
   const activeFilterCount = availableOnly ? 1 : 0;
 
-  const handleSendRequest = async (supervisorId: string) => {
-    if (!groupId) {
-      alert("You must create or join a group first");
-      return;
-    }
-
-    try {
-      setSendingId(supervisorId);
-
-      await sendSupervisorRequest(groupId, supervisorId);
-
-      alert("Request sent successfully");
-    } catch (err: any) {
-      console.error(err);
-      alert(err?.response?.data?.message || "Failed to send request");
-    } finally {
-      setSendingId(null);
-    }
-  };
   const filtered = supervisors.filter((s) => {
     const q = search.toLowerCase();
     const matchSearch =
@@ -138,6 +133,56 @@ const FindSupervisor: FC = () => {
     return matchSearch && matchAvail;
   });
 
+  /* ── modal handlers ── */
+  const openRequestModal = (supervisorId: string, supervisorName: string) => {
+    if (!groupId) {
+      alert("You must create or join a group first");
+      return;
+    }
+    setFypName("");
+    setFypDescription("");
+    setMessage("");
+    setModal({ supervisorId, supervisorName });
+  };
+
+  const closeModal = () => {
+    setModal(null);
+  };
+
+  const handleSendRequest = async () => {
+    if (!modal || !groupId) return;
+
+    if (!fypName.trim()) {
+      alert("FYP title is required");
+      return;
+    }
+    if (!fypDescription.trim()) {
+      alert("FYP description is required");
+      return;
+    }
+
+    try {
+      setSendingId(modal.supervisorId);
+
+      await sendSupervisorRequest(
+        groupId,
+        modal.supervisorId,
+        fypName.trim(),
+        fypDescription.trim(),
+        message.trim() || undefined,
+      );
+
+      alert("Request sent successfully");
+      closeModal();
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.response?.data?.message || "Failed to send request");
+    } finally {
+      setSendingId(null);
+    }
+  };
+
+  /* ── early returns ── */
   if (loading)
     return (
       <div className={styles.emptyState}>
@@ -152,6 +197,7 @@ const FindSupervisor: FC = () => {
       </div>
     );
 
+  /* ── render ── */
   return (
     <div className={styles.container}>
       <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -335,7 +381,7 @@ const FindSupervisor: FC = () => {
 
                     <button
                       className={styles.button}
-                      onClick={() => handleSendRequest(s.id)}
+                      onClick={() => openRequestModal(s.id, s.name)}
                       disabled={sendingId === s.id}
                     >
                       <LuSend size={14} />
@@ -348,6 +394,83 @@ const FindSupervisor: FC = () => {
           )}
         </div>
       </div>
+
+      {/* ── Request Modal ── */}
+      {modal && (
+        <div className={styles.modalOverlay} onClick={closeModal}>
+          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div>
+                <p className={styles.modalTitle}>Request Supervisor</p>
+                <p className={styles.modalSub}>
+                  Sending to {modal.supervisorName}
+                </p>
+              </div>
+              <button className={styles.modalClose} onClick={closeModal}>
+                <LuX size={16} />
+              </button>
+            </div>
+
+            <div className={styles.modalBody}>
+              {/* FYP Title */}
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>
+                  FYP Title <span className={styles.required}>*</span>
+                </label>
+                <input
+                  className={styles.fieldInput}
+                  type="text"
+                  placeholder="e.g. AI-based Attendance System"
+                  value={fypName}
+                  onChange={(e) => setFypName(e.target.value)}
+                />
+              </div>
+
+              {/* FYP Description */}
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>
+                  FYP Description <span className={styles.required}>*</span>
+                </label>
+                <textarea
+                  className={styles.fieldTextarea}
+                  placeholder="Brief overview of your project idea..."
+                  rows={4}
+                  value={fypDescription}
+                  onChange={(e) => setFypDescription(e.target.value)}
+                />
+              </div>
+
+              {/* Optional Message */}
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>
+                  Message <span className={styles.optional}>(optional)</span>
+                </label>
+                <textarea
+                  className={styles.fieldTextarea}
+                  placeholder="Any additional message for the supervisor..."
+                  rows={3}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button className={styles.cancelBtn} onClick={closeModal}>
+                Cancel
+              </button>
+              <button
+                className={styles.submitBtn}
+                onClick={handleSendRequest}
+                disabled={!!sendingId}
+              >
+                <LuSend size={13} />
+                {sendingId ? "Sending..." : "Send Request"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

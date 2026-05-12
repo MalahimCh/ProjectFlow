@@ -10,29 +10,26 @@ export const getAllSupervisors = async (req, res) => {
       })
       .lean();
 
-    // 🔥 STEP 1: get all user ids
-    const userIds = profiles.map((p) => p.user?.id);
+    // ✅ use ._id (lean objects have no .id virtual)
+    const userIds = profiles.map((p) => p.user?._id);
 
-    // 🔥 STEP 2: fetch all profiles in one go
     const userProfiles = await UserProfile.find({
       user: { $in: userIds },
     }).lean();
 
-    // 🔥 STEP 3: map for fast lookup
     const profileMap = new Map();
     userProfiles.forEach((up) => {
-      profileMap.set(up.user.toString(), up);
+      profileMap.set(up.user.toString(), up); // up.user is already an ObjectId string key
     });
 
-    // 🔥 STEP 4: merge
     const formatted = profiles.map((p) => {
-      const up = profileMap.get(p.user?.id?.toString());
+      const up = profileMap.get(p.user?._id?.toString()); // ✅ use ._id here too
 
       return {
-        id: p.id,
+        id: p._id.toString(), // ✅ manually stringify _id
         name: p.user?.name || "Unknown",
         email: p.user?.email || "",
-        department: up?.department || "Not set", // ✅ HERE IT IS
+        department: up?.department || "Not set",
         designation: p.designation || "",
         specialization: p.specialization
           ? p.specialization.split(",").map((s) => s.trim())
@@ -43,15 +40,11 @@ export const getAllSupervisors = async (req, res) => {
       };
     });
 
-    return res.status(200).json({
-      success: true,
-      data: formatted,
-    });
+    return res.status(200).json({ success: true, data: formatted });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch supervisors",
-    });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch supervisors" });
   }
 };

@@ -1,6 +1,7 @@
-import { type FunctionComponent } from "react";
+import { type FunctionComponent, useEffect, useState } from "react";
 import { IoMdNotifications } from "react-icons/io";
 import styles from "./Header.module.css";
+import { getRollNumber } from "../../services/authService";
 
 type HeaderProps = {
   title: string;
@@ -9,6 +10,7 @@ type HeaderProps = {
 
 type User = {
   name?: string;
+  role?: string;
   studentId?: string;
   registrationNumber?: string;
   employeeId?: string;
@@ -26,7 +28,6 @@ const getInitials = (name: string) => {
 };
 
 const Header: FunctionComponent<HeaderProps> = ({ title, subtitle }) => {
-  // Get user from localStorage
   const storedUser = localStorage.getItem("user");
 
   let user: User = {};
@@ -37,15 +38,27 @@ const Header: FunctionComponent<HeaderProps> = ({ title, subtitle }) => {
     user = {};
   }
 
-  // Extract values with fallbacks
   const userName = user.name || "User";
+  const userId = user.id || "N/A";
+  const userRole = user.role;
 
-  const userId =
-    user.studentId ||
-    user.registrationNumber ||
-    user.employeeId ||
-    user.id ||
-    "N/A";
+  // Default display is the user ID
+  const [displayId, setDisplayId] = useState(userId);
+
+  useEffect(() => {
+    // Only fetch roll number for students
+    if (userRole === "student") {
+      getRollNumber()
+        .then((rollNo) => {
+          setDisplayId(rollNo || userId);
+        })
+        .catch(() => {
+          setDisplayId(userId);
+        });
+    } else {
+      setDisplayId(userId);
+    }
+  }, [userRole, userId]);
 
   const initials = getInitials(userName);
 
@@ -73,7 +86,7 @@ const Header: FunctionComponent<HeaderProps> = ({ title, subtitle }) => {
 
           <div className={styles.userText}>
             <span className={styles.name}>{userName}</span>
-            <span className={styles.id}>ID: {userId}</span>
+            <span className={styles.id}>ID: {displayId}</span>
           </div>
         </div>
       </div>

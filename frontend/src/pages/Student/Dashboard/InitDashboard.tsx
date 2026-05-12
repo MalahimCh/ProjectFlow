@@ -42,6 +42,7 @@ const InitDashboard: FC = () => {
   if (loading || !dashboardData) {
     return <div>Loading dashboard...</div>;
   }
+  console.log("Dashboard Data:", dashboardData);
 
   /* ================= EXTRACT DATA ================= */
 

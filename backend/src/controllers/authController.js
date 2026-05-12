@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import User from "../database/models/user.model.js";
+import StudentProfile from "../database/models/studentProfile.model.js";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -20,7 +21,29 @@ import {
   conflict,
   serverError,
 } from "../utils/apiResponse.js";
+import { notFound } from "../utils/apiResponse.js";
+// Make sure notFound is imported ↑
 
+export const getRollNumber = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const studentProfile = await StudentProfile.findOne({
+      user: userId,
+    }).select("rollNumber");
+
+    if (!studentProfile) {
+      return notFound(res, "Student profile not found");
+    }
+
+    return ok(res, "Roll number fetched", {
+      rollNumber: studentProfile.rollNumber,
+    });
+  } catch (err) {
+    console.error("getRollNumber error:", err);
+    return serverError(res, "Failed to fetch roll number");
+  }
+};
 // ─── REGISTER ─────────────────────────────────────────────────────────────────
 // POST /api/auth/register
 export const register = async (req, res) => {

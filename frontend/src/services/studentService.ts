@@ -26,7 +26,23 @@ export const getSupervisors = async () => {
     maxLoad: s.maxLoad,
   }));
 };
-
+/* ── supervisor request ─────────────────────────── */
+export const sendSupervisorRequest = async (
+  groupId: string,
+  supervisorId: string,
+  fypName: string,
+  fypDescription: string,
+  message?: string,
+) => {
+  const res = await api.post("/student/sendSupervisorRequest", {
+    groupId,
+    supervisorId,
+    fypName,
+    fypDescription,
+    message,
+  });
+  return res.data;
+};
 /* ── group self ──────────────────────────────────── */
 export const getMyGroup = async () => {
   const res = await api.get("/student/group/me");
@@ -59,20 +75,6 @@ export const inviteMember = async (groupId: string, studentId: string) => {
   return res.data;
 };
 
-/* ── supervisor request ─────────────────────────── */
-export const sendSupervisorRequest = async (
-  groupId: string,
-  supervisorId: string,
-  message?: string,
-) => {
-  const res = await api.post("/student/sendSupervisorRequest", {
-    groupId,
-    supervisorId,
-    message,
-  });
-
-  return res.data;
-};
 /* ── shared types ────────────────────────────────── */
 export type IncomingRequest = {
   id: string;

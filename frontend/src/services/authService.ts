@@ -1,5 +1,10 @@
 import api from "./api";
 
+export const getRollNumber = async () => {
+  const res = await api.get("/auth/roll-number");
+  return res.data.data.rollNumber;
+};
+
 export const registerUser = async (data: {
   name: string;
   email: string;
