@@ -107,7 +107,7 @@ const SignUpPage: FC = () => {
         role: "student",
       });
 
-      navigate("/student/initialdashboard");
+      navigate("/login");
     } catch (error: any) {
       setError(error.response?.data?.message || "Registration failed");
     }

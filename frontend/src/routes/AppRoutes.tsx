@@ -1,16 +1,26 @@
+// src/routes/AppRoutes.tsx
+
 import { Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
+
+// Auth pages
 import SignUpPage from "../pages/SignUp/SignUpPage";
 import SignInPage from "../pages/SignIn/SignInPage";
+
+// Shared pages (authenticated users only)
 import Settings from "../pages/Settings/Settings";
 import Profile from "../pages/Profile/Profile";
 import Repository from "../pages/Repository/Repository";
+import SetupProfilePage from "../pages/SetupProfile/SetupProfile";
 
+// Supervisor pages
 import SDashboard from "../pages/Supervisor/Dashboard/SDashboard";
 import SProjects from "../pages/Supervisor/Projects/SProjects";
 import ProjectDetails from "../pages/Supervisor/Projects/ProjectDetails";
 import SMeetings from "../pages/Supervisor/Meetings/SMeetings";
 import SRequests from "../pages/Supervisor/Requests/SRequests";
 
+// Student pages
 import InitDashboard from "../pages/Student/Dashboard/InitDashboard";
 import FindTeam from "../pages/Student/FindTeam/FindTeam";
 import FindSupervisor from "../pages/Student/FindSupervisors/FindSupervisor";
@@ -20,6 +30,7 @@ import StudDashboard from "../pages/Student/Dashboard/StudDashboard";
 import StudMeetings from "../pages/Student/Meetings/studMeetings";
 import StudProject from "../pages/Student/Project/StudProject";
 
+// Coordinator pages
 import CoordDashboard from "../pages/Coordinator/Dashboard/CoordDashboard";
 import CoordDeadlines from "../pages/Coordinator/Deadlines/CoordDeadlines";
 import CoordRubrics from "../pages/Coordinator/Rubric/CoordRubric";
@@ -30,43 +41,59 @@ import CoordProjects from "../pages/Coordinator/Projects/CoordProjects";
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Auth routes */}
+      {/* ================= Public Routes ================= */}
       <Route path="/" element={<SignUpPage />} />
       <Route path="/login" element={<SignInPage />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/repository" element={<Repository />} />
 
-      {/* Coordinator routes */}
-      <Route path="/coordinator/dashboard" element={<CoordDashboard />} />
-      <Route path="/coordinator/projects" element={<CoordProjects />} />
-      <Route path="/coordinator/deadlines" element={<CoordDeadlines />} />
-      <Route path="/coordinator/rubrics" element={<CoordRubrics />} />
-      <Route path="/coordinator/evaluations" element={<CoordEvaluations />} />
-      <Route path="/coordinator/workload" element={<CoordWorkload />} />
+      {/* ================= Shared Authenticated Routes ================= */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/repository" element={<Repository />} />
+        <Route path="/setup-profile" element={<SetupProfilePage />} />
+      </Route>
 
-      {/* Supervisor routes */}
-      <Route path="/supervisor/dashboard" element={<SDashboard />} />
-      <Route path="/supervisor/projects" element={<SProjects />} />
-      <Route path="/supervisor/meetings" element={<SMeetings />} />
-      <Route path="/supervisor/requests" element={<SRequests />} />
-      <Route
-        path="/supervisor/projects/:projectId"
-        element={<ProjectDetails />}
-      />
+      {/* ================= Student Routes ================= */}
+      <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+        {/* Initial group-formation flow */}
+        <Route path="/student/initialdashboard" element={<InitDashboard />} />
+        <Route path="/student/findteam" element={<FindTeam />} />
+        <Route path="/student/findsupervisor" element={<FindSupervisor />} />
+        <Route path="/student/requests" element={<PendingRequest />} />
 
-      {/* Student routes */}
-      <Route path="/student/initialdashboard" element={<InitDashboard />} />
-      <Route path="/student/findteam" element={<FindTeam />} />
-      <Route path="/student/findsupervisor" element={<FindSupervisor />} />
-      <Route path="/student/requests" element={<PendingRequest />} />
+        {/* Full project dashboard */}
+        <Route path="/student/dashboard" element={<StudDashboard />} />
+        <Route path="/student/meetings" element={<StudMeetings />} />
+        <Route path="/student/project" element={<StudProject />} />
+      </Route>
 
-      <Route path="/student/dashboard" element={<StudDashboard />} />
-      <Route path="/student/meetings" element={<StudMeetings />} />
-      <Route path="/student/project" element={<StudProject />} />
+      {/* ================= Supervisor Routes ================= */}
+      <Route element={<ProtectedRoute allowedRoles={["supervisor"]} />}>
+        <Route path="/supervisor/dashboard" element={<SDashboard />} />
+        <Route path="/supervisor/projects" element={<SProjects />} />
+        <Route path="/supervisor/meetings" element={<SMeetings />} />
+        <Route path="/supervisor/requests" element={<SRequests />} />
+        <Route
+          path="/supervisor/projects/:projectId"
+          element={<ProjectDetails />}
+        />
+      </Route>
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" />} />
+      {/* ================= Coordinator Routes ================= */}
+      <Route element={<ProtectedRoute allowedRoles={["coordinator"]} />}>
+        <Route path="/coordinator/dashboard" element={<CoordDashboard />} />
+        <Route path="/coordinator/projects" element={<CoordProjects />} />
+        <Route path="/coordinator/deadlines" element={<CoordDeadlines />} />
+        <Route path="/coordinator/rubrics" element={<CoordRubrics />} />
+        <Route path="/coordinator/evaluations" element={<CoordEvaluations />} />
+        <Route path="/coordinator/workload" element={<CoordWorkload />} />
+      </Route>
+
+      {/* ================= Unauthorized ================= */}
+      <Route path="/unauthorized" element={<div>Unauthorized Access</div>} />
+
+      {/* ================= Fallback ================= */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

@@ -35,15 +35,11 @@ const studentProfileSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-studentProfileSchema.index({ roll_number: 1 }, { unique: true });
+studentProfileSchema.index({ rollNumber: 1 });
 
-
-const StudentProfile = mongoose.model(
-  "StudentProfile",
-  studentProfileSchema
-);
+const StudentProfile = mongoose.model("StudentProfile", studentProfileSchema);
 
 export default StudentProfile;

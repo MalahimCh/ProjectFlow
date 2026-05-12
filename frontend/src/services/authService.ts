@@ -25,18 +25,23 @@ export const loginUser = async (data: {
   const res = await api.post("/auth/login", data);
 
   const accessToken = res.data.data.accessToken;
+  const user = res.data.data.user;
 
   if (accessToken) {
     localStorage.setItem("accessToken", accessToken);
   }
 
-  console.log("Login response:", res.data);
-  return res.data.data.user.role;
+  if (user) {
+    localStorage.setItem("user", JSON.stringify(user));
+  }
+
+  return res.data;
 };
 
 export const logoutUser = async () => {
   await api.post("/auth/logout");
   localStorage.removeItem("accessToken");
+  localStorage.removeItem("user");
 };
 
 export const getCurrentUser = async () => {

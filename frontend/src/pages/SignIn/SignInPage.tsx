@@ -94,14 +94,7 @@ const SignInPage: FC = () => {
         email: formData.email,
         password: formData.password,
       });
-
-      if (res === "supervisor") {
-        navigate("/supervisor/dashboard");
-      } else if (res === "student") {
-        navigate("/student/dashboard");
-      } else {
-        navigate("/coordinator/dashboard");
-      }
+      navigate(res.data.redirectTo);
     } catch (error: any) {
       setError(error.response?.data?.message || "Login failed");
     }

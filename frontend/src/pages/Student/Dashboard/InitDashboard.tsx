@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./InitDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
+import { getInitDashboard } from "../../../services/studentService";
 import {
   LuUsers,
   LuCircleAlert,
@@ -13,103 +14,155 @@ import {
   LuUserPlus,
 } from "react-icons/lu";
 
-const mockData = {
-  group: {
-    members: [
-      { id: "1", name: "Malahim Chaudhary", reg: "23L-0840", isLeader: true },
-      { id: "2", name: "Minahil Mudassar", reg: "23L-0877" },
-      { id: "3", name: "Abdullah Tahir", reg: "23L-0602" },
-    ],
-  },
-
-  // supervisor: {
-  //   name: "none",
-  //   requestedOn: "none",
-  //   status: "none",
-  // },
-
-  // supervisor: {
-  //   name: "Mr. Muhammad Kamran",
-  //   requestedOn: "Mar 28, 2026",
-  //   acceptedOn: "none",
-  //   status: "pending", // "none" | "pending" | "accepted"
-  // },
-
-  supervisor: {
-    name: "Mr. Muhammad Kamran",
-    requestedOn: "Mar 28, 2026",
-    acceptedOn: "Apr 22, 2026",
-    status: "accepted", // "none" | "pending" | "accepted"
-  },
-};
+import { useEffect } from "react";
 
 /* ================= COMPONENT ================= */
 
 const InitDashboard: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const members = mockData.group.members;
-  const supervisor = mockData.supervisor;
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const data = await getInitDashboard();
+        setDashboardData(data);
+      } catch (err) {
+        console.error("Dashboard error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  /* ===== DERIVED STATE ===== */
+    fetchDashboard();
+  }, []);
 
-  const isGroupComplete = members.length === 3;
+  if (loading || !dashboardData) {
+    return <div>Loading dashboard...</div>;
+  }
+
+  /* ================= EXTRACT DATA ================= */
+
+  const { stats, group, supervisor } = dashboardData;
+
+  const members = group.members;
+  const maxMembers = group.maxMembers;
+
+  /* ================= DERIVED STATE ================= */
+
+  const groupCount = members.length;
+  const remainingMembers = maxMembers - groupCount;
+  const isGroupComplete = groupCount === maxMembers;
 
   const hasSupervisorAssigned = supervisor?.status === "accepted";
   const hasSupervisorRequested = supervisor?.status === "pending";
   const noSupervisor = !supervisor || supervisor?.status === "none";
 
-  const FindTeamMembersButtonClick = () => {
-    navigate("/student/findteam");
-  };
-
-  const RequestSupervisorButtonClick = () => {
-    navigate("/student/findsupervisor");
-  };
-
-  const SubmitButtonClicked = () => {
-    navigate("/student/dashboard");
-  };
-  /* ===== STATS ===== */
-
-  const groupCount = members.length;
-  const pendingRequests = 3; // mock
   const supervisorStatus = noSupervisor
     ? "None"
     : hasSupervisorRequested
       ? "Pending"
       : "Accepted";
 
+  /* ================= ACTION HANDLERS ================= */
+
+  const handleFindTeamMembers = () => {
+    navigate("/student/findteam");
+  };
+
+  const handleRequestSupervisor = () => {
+    navigate("/student/findsupervisor");
+  };
+
+  const handleSubmitGroup = () => {
+    navigate("/student/dashboard");
+  };
+
+  /* ================= BANNER CONTENT ================= */
+
+  const bannerConfig = !isGroupComplete
+    ? {
+        title: "Complete Your Group",
+        subtitle: `You need ${remainingMembers} more member${
+          remainingMembers > 1 ? "s" : ""
+        } to complete your group.`,
+        buttonText: "Find Team Members",
+        buttonClass: styles.action,
+        buttonDisabled: false,
+        onClick: handleFindTeamMembers,
+        icon: <LuCircleAlert />,
+        iconClass: styles.primaryIcon,
+        containerClass: "",
+      }
+    : noSupervisor
+      ? {
+          title: "Request Supervisor",
+          subtitle: "Request a supervisor to submit your group.",
+          buttonText: "Request Supervisor",
+          buttonClass: styles.action,
+          buttonDisabled: false,
+          onClick: handleRequestSupervisor,
+          icon: <LuCheck />,
+          iconClass: styles.primaryIcon,
+          containerClass: "",
+        }
+      : hasSupervisorRequested
+        ? {
+            title: "Supervisor Requested",
+            subtitle: "Your request is pending approval.",
+            buttonText: "Awaiting Approval",
+            buttonClass: styles.pendingBtn,
+            buttonDisabled: true,
+            onClick: undefined,
+            icon: <LuCheck />,
+            iconClass: styles.pendingIcon,
+            containerClass: styles.pendingBox,
+          }
+        : {
+            title: "Group Ready for Submission",
+            subtitle:
+              "Your group is complete and supervisor has accepted. Submit your group for coordinator approval.",
+            buttonText: "Submit Group",
+            buttonClass: styles.successBtn,
+            buttonDisabled: false,
+            onClick: handleSubmitGroup,
+            icon: <LuCheck />,
+            iconClass: styles.successIcon,
+            containerClass: styles.successBox,
+          };
+
   return (
     <div className={styles.container}>
       <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div className={styles.main}>
+        {/* ================= HEADER ================= */}
         <Header
           title="Dashboard"
-          subtitle="Welcome back, Malahim Chaudhary"
-          userName="Malahim Chaudhary"
-          userId="ST2024001"
+          subtitle="A quick overview of your project progress."
         />
 
         <div className={styles.content}>
           {/* ================= STATS ================= */}
           <div className={styles.statsGrid}>
             <StatsCard
-              value={`${groupCount} / 3`}
+              value={`${groupCount} / ${maxMembers}`}
               label="Group Members"
               icon={<LuUsers />}
               bgColor="#EFF6FF"
               iconColor="#0D3CCF"
             />
+
             <StatsCard
-              value={pendingRequests}
+              value={stats.pendingRequests}
               label="Pending Requests"
               icon={<LuMessageSquareText />}
               bgColor="#FEF2F2"
               iconColor="#DC2626"
             />
+
             <StatsCard
               value={supervisorStatus}
               label="Supervisor Status"
@@ -119,119 +172,41 @@ const InitDashboard: FC = () => {
             />
           </div>
 
-          {/* ================= BANNER ================= */}
+          {/* ================= STATUS BANNER ================= */}
           <div
-            className={`${styles.completeGroup} ${
-              hasSupervisorAssigned
-                ? styles.successBox
-                : hasSupervisorRequested
-                  ? styles.pendingBox
-                  : ""
-            }`}
+            className={`${styles.completeGroup} ${bannerConfig.containerClass}`}
           >
             <div className={styles.row}>
               <div className={styles.left}>
-                <span
-                  className={`${styles.icon} ${
-                    hasSupervisorAssigned
-                      ? styles.successIcon
-                      : hasSupervisorRequested
-                        ? styles.pendingIcon
-                        : styles.primaryIcon
-                  }`}
-                >
-                  {!isGroupComplete ? <LuCircleAlert /> : <LuCheck />}
+                <span className={`${styles.icon} ${bannerConfig.iconClass}`}>
+                  {bannerConfig.icon}
                 </span>
 
                 <div>
-                  {/* 1. Incomplete */}
-                  {!isGroupComplete && (
-                    <>
-                      <p className={styles.title}>Complete Your Group</p>
-                      <p className={styles.subtitle}>
-                        You need {3 - members.length} more members to complete
-                        your group.
-                      </p>
-                    </>
-                  )}
-
-                  {/* 2. No supervisor */}
-                  {isGroupComplete && noSupervisor && (
-                    <>
-                      <p className={styles.title}>Request Supervisor</p>
-                      <p className={styles.subtitle}>
-                        Request a supervisor to submit your group.
-                      </p>
-                    </>
-                  )}
-
-                  {/* 3. Pending */}
-                  {isGroupComplete && hasSupervisorRequested && (
-                    <>
-                      <p className={styles.title}>Supervisor Requested</p>
-                      <p className={styles.subtitle}>
-                        Your request is pending approval.
-                      </p>
-                    </>
-                  )}
-
-                  {/* 4. Accepted */}
-                  {isGroupComplete && hasSupervisorAssigned && (
-                    <>
-                      <p className={styles.title}>Group Ready for Submission</p>
-                      <p className={styles.subtitle}>
-                        Your group is complete and supervisor has accepted.
-                        Submit your group for coordinator approval.
-                      </p>
-                    </>
-                  )}
+                  <p className={styles.title}>{bannerConfig.title}</p>
+                  <p className={styles.subtitle}>{bannerConfig.subtitle}</p>
                 </div>
               </div>
 
-              {/* BUTTONS */}
-              {!isGroupComplete && (
-                <button
-                  className={styles.action}
-                  onClick={FindTeamMembersButtonClick}
-                >
-                  Find Team Members
-                </button>
-              )}
-
-              {isGroupComplete && noSupervisor && (
-                <button
-                  className={styles.action}
-                  onClick={RequestSupervisorButtonClick}
-                >
-                  Request Supervisor
-                </button>
-              )}
-
-              {isGroupComplete && hasSupervisorRequested && (
-                <button className={styles.pendingBtn} disabled>
-                  Awaiting Approval
-                </button>
-              )}
-
-              {isGroupComplete && hasSupervisorAssigned && (
-                <button
-                  className={styles.successBtn}
-                  onClick={SubmitButtonClicked}
-                >
-                  Submit Group
-                </button>
-              )}
+              <button
+                className={bannerConfig.buttonClass}
+                disabled={bannerConfig.buttonDisabled}
+                onClick={bannerConfig.onClick}
+              >
+                {bannerConfig.buttonText}
+              </button>
             </div>
           </div>
 
-          {/* ================= GROUP ================= */}
-          {members.length > 0 && (
+          {/* ================= GROUP CARD ================= */}
+          {groupCount > 0 && (
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <p className={styles.cardHeading}>My Group</p>
               </div>
+
               <div className={styles.memberList}>
-                {[...members, ...Array(3 - members.length).fill(null)].map(
+                {[...members, ...Array(maxMembers - groupCount).fill(null)].map(
                   (member, index) => (
                     <div
                       key={member ? member.id : `empty-${index}`}
@@ -246,7 +221,7 @@ const InitDashboard: FC = () => {
                           <div className={styles.avatar}>
                             {member.name
                               .split(" ")
-                              .map((n: string) => n[0])
+                              .map((part: string) => part[0])
                               .join("")}
                           </div>
 
@@ -272,8 +247,8 @@ const InitDashboard: FC = () => {
             </div>
           )}
 
-          {/* ================= SUPERVISOR ================= */}
-          {supervisor && supervisor.status !== "none" && (
+          {/* ================= SUPERVISOR CARD ================= */}
+          {!noSupervisor && (
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <p className={styles.cardHeading}>Supervisor</p>

@@ -6,7 +6,12 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt.js";
-import { getRefreshCookieOptions, clearRefreshCookieOptions } from "../utils/cookie.js";
+import {
+  getRefreshCookieOptions,
+  clearRefreshCookieOptions,
+} from "../utils/cookie.js";
+import { isProfileComplete } from "../utils/profileCheck.js";
+import { getUserGroupStatus } from "../helpers/groupHelper.js";
 import {
   created,
   ok,
@@ -73,7 +78,7 @@ export const login = async (req, res) => {
     if (user.isLocked) {
       return unauthorized(
         res,
-        "Account temporarily locked due to too many failed attempts. Try again in 15 minutes."
+        "Account temporarily locked due to too many failed attempts. Try again in 15 minutes.",
       );
     }
 
@@ -115,9 +120,36 @@ export const login = async (req, res) => {
     // 8. Set refresh token cookie
     res.cookie("refreshToken", refreshToken, getRefreshCookieOptions());
 
+    const profileDone = await isProfileComplete(user);
+
+    let redirectTo = "/setup-profile";
+
+    // 1. Force profile completion first
+    if (!profileDone) {
+      redirectTo = "/setup-profile";
+    } else {
+      // 2. Then role-based routing
+      if (user.role === "student") {
+        const groupStatus = await getUserGroupStatus(user._id);
+
+        redirectTo =
+          groupStatus.isInGroup && groupStatus.isGroupCompleted
+            ? "/student/dashboard"
+            : "/student/initialdashboard";
+      }
+
+      if (user.role === "supervisor") {
+        redirectTo = "/supervisor/dashboard";
+      }
+
+      if (user.role === "coordinator") {
+        redirectTo = "/coordinator/dashboard";
+      }
+    }
     return ok(res, "Login successful", {
       accessToken,
       user,
+      redirectTo,
     });
   } catch (err) {
     console.error("login error:", err);
@@ -167,7 +199,7 @@ export const refreshAccessToken = async (req, res) => {
       res.clearCookie("refreshToken", clearRefreshCookieOptions());
       return unauthorized(
         res,
-        "Refresh token reuse detected. All sessions have been invalidated."
+        "Refresh token reuse detected. All sessions have been invalidated.",
       );
     }
 
@@ -249,7 +281,9 @@ export const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
     // Must fetch passwordHash explicitly (select: false)
-    const user = await User.findById(req.user.id).select("+passwordHash +refreshTokens");
+    const user = await User.findById(req.user.id).select(
+      "+passwordHash +refreshTokens",
+    );
     if (!user) return unauthorized(res, "User not found");
 
     const match = await user.comparePassword(currentPassword);
@@ -321,10 +355,7 @@ export const resetPassword = async (req, res) => {
     const { token, newPassword } = req.body;
 
     // Hash the incoming raw token to compare with stored hash
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await User.findOne({
       passwordResetToken: hashedToken,
@@ -344,7 +375,10 @@ export const resetPassword = async (req, res) => {
 
     res.clearCookie("refreshToken", clearRefreshCookieOptions());
 
-    return ok(res, "Password reset successful. Please log in with your new password.");
+    return ok(
+      res,
+      "Password reset successful. Please log in with your new password.",
+    );
   } catch (err) {
     console.error("resetPassword error:", err);
     return serverError(res);

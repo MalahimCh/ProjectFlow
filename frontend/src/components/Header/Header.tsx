@@ -1,12 +1,18 @@
-import type { FunctionComponent } from "react";
+import { type FunctionComponent } from "react";
 import { IoMdNotifications } from "react-icons/io";
 import styles from "./Header.module.css";
 
 type HeaderProps = {
   title: string;
   subtitle: string;
-  userName: string;
-  userId: string;
+};
+
+type User = {
+  name?: string;
+  studentId?: string;
+  registrationNumber?: string;
+  employeeId?: string;
+  id?: string;
 };
 
 const getInitials = (name: string) => {
@@ -16,15 +22,31 @@ const getInitials = (name: string) => {
     .map((n) => n[0])
     .join("")
     .toUpperCase()
-    .slice(0, 2); // max 2 letters
+    .slice(0, 2);
 };
 
-const Header: FunctionComponent<HeaderProps> = ({
-  title,
-  subtitle,
-  userName,
-  userId,
-}) => {
+const Header: FunctionComponent<HeaderProps> = ({ title, subtitle }) => {
+  // Get user from localStorage
+  const storedUser = localStorage.getItem("user");
+
+  let user: User = {};
+
+  try {
+    user = storedUser ? JSON.parse(storedUser) : {};
+  } catch {
+    user = {};
+  }
+
+  // Extract values with fallbacks
+  const userName = user.name || "User";
+
+  const userId =
+    user.studentId ||
+    user.registrationNumber ||
+    user.employeeId ||
+    user.id ||
+    "N/A";
+
   const initials = getInitials(userName);
 
   return (
