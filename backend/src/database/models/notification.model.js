@@ -22,13 +22,7 @@ const notificationSchema = new mongoose.Schema(
 
     type: {
       type: String,
-      enum: [
-        "system",
-        "event",
-        "message",
-        "deadline",
-        "evaluation",
-      ],
+      enum: ["system", "event", "message", "deadline", "evaluation"],
       default: "system",
     },
 
@@ -50,7 +44,7 @@ const notificationSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Optimized for fetching notifications
@@ -60,9 +54,17 @@ notificationSchema.index({
   createdAt: -1,
 });
 
-const Notification = mongoose.model(
-  "Notification",
-  notificationSchema
-);
+notificationSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
+const Notification = mongoose.model("Notification", notificationSchema);
 
 export default Notification;

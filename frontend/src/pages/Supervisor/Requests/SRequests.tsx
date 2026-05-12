@@ -1,303 +1,271 @@
 import SSidebar from "../Sidebar/Ssidebar";
-import { type FC, useState } from "react";
+import { type FC, type JSX, useState, useEffect } from "react";
 import styles from "./SRequests.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuUser, LuClock, LuFileText, LuCircleX, LuCircleCheck } from "react-icons/lu";
+import {
+  LuUsers,
+  LuCalendar,
+  LuUserCheck,
+  LuMessageSquareText,
+  LuCircleX,
+  LuCircleCheck,
+} from "react-icons/lu";
+import {
+  getSupervisorRequests,
+  acceptSupervisorRequest,
+  rejectSupervisorRequest,
+} from "../../../services/supervisorService";
 
-type Request = {
+/* ── types ── */
+type SupervisorRequest = {
   id: string;
-  studentName: string;
-  rollNo: string;
-  section: string;
-  projectName: string;
-  description: string;
-  submittedOn: string;
-  lastDate: string;
-  proposalLink: string;
   status: "pending" | "accepted" | "rejected";
-  decisionDate?: string;
+  createdAt: string;
+  group: {
+    id: string;
+    name: string;
+    status: string;
+  };
+  supervisor: {
+    name: string;
+    email: string;
+  };
 };
 
-const initialRequests: Request[] = [
-  {
-    id: "r1",
-    studentName: "Ali Raza",
-    rollNo: "23L-0948",
-    section: "BCS-8A",
-    projectName: "AI Chatbot System",
-    description: "AI chatbot for student queries using NLP.",
-    submittedOn: "2026-04-18",
-    lastDate: "2026-05-31",
-    proposalLink: "https://example.com/proposal1.pdf",
-    status: "pending",
-  },
-  {
-    id: "r2",
-    studentName: "Abdullah Tahir",
-    rollNo: "23L-0602",
-    section: "BCS-6H",
-    projectName: "FYP Management System",
-    description:
-      "Web-based platform that manages FYP proposals, approvals and progress tracking in one centralized system.",
-    submittedOn: "2026-04-19",
-    lastDate: "2026-05-31",
-    proposalLink: "https://example.com/proposal2.pdf",
-    status: "pending",
-  },
-  {
-    id: "r3",
-    studentName: "Sara Khan",
-    rollNo: "23L-0949",
-    section: "BDS-8B",
-    projectName: "Smart Attendance System",
-    description: "Face recognition attendance system.",
-    submittedOn: "2026-04-21",
-    lastDate: "2026-05-31",
-    proposalLink: "https://example.com/proposal3.pdf",
-    status: "pending",
-  },
-];
-
-const SRequests: FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
-  const [requests, setRequests] = useState<Request[]>(initialRequests);
-
-  const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat("en-US", {
+/* ── helpers ── */
+const formatDate = (iso: string) =>
+  new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "2-digit",
     year: "numeric",
-  }).format(date);
-};
+  }).format(new Date(iso));
 
-const updateStatus = (id: string, status: "accepted" | "rejected") => {
-  const today = formatDate(new Date());
+/* ── component ── */
+const SRequests: FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const [requests, setRequests] = useState<SupervisorRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [acting, setActing] = useState<
+    Record<string, "accepting" | "rejecting">
+  >({});
 
-  setRequests((prev) =>
-    prev.map((r) =>
-      r.id === id
-        ? {
-            ...r,
-            status,
-            decisionDate: today,
-          }
-        : r
-    )
-  );
-};
+  useEffect(() => {
+    const fetch_ = async () => {
+      try {
+        setLoading(true);
+        const data = await getSupervisorRequests();
+        setRequests(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch_();
+  }, []);
 
-  const viewProposal = (link: string) => {
-    window.open(link, "_blank");
+  const handleAccept = async (id: string) => {
+    setActing((p) => ({ ...p, [id]: "accepting" }));
+    try {
+      await acceptSupervisorRequest(id);
+      setRequests((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: "accepted" } : r)),
+      );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setActing((p) => {
+        const n = { ...p };
+        delete n[id];
+        return n;
+      });
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    setActing((p) => ({ ...p, [id]: "rejecting" }));
+    try {
+      await rejectSupervisorRequest(id);
+      setRequests((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: "rejected" } : r)),
+      );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setActing((p) => {
+        const n = { ...p };
+        delete n[id];
+        return n;
+      });
+    }
   };
 
   const pending = requests.filter((r) => r.status === "pending").length;
   const accepted = requests.filter((r) => r.status === "accepted").length;
   const rejected = requests.filter((r) => r.status === "rejected").length;
 
-  const renderPendingCard = (r: Request) => (
-    <>
-      <div className={styles.studentInfo}>
-        <div className={styles.userIcon}><LuUser /></div>
-        <div>
-          <p className={styles.studentName}>{r.studentName}</p>
-          <span className={styles.studentRollNo}>{r.rollNo}</span>
-          <span className={styles.studentSection}>{r.section}</span>
-        </div>
-      </div>
-
-      <div className={styles.projectInfo}>
-        <p className={styles.projectName}>{r.projectName}</p>
-        <p className={styles.projectDescp}>{r.description}</p>
-
-        <div className={styles.dates}>
-          <div className={styles.singleDate}>
-            <LuCalendar /> Submitted: {r.submittedOn}
-          </div>
-          <div className={styles.singleDate}>
-            <LuClock /> Deadline: {r.lastDate}
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.actionsRow}>
-        <button
-          className={styles.proposalButton}
-          onClick={() => viewProposal(r.proposalLink)}
-        >
-          <LuFileText />
-          <p>View Proposal</p>
-        </button>
-
-        {r.status === "pending" && (
-          <div className={styles.rightActions}>
-            <button
-              className={styles.approve}
-              onClick={() => updateStatus(r.id, "accepted")}
-            >
-              <LuCircleCheck />
-              <p>Approve</p>
-            </button>
-            <button
-              className={styles.reject}
-              onClick={() => updateStatus(r.id, "rejected")}
-            >
-              <LuCircleX />
-              <p>Reject</p>
-            </button>
-          </div>
-        )}
-      </div>
-    </>
-  );
-
-  const renderAcceptedCard = (r: Request) => (
-    <>
-      <div className={styles.actionedTop}>
-        <div className={styles.studentInfo}>
-          <div className={styles.userIcon}><LuUser /></div>
+  /* ── card renderers ── */
+  const renderPendingCard = (r: SupervisorRequest) => {
+    const busy = acting[r.id];
+    return (
+      <div key={r.id} className={styles.requestCard}>
+        <div className={styles.cardTop}>
           <div>
-            <p className={styles.studentName}>{r.studentName}</p>
-            <span className={styles.studentRollNo}>{r.rollNo}</span>
-            <span className={styles.studentSection}>{r.section}</span>
+            <p className={styles.groupName}>{r.group.name}</p>
+            <p className={styles.meta}>
+              <LuCalendar size={12} /> Submitted: {formatDate(r.createdAt)}
+            </p>
           </div>
+          <span className={styles.badgePending}>Pending</span>
         </div>
+
+        <div className={styles.actionsRow}>
+          <button
+            className={styles.approve}
+            onClick={() => handleAccept(r.id)}
+            disabled={!!busy}
+          >
+            {busy === "accepting" ? (
+              <span className={styles.spinner} />
+            ) : (
+              <LuCircleCheck size={14} />
+            )}
+            Approve
+          </button>
+          <button
+            className={styles.reject}
+            onClick={() => handleReject(r.id)}
+            disabled={!!busy}
+          >
+            {busy === "rejecting" ? (
+              <span className={styles.spinner} />
+            ) : (
+              <LuCircleX size={14} />
+            )}
+            Reject
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderActionedCard = (r: SupervisorRequest) => (
+    <div key={r.id} className={styles.requestCard}>
+      <div className={styles.cardTop}>
         <div>
-          <p className={styles.approveLabel}>Approved</p>
+          <p className={styles.groupName}>{r.group.name}</p>
+          <p className={styles.meta}>
+            <LuCalendar size={12} />
+            {r.status === "accepted" ? " Approved: " : " Rejected: "}
+            {formatDate(r.createdAt)}
+          </p>
         </div>
-      </div>
-
-      <div className={styles.projectInfo}>
-        <p className={styles.projectNameActioned}>{r.projectName}</p>
-        <div className={styles.dates}>
-          <div className={styles.singleDate}>
-            <LuCalendar/> Approved on: {r.decisionDate}
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.actionsRow}>
-        <button
-          className={styles.proposalButton}
-          onClick={() => viewProposal(r.proposalLink)}
+        <span
+          className={
+            r.status === "accepted"
+              ? styles.badgeAccepted
+              : styles.badgeRejected
+          }
         >
-          <LuFileText />
-          <p>View Proposal</p>
-        </button>
+          {r.status === "accepted" ? "Approved" : "Rejected"}
+        </span>
       </div>
-    </>
+    </div>
   );
 
-  const renderRejectedCard = (r: Request) => (
-    <>
-      <div className={styles.actionedTop}>
-        <div className={styles.studentInfo}>
-          <div className={styles.userIcon}><LuUser /></div>
-          <div>
-            <p className={styles.studentName}>{r.studentName}</p>
-            <span className={styles.studentRollNo}>{r.rollNo}</span>
-            <span className={styles.studentSection}>{r.section}</span>
-          </div>
+  /* ── section renderer ── */
+  const Section = ({
+    title,
+    subtitle,
+    items,
+    renderer,
+  }: {
+    title: string;
+    subtitle?: string;
+    items: SupervisorRequest[];
+    renderer: (r: SupervisorRequest) => JSX.Element;
+  }) =>
+    items.length === 0 ? (
+      <div className={styles.request}>
+        <div className={styles.requestHeader}>
+          <p className={styles.requestTitle}>{title}</p>
         </div>
-        <div>
-          <p className={styles.rejectLabel}>Rejected</p>
-        </div>
-      </div>
 
-      <div className={styles.projectInfo}>
-        <p className={styles.projectNameActioned}>{r.projectName}</p>
-        <div className={styles.dates}>
-          <div className={styles.singleDate}>
-            <LuCalendar /> Rejected on: {r.decisionDate}
-          </div>
+        <p className={styles.emptyText}>No requests for now</p>
+      </div>
+    ) : (
+      <div className={styles.request}>
+        <div className={styles.requestHeader}>
+          <p className={styles.requestTitle}>{title}</p>
+          {subtitle && <p className={styles.requestCountText}>{subtitle}</p>}
         </div>
-      </div>
 
-      <div className={styles.actionsRow}>
-        <button
-          className={styles.proposalButton}
-          onClick={() => viewProposal(r.proposalLink)}
-        >
-          <LuFileText />
-          <p>View Proposal</p>
-        </button>
+        <div className={styles.requestList}>{items.map(renderer)}</div>
       </div>
-    </>
-  );
+    );
 
   return (
     <div className={styles.container}>
       <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div className={styles.main}>
-        <Header
-          title="Requests"
-          subtitle="View and manage your requests"
-          userName="Junaid Hussain"
-          userId="CO2024001"
-        />
+        <Header title="Requests" subtitle="View and manage your requests" />
 
         <div className={styles.content}>
+          {/* stats */}
           <div className={styles.statsGrid}>
-            <StatsCard value={pending} label="Pending Requests" icon={<LuUsers />} bgColor="#EFF6FF" iconColor="#0D3CCF" />
-            <StatsCard value={accepted} label="Accepted" icon={<LuMessageSquareText />} bgColor="#F0FDF4" iconColor="#16A34A" />
-            <StatsCard value={rejected} label="Rejected" icon={<LuCalendar />} bgColor="#FEF2F2" iconColor="#DC2626" />
-            <StatsCard value={requests.length} label="Total Requests" icon={<LuUserCheck />} bgColor="#FFF7ED" iconColor="#F59E0B" />
+            <StatsCard
+              value={pending}
+              label="Pending"
+              icon={<LuUsers />}
+              bgColor="#EFF6FF"
+              iconColor="#0D3CCF"
+            />
+            <StatsCard
+              value={accepted}
+              label="Accepted"
+              icon={<LuMessageSquareText />}
+              bgColor="#F0FDF4"
+              iconColor="#16A34A"
+            />
+            <StatsCard
+              value={rejected}
+              label="Rejected"
+              icon={<LuCalendar />}
+              bgColor="#FEF2F2"
+              iconColor="#DC2626"
+            />
+            <StatsCard
+              value={requests.length}
+              label="Total"
+              icon={<LuUserCheck />}
+              bgColor="#FFF7ED"
+              iconColor="#F59E0B"
+            />
           </div>
 
-          <div className={styles.request}>
-            <div className={styles.requestHeader}>
-              <p className={styles.requestTitle}>Pending Requests</p>
-              <p className={styles.requestCountText}>
-                {pending} Awaiting Requests
-              </p>
-            </div>
+          {loading && <p className={styles.loadingText}>Loading requests…</p>}
 
-            <div className={styles.requestList}>
-              {requests
-                .filter((r) => r.status === "pending")
-                .map((r) => (
-                  <div key={r.id} className={styles.requestCard}>
-                    {renderPendingCard(r)}
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          {requests.filter((r) => r.status === "accepted").length > 0 && (
-            <div className={styles.request}>
-              <div className={styles.requestHeader}>
-                <p className={styles.requestTitle}>Approved Requests</p>
-              </div>
-
-              <div className={styles.requestList}>
-                {requests
-                  .filter((r) => r.status === "accepted")
-                  .map((r) => (
-                    <div key={r.id} className={styles.requestCard}>
-                      {renderAcceptedCard(r)}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-
-          {requests.filter((r) => r.status === "rejected").length > 0 && (
-            <div className={styles.request}>
-              <div className={styles.requestHeader}>
-                <p className={styles.requestTitle}>Rejected Requests</p>
-              </div>
-
-              <div className={styles.requestList}>
-                {requests
-                  .filter((r) => r.status === "rejected")
-                  .map((r) => (
-                    <div key={r.id} className={styles.requestCard}>
-                      {renderRejectedCard(r)}
-                    </div>
-                  ))}
-              </div>
-            </div>
+          {!loading && (
+            <>
+              <Section
+                title="Pending Requests"
+                subtitle={`${pending} awaiting`}
+                items={requests.filter((r) => r.status === "pending")}
+                renderer={renderPendingCard}
+              />
+              <Section
+                title="Approved Requests"
+                items={requests.filter((r) => r.status === "accepted")}
+                renderer={renderActionedCard}
+              />
+              <Section
+                title="Rejected Requests"
+                items={requests.filter((r) => r.status === "rejected")}
+                renderer={renderActionedCard}
+              />
+            </>
           )}
         </div>
       </div>

@@ -84,7 +84,6 @@ const run = async () => {
     await UserProfile.syncIndexes();
 
     console.log("✅ All indexes synced successfully!");
-
   } catch (error) {
     console.error("❌ Error syncing indexes:", error);
   } finally {

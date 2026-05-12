@@ -28,6 +28,17 @@ const userProfileSchema = new mongoose.Schema(
   },
 );
 
+userProfileSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
 const UserProfile = mongoose.model("UserProfile", userProfileSchema);
 
 export default UserProfile;

@@ -22,9 +22,19 @@ const rubricSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
+rubricSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 const Rubric = mongoose.model("Rubric", rubricSchema);
 
 export default Rubric;

@@ -4,7 +4,10 @@ import styles from "./FindTeam.module.css";
 import Header from "../../../components/Header/Header";
 import { LuSearch, LuSend, LuFilter, LuChevronDown, LuX } from "react-icons/lu";
 
-import { getStudentProfiles } from "../../../services/studentService";
+import {
+  getStudentProfiles,
+  sendGroupRequest,
+} from "../../../services/studentService";
 
 /* ================= TYPES ================= */
 type Student = {
@@ -22,6 +25,19 @@ const FindTeam: FC = () => {
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [minCgpa, setMinCgpa] = useState<string>("");
+  const [sending, setSending] = useState<Record<string, boolean>>({});
+
+  const handleSendRequest = async (studentId: string) => {
+    setSending((p) => ({ ...p, [studentId]: true }));
+    try {
+      await sendGroupRequest(studentId);
+      // optionally mark as sent so button disables
+      setSending((p) => ({ ...p, [studentId]: "sent" as any }));
+    } catch (err: any) {
+      alert(err?.response?.data?.message ?? "Failed to send request.");
+      setSending((p) => ({ ...p, [studentId]: false }));
+    }
+  };
 
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -216,9 +232,17 @@ const FindTeam: FC = () => {
                   </div>
 
                   {/* BUTTON */}
-                  <button className={styles.button}>
+                  <button
+                    className={styles.button}
+                    onClick={() => handleSendRequest(s.id)}
+                    disabled={!!sending[s.id]}
+                  >
                     <LuSend size={14} />
-                    Send Request
+                    {sending[s.id] === true
+                      ? "Sending…"
+                      : sending[s.id]
+                        ? "Sent"
+                        : "Send Request"}
                   </button>
                 </div>
               ))}

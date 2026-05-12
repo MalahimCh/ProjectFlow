@@ -17,18 +17,26 @@ const projectTechnologySchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Prevent duplicate technologies per project
-projectTechnologySchema.index(
-  { project: 1, technology: 1 },
-  { unique: true }
-);
+projectTechnologySchema.index({ project: 1, technology: 1 }, { unique: true });
+
+projectTechnologySchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const ProjectTechnology = mongoose.model(
   "ProjectTechnology",
-  projectTechnologySchema
+  projectTechnologySchema,
 );
 
 export default ProjectTechnology;

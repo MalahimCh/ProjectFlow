@@ -32,10 +32,21 @@ const deadlineSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 deadlineSchema.index({ dueAt: 1, isGlobal: 1 });
+
+deadlineSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const Deadline = mongoose.model("Deadline", deadlineSchema);
 

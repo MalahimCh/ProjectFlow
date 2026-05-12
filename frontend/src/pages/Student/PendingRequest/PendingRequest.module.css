@@ -1,51 +1,55 @@
+/* ── Layout ──────────────────────────────────────── */
 .container {
   display: flex;
   height: 100vh;
+  background: #f6f9ff;
 }
 
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .content {
   flex: 1;
   padding: 30px;
-  background: #F6F9FF;
+  background: #f6f9ff;
   overflow-y: auto;
 }
 
-/* GRID */
+/* ── Grid ────────────────────────────────────────── */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
 }
 
-/* CARD */
+/* ── Card ────────────────────────────────────────── */
 .card {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-/* TOP */
+/* ── Top row ─────────────────────────────────────── */
 .top {
   display: flex;
-  gap: 10px;
   align-items: center;
-  margin-bottom: 10px;
+  gap: 12px;
 }
 
-/* AVATAR */
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: #0D3CCF;
-  color: #FFFFFF;
+  background: #0d3ccf;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,63 +58,144 @@
   flex-shrink: 0;
 }
 
-/* TEXT */
+.meta {
+  flex: 1;
+  min-width: 0;
+}
+
 .name {
-  margin: 0;
   font-size: 14px;
   font-weight: 600;
   color: #111827;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.reg {
-  margin: 0;
+.email {
   font-size: 12px;
-  color: #6A7282;
+  color: #6b7280;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* MESSAGE */
-.message {
-  font-size: 13px;
-  color: #374151;
-  margin: 10px 0 0 0;
-  line-height: 1.5;
+.time {
+  font-size: 11px;
+  color: #9ca3af;
+  flex-shrink: 0;
+  align-self: flex-start;
 }
 
-/* ACTIONS — right-aligned, not full width */
+/* ── Actions ─────────────────────────────────────── */
 .actions {
   display: flex;
-  justify-content: flex-end;
   gap: 8px;
-  margin-top: 14px;
 }
 
-/* BUTTONS — compact, no icon, like picture */
-.accept {
-  background: #16A34A;
-  color: #FFFFFF;
-  border: none;
-  padding: 7px 16px;
+.accept,
+.reject {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  border: none;
+  transition:
+    background 0.15s,
+    opacity 0.15s;
+}
+
+.accept {
+  background: #0d3ccf;
+  color: #ffffff;
+}
+
+.accept:hover:not(:disabled) {
+  background: #0b34b0;
 }
 
 .reject {
-  background: #DC2626;
-  color: #FFFFFF;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.reject:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.accept:disabled,
+.reject:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ─────────────────────────────────────── */
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+.reject .spinner {
+  border-color: rgba(220, 38, 38, 0.25);
+  border-top-color: #dc2626;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Empty state ─────────────────────────────────── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 8px;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6a7282;
+  margin: 0;
+}
+
+.emptySub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.retryBtn {
+  margin-top: 8px;
+  padding: 8px 20px;
+  background: #0d3ccf;
+  color: #fff;
   border: none;
-  padding: 7px 16px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.accept:hover {
-  background: #15803D;
-}
-
-.reject:hover {
-  background: #B91C1C;
+.retryBtn:hover {
+  background: #0b34b0;
 }

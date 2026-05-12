@@ -1,16 +1,22 @@
 import { verifyAccessToken } from "../utils/jwt.js";
 import { unauthorized, forbidden, serverError } from "../utils/apiResponse.js";
-
 import User from "../database/models/user.model.js";
 
-// ─── authenticate ─────────────────────────────────────────────────────────────
-// Verifies the Bearer access token from Authorization header.
-// Attaches req.user (lightweight payload from token — no DB hit by default).
-// For routes that need a fresh DB user, use authenticateFresh below.
+// ─── helper: normalize user shape ─────────────────────────────────────────────
+const normalizeUser = (user) => ({
+  id: user._id ? user._id.toString() : user.id,
+  role: user.role,
+  email: user.email,
+  name: user.name,
+  isActive: user.isActive,
+});
 
+// ─── authenticate ─────────────────────────────────────────────────────────────
+// Lightweight auth (no DB hit)
 export const authenticate = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return unauthorized(res, "Access token required");
     }
@@ -18,7 +24,6 @@ export const authenticate = (req, res, next) => {
     const token = authHeader.split(" ")[1];
     const payload = verifyAccessToken(token);
 
-    // Attach decoded payload to request
     req.user = {
       id: payload.sub,
       role: payload.role,
@@ -39,12 +44,11 @@ export const authenticate = (req, res, next) => {
 };
 
 // ─── authenticateFresh ────────────────────────────────────────────────────────
-// Same as authenticate but also queries DB to get the latest user document.
-// Use on sensitive routes (change password, account settings).
-
+// DB-backed auth (fresh user state)
 export const authenticateFresh = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return unauthorized(res, "Access token required");
     }
@@ -53,11 +57,13 @@ export const authenticateFresh = async (req, res, next) => {
     const payload = verifyAccessToken(token);
 
     const user = await User.findById(payload.sub);
+
     if (!user || !user.isActive) {
       return unauthorized(res, "Account not found or deactivated");
     }
 
-    req.user = user;
+    req.user = normalizeUser(user);
+
     next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {
@@ -66,26 +72,25 @@ export const authenticateFresh = async (req, res, next) => {
     if (err.name === "JsonWebTokenError") {
       return unauthorized(res, "Invalid access token");
     }
-    return serverError(res);
+    return serverError(res, "Authentication error");
   }
 };
 
 // ─── authorizeRoles ───────────────────────────────────────────────────────────
-// Role guard — use after authenticate.
-// Usage: authorizeRoles("coordinator")
-//        authorizeRoles("supervisor", "coordinator")
-
+// Role-based access control
 export const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user) {
-      return unauthorized(res);
+      return unauthorized(res, "Unauthorized");
     }
+
     if (!allowedRoles.includes(req.user.role)) {
       return forbidden(
         res,
-        `Access denied. Required role: ${allowedRoles.join(" or ")}`
+        `Access denied. Required role: ${allowedRoles.join(" or ")}`,
       );
     }
+
     next();
   };
 };

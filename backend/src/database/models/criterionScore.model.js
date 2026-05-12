@@ -22,17 +22,22 @@ const criterionScoreSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-criterionScoreSchema.index(
-  { evaluation: 1, criterion: 1 },
-  { unique: true }
-);
+criterionScoreSchema.index({ evaluation: 1, criterion: 1 }, { unique: true });
 
-const CriterionScore = mongoose.model(
-  "CriterionScore",
-  criterionScoreSchema
-);
+criterionScoreSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
+const CriterionScore = mongoose.model("CriterionScore", criterionScoreSchema);
 
 export default CriterionScore;

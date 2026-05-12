@@ -28,18 +28,26 @@ const supervisorRequestSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Optional: prevent duplicate pending requests to same supervisor
-supervisorRequestSchema.index(
-  { group: 1, supervisor: 1 },
-  { unique: true }
-);
+supervisorRequestSchema.index({ group: 1, supervisor: 1 }, { unique: true });
+
+supervisorRequestSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const SupervisorRequest = mongoose.model(
   "SupervisorRequest",
-  supervisorRequestSchema
+  supervisorRequestSchema,
 );
 
 export default SupervisorRequest;

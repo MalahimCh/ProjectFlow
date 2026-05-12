@@ -28,18 +28,23 @@ const projectRatingSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Each user can rate a project only once
-projectRatingSchema.index(
-  { project: 1, user: 1 },
-  { unique: true }
-);
+projectRatingSchema.index({ project: 1, user: 1 }, { unique: true });
 
-const ProjectRating = mongoose.model(
-  "ProjectRating",
-  projectRatingSchema
-);
+projectRatingSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
+const ProjectRating = mongoose.model("ProjectRating", projectRatingSchema);
 
 export default ProjectRating;

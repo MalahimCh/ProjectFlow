@@ -42,10 +42,21 @@ const meetingSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 meetingSchema.index({ project: 1, scheduledAt: 1 });
+
+meetingSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const Meeting = mongoose.model("Meeting", meetingSchema);
 

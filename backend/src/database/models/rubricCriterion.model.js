@@ -27,12 +27,23 @@ const rubricCriterionSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+rubricCriterionSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const RubricCriterion = mongoose.model(
   "RubricCriterion",
-  rubricCriterionSchema
+  rubricCriterionSchema,
 );
 
 export default RubricCriterion;

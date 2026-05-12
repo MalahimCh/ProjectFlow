@@ -43,12 +43,23 @@ const evaluationPanelSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+evaluationPanelSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const EvaluationPanel = mongoose.model(
   "EvaluationPanel",
-  evaluationPanelSchema
+  evaluationPanelSchema,
 );
 
 export default EvaluationPanel;

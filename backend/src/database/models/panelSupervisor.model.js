@@ -16,17 +16,25 @@ const panelSupervisorSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-panelSupervisorSchema.index(
-  { panel: 1, supervisor: 1 },
-  { unique: true }
-);
+panelSupervisorSchema.index({ panel: 1, supervisor: 1 }, { unique: true });
+
+panelSupervisorSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const PanelSupervisor = mongoose.model(
   "PanelSupervisor",
-  panelSupervisorSchema
+  panelSupervisorSchema,
 );
 
 export default PanelSupervisor;

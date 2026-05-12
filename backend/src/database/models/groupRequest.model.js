@@ -13,11 +13,10 @@ const groupRequestSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
     group: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Group",
-      required: true,
+      default: null, // ← was required: true, breaks sendGroupRequest
     },
 
     status: {
@@ -34,12 +33,29 @@ const groupRequestSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const GroupRequest = mongoose.model(
-  "GroupRequest",
-  groupRequestSchema
+// Remove the old index, replace with:
+groupRequestSchema.index(
+  { sender: 1, receiver: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: "pending" }, // only one pending per pair
+  },
 );
+
+groupRequestSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
+const GroupRequest = mongoose.model("GroupRequest", groupRequestSchema);
 
 export default GroupRequest;

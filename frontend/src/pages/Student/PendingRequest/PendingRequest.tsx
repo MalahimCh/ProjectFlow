@@ -1,48 +1,101 @@
 import InitSidebar from "../Sidebar/InitSidebar";
-import { type FC, useState } from "react";
+import { type FC, useState, useEffect, useCallback } from "react";
 import styles from "./PendingRequest.module.css";
 import Header from "../../../components/Header/Header";
+import { LuCheck, LuX, LuInbox } from "react-icons/lu";
 
-/* ================= MOCK DATA ================= */
+import {
+  getIncomingRequests,
+  acceptGroupRequest,
+  rejectGroupRequest,
+  type IncomingRequest,
+} from "../../../services/studentService";
 
-const requests = [
-  {
-    id: "1",
-    name: "Ali Khan",
-    rollNo: "23L-0512",
-    message: "I would like to join your FYP group.",
-  },
-  {
-    id: "2",
-    name: "Sara Ahmed",
-    rollNo: "23L-0745",
-    message: "Rakh lo re baba 🙏🏻",
-  },
-  {
-    id: "3",
-    name: "Chaudhary Abdul Rehman",
-    rollNo: "23L-2310",
-    message: "I am retarded",
-  },
-  {
-    id: "4",
-    name: "Hira Malik",
-    rollNo: "23L-0678",
-    message: "Help pleaseee",
-  },
-  {
-    id: "5",
-    name: "Bilal Ahmed",
-    rollNo: "23L-2533",
-    message: "I want to die",
-  },
-];
+/* ── helpers ─────────────────────────────────────── */
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 
-/* ================= COMPONENT ================= */
+const timeAgo = (iso: string) => {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+};
 
+/* ── component ───────────────────────────────────── */
 const PendingRequest: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [requests, setRequests] = useState<IncomingRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // per-card loading state: requestId → "accepting" | "rejecting" | null
+  const [acting, setActing] = useState<
+    Record<string, "accepting" | "rejecting">
+  >({});
+
+  /* fetch */
+  const fetchRequests = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getIncomingRequests();
+      setRequests(data);
+    } catch {
+      setError("Failed to load requests.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
+
+  /* accept */
+  const handleAccept = async (req: IncomingRequest) => {
+    setActing((p) => ({ ...p, [req.id]: "accepting" }));
+    try {
+      await acceptGroupRequest(req.id);
+      // remove from list optimistically
+      setRequests((p) => p.filter((r) => r.id !== req.id));
+    } catch (err: any) {
+      alert(err?.response?.data?.message ?? "Failed to accept request.");
+    } finally {
+      setActing((p) => {
+        const n = { ...p };
+        delete n[req.id];
+        return n;
+      });
+    }
+  };
+
+  /* reject */
+  const handleReject = async (req: IncomingRequest) => {
+    setActing((p) => ({ ...p, [req.id]: "rejecting" }));
+    try {
+      await rejectGroupRequest(req.id);
+      setRequests((p) => p.filter((r) => r.id !== req.id));
+    } catch (err: any) {
+      alert(err?.response?.data?.message ?? "Failed to reject request.");
+    } finally {
+      setActing((p) => {
+        const n = { ...p };
+        delete n[req.id];
+        return n;
+      });
+    }
+  };
+
+  /* ── render ── */
   return (
     <div className={styles.container}>
       <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -50,45 +103,91 @@ const PendingRequest: FC = () => {
       <div className={styles.main}>
         <Header
           title="Pending Requests"
-          subtitle="View and manage your pending requests"
-          userName="Malahim Chaudhary"
-          userId="CO2024001"
+          subtitle="View and manage incoming group requests"
         />
 
         <div className={styles.content}>
-          <div className={styles.grid}>
-            {requests.map((r) => (
-              <div key={r.id} className={styles.card}>
+          {loading && (
+            <div className={styles.emptyState}>
+              <p className={styles.emptyText}>Loading requests…</p>
+            </div>
+          )}
 
-                {/* TOP */}
-                <div className={styles.top}>
-                  <div className={styles.avatar}>
-                    {r.name
-                      .split(" ")
-                      .slice(0, 2)
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()}
+          {!loading && error && (
+            <div className={styles.emptyState}>
+              <p className={styles.emptyText}>{error}</p>
+              <button className={styles.retryBtn} onClick={fetchRequests}>
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && requests.length === 0 && (
+            <div className={styles.emptyState}>
+              <LuInbox size={28} color="#D1D5DB" />
+              <p className={styles.emptyText}>No pending requests</p>
+              <p className={styles.emptySub}>
+                When someone sends you a group request it will appear here.
+              </p>
+            </div>
+          )}
+
+          {!loading && !error && requests.length > 0 && (
+            <div className={styles.grid}>
+              {requests.map((r) => {
+                const busy = acting[r.id];
+
+                return (
+                  <div key={r.id} className={styles.card}>
+                    {/* TOP */}
+                    <div className={styles.top}>
+                      <div className={styles.avatar}>
+                        {getInitials(r.sender.name)}
+                      </div>
+
+                      <div className={styles.meta}>
+                        <p className={styles.name}>{r.sender.name}</p>
+                        <p className={styles.email}>{r.sender.email}</p>
+                      </div>
+
+                      <span className={styles.time}>
+                        {timeAgo(r.createdAt)}
+                      </span>
+                    </div>
+
+                    {/* ACTIONS */}
+                    <div className={styles.actions}>
+                      <button
+                        className={styles.accept}
+                        onClick={() => handleAccept(r)}
+                        disabled={!!busy}
+                      >
+                        {busy === "accepting" ? (
+                          <span className={styles.spinner} />
+                        ) : (
+                          <LuCheck size={14} />
+                        )}
+                        Accept
+                      </button>
+
+                      <button
+                        className={styles.reject}
+                        onClick={() => handleReject(r)}
+                        disabled={!!busy}
+                      >
+                        {busy === "rejecting" ? (
+                          <span className={styles.spinner} />
+                        ) : (
+                          <LuX size={14} />
+                        )}
+                        Decline
+                      </button>
+                    </div>
                   </div>
-
-                  <div>
-                    <p className={styles.name}>{r.name}</p>
-                    <p className={styles.reg}>{r.rollNo}</p>
-                  </div>
-                </div>
-
-                {/* MESSAGE */}
-                <p className={styles.message}>{r.message}</p>
-
-                {/* BUTTONS */}
-                <div className={styles.actions}>
-                  <button className={styles.accept}>Accept</button>
-                  <button className={styles.reject}>Reject</button>
-                </div>
-
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

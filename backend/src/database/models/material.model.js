@@ -27,8 +27,19 @@ const materialSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+materialSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const Material = mongoose.model("Material", materialSchema);
 

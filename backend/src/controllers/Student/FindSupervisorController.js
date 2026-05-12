@@ -11,7 +11,7 @@ export const getAllSupervisors = async (req, res) => {
       .lean();
 
     // 🔥 STEP 1: get all user ids
-    const userIds = profiles.map((p) => p.user?._id);
+    const userIds = profiles.map((p) => p.user?.id);
 
     // 🔥 STEP 2: fetch all profiles in one go
     const userProfiles = await UserProfile.find({
@@ -26,10 +26,10 @@ export const getAllSupervisors = async (req, res) => {
 
     // 🔥 STEP 4: merge
     const formatted = profiles.map((p) => {
-      const up = profileMap.get(p.user?._id?.toString());
+      const up = profileMap.get(p.user?.id?.toString());
 
       return {
-        id: p._id,
+        id: p.id,
         name: p.user?.name || "Unknown",
         email: p.user?.email || "",
         department: up?.department || "Not set", // ✅ HERE IT IS

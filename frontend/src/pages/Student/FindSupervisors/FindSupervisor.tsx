@@ -14,8 +14,11 @@ import {
   LuX,
   LuBrain,
 } from "react-icons/lu";
-
-import { getSupervisors } from "../../../services/studentService";
+import {
+  getSupervisors,
+  sendSupervisorRequest,
+  getMyGroup,
+} from "../../../services/studentService";
 
 /* ================= TYPES ================= */
 type Supervisor = {
@@ -54,11 +57,25 @@ const FindSupervisor: FC = () => {
   const [availableOnly, setAvailableOnly] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
 
+  const [groupId, setGroupId] = useState<string | null>(null);
+  const [sendingId, setSendingId] = useState<string | null>(null);
   const [supervisors, setSupervisors] = useState<Supervisor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const filterRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const fetchGroup = async () => {
+      try {
+        const data = await getMyGroup();
+        setGroupId(data.group?.id || null);
+      } catch (err) {
+        console.error("Failed to fetch group", err);
+      }
+    };
+
+    fetchGroup();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,6 +107,25 @@ const FindSupervisor: FC = () => {
   const clearFilters = () => setAvailableOnly(false);
   const activeFilterCount = availableOnly ? 1 : 0;
 
+  const handleSendRequest = async (supervisorId: string) => {
+    if (!groupId) {
+      alert("You must create or join a group first");
+      return;
+    }
+
+    try {
+      setSendingId(supervisorId);
+
+      await sendSupervisorRequest(groupId, supervisorId);
+
+      alert("Request sent successfully");
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.response?.data?.message || "Failed to send request");
+    } finally {
+      setSendingId(null);
+    }
+  };
   const filtered = supervisors.filter((s) => {
     const q = search.toLowerCase();
     const matchSearch =
@@ -297,10 +333,13 @@ const FindSupervisor: FC = () => {
                       />
                     </div>
 
-                    {/* BUTTON */}
-                    <button className={styles.button}>
+                    <button
+                      className={styles.button}
+                      onClick={() => handleSendRequest(s.id)}
+                      disabled={sendingId === s.id}
+                    >
                       <LuSend size={14} />
-                      Request Supervisor
+                      {sendingId === s.id ? "Sending..." : "Request Supervisor"}
                     </button>
                   </div>
                 );

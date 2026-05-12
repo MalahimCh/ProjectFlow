@@ -10,7 +10,7 @@ export const getUser = async (req, res) => {
     let userR = "";
 
     if (user.role === "student") {
-      const groupStatus = await getUserGroupStatus(user._id);
+      const groupStatus = await getUserGroupStatus(user.id);
 
       userR =
         groupStatus.isInGroup && groupStatus.isGroupCompleted

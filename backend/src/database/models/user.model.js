@@ -65,16 +65,22 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
     toJSON: {
       transform(doc, ret) {
+        ret.id = ret._id.toString(); // ✅ standardize id
+
+        delete ret._id; // ❌ hide Mongo internal id
+        delete ret.__v;
+
         delete ret.passwordHash;
         delete ret.refreshTokens;
         delete ret.loginAttempts;
         delete ret.lockUntil;
         delete ret.passwordResetToken;
         delete ret.passwordResetExpires;
+
         return ret;
       },
     },
-  }
+  },
 );
 
 // Virtual
@@ -114,7 +120,7 @@ userSchema.methods.resetLoginAttempts = async function () {
 // Static
 userSchema.statics.findByEmailForAuth = function (email) {
   return this.findOne({ email }).select(
-    "+passwordHash +refreshTokens +loginAttempts +lockUntil"
+    "+passwordHash +refreshTokens +loginAttempts +lockUntil",
   );
 };
 

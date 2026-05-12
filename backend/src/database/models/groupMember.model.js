@@ -27,18 +27,23 @@ const groupMemberSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Enforce UNIQUE(group_id, student_id)
-groupMemberSchema.index(
-  { group: 1, student: 1 },
-  { unique: true }
-);
+groupMemberSchema.index({ group: 1, student: 1 }, { unique: true });
 
-const GroupMember = mongoose.model(
-  "GroupMember",
-  groupMemberSchema
-);
+groupMemberSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
+const GroupMember = mongoose.model("GroupMember", groupMemberSchema);
 
 export default GroupMember;

@@ -47,7 +47,7 @@ export const getInitDashboard = async (req, res) => {
       group: {
         maxMembers: 3,
         members: members.map((m) => ({
-          id: m.student?._id,
+          id: m.student?.id,
           name: m.student?.name,
           reg: m.student?.reg,
           isLeader: m.role === "leader",

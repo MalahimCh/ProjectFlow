@@ -130,7 +130,7 @@ export const login = async (req, res) => {
     } else {
       // 2. Then role-based routing
       if (user.role === "student") {
-        const groupStatus = await getUserGroupStatus(user._id);
+        const groupStatus = await getUserGroupStatus(user.id);
 
         redirectTo =
           groupStatus.isInGroup && groupStatus.isGroupCompleted

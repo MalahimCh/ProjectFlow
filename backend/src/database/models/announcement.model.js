@@ -29,14 +29,22 @@ const announcementSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+announcementSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 announcementSchema.index({ project: 1, createdAt: -1 });
 
-const Announcement = mongoose.model(
-  "Announcement",
-  announcementSchema
-);
+const Announcement = mongoose.model("Announcement", announcementSchema);
 
 export default Announcement;

@@ -38,17 +38,28 @@ const projectEvaluationSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 projectEvaluationSchema.index(
   { panel: 1, project: 1, evaluator: 1 },
-  { unique: true }
+  { unique: true },
 );
+
+projectEvaluationSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
 
 const ProjectEvaluation = mongoose.model(
   "ProjectEvaluation",
-  projectEvaluationSchema
+  projectEvaluationSchema,
 );
 
 export default ProjectEvaluation;

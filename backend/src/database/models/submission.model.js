@@ -31,18 +31,23 @@ const submissionSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // One submission per student per assignment
-submissionSchema.index(
-  { assignment: 1, student: 1 },
-  { unique: true }
-);
+submissionSchema.index({ assignment: 1, student: 1 }, { unique: true });
 
-const Submission = mongoose.model(
-  "Submission",
-  submissionSchema
-);
+submissionSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
+const Submission = mongoose.model("Submission", submissionSchema);
 
 export default Submission;

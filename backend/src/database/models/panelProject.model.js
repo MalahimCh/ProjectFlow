@@ -20,17 +20,22 @@ const panelProjectSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-panelProjectSchema.index(
-  { panel: 1, project: 1 },
-  { unique: true }
-);
+panelProjectSchema.index({ panel: 1, project: 1 }, { unique: true });
 
-const PanelProject = mongoose.model(
-  "PanelProject",
-  panelProjectSchema
-);
+panelProjectSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
+const PanelProject = mongoose.model("PanelProject", panelProjectSchema);
 
 export default PanelProject;

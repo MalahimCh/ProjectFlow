@@ -40,6 +40,17 @@ const studentProfileSchema = new mongoose.Schema(
 
 studentProfileSchema.index({ rollNumber: 1 });
 
+studentProfileSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+
 const StudentProfile = mongoose.model("StudentProfile", studentProfileSchema);
 
 export default StudentProfile;

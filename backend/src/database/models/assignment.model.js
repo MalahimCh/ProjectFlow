@@ -32,14 +32,21 @@ const assignmentSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 assignmentSchema.index({ project: 1, dueDate: 1 });
 
-const Assignment = mongoose.model(
-  "Assignment",
-  assignmentSchema
-);
+assignmentSchema.set("toJSON", {
+  transform(doc, ret) {
+    ret.id = ret._id.toString();
+
+    delete ret._id;
+    delete ret.__v;
+
+    return ret;
+  },
+});
+const Assignment = mongoose.model("Assignment", assignmentSchema);
 
 export default Assignment;
