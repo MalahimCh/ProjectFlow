@@ -13,7 +13,7 @@
 .content {
   flex: 1;
   padding: 30px;
-  background: #F6F9FF;
+  background: #f6f9ff;
   overflow-y: auto;
 }
 
@@ -30,9 +30,9 @@
   justify-content: space-between;
 
   width: 280px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   padding: 20px;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .videoIcon {
-  color: #0D3CCF;
+  color: #0d3ccf;
   font-size: 20px;
 }
 
@@ -63,8 +63,8 @@
 .primaryBtn {
   width: 100%;
   padding: 12px;
-  background: #0D3CCF;
-  color: #FFFFFF;
+  background: #0d3ccf;
+  color: #ffffff;
   border-radius: 20px;
   border: none;
   margin-bottom: 12px;
@@ -75,10 +75,10 @@
 .outlineBtn {
   width: 100%;
   padding: 12px;
-  background: #FFFFFF;
-  color: #0D3CCF;
+  background: #ffffff;
+  color: #0d3ccf;
   border-radius: 20px;
-  border: 1px solid #0D3CCF;
+  border: 1px solid #0d3ccf;
   cursor: pointer;
   font-weight: 600;
 }
@@ -91,9 +91,9 @@
 }
 
 .sectionHeader {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   padding: 20px;
   margin: 20px 0 0 0;
 }
@@ -113,8 +113,8 @@
 
 .badge {
   font-size: 12px;
-  color: #0D3CCF;
-  background: #EFF6FF;
+  color: #0d3ccf;
+  background: #eff6ff;
   padding: 2px 6px;
   border-radius: 6px;
   margin: 0px;
@@ -132,8 +132,8 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
 }
 
@@ -157,8 +157,8 @@
 }
 
 .sessionBadge {
-  background: #EFF6FF;
-  color: #0D3CCF;
+  background: #eff6ff;
+  color: #0d3ccf;
   font-size: 11px;
   font-weight: 600;
   padding: 4px 10px;
@@ -189,7 +189,7 @@
 }
 
 .joinBtn {
-  background: #0D3CCF;
+  background: #0d3ccf;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -215,7 +215,7 @@
 .modal {
   width: 100%;
   max-width: 420px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
   padding: 28px 32px;
   box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
@@ -232,7 +232,7 @@
 /* subtitle shown in join modal only */
 .modalSubtitle {
   font-size: 13px;
-  color: #6A7282;
+  color: #6a7282;
   margin: 0 0 20px 0;
 }
 
@@ -255,7 +255,7 @@
 .inputIcon {
   position: absolute;
   left: 14px;
-  color: #6A7282;
+  color: #6a7282;
   pointer-events: none;
 }
 
@@ -271,27 +271,29 @@
 .timeInput {
   width: 100%;
   padding: 11px 14px;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   border-radius: 10px;
   font-size: 14px;
   color: #111827;
   outline: none;
   box-sizing: border-box;
-  background-color: #FFFFFF;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  background-color: #ffffff;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .selectInput:focus,
 .textInput:focus,
 .dateInput:focus,
 .timeInput:focus {
-  border-color: #0D3CCF;
+  border-color: #0d3ccf;
   box-shadow: 0 0 0 3px rgba(13, 60, 207, 0.08);
 }
 
 /* placeholder colour */
 .textInput::placeholder {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* ── MODAL BUTTONS ── */
@@ -302,8 +304,8 @@
 }
 
 .cancelBtn {
-  background: #F3F4F6;
-  color: #6A7282;
+  background: #f3f4f6;
+  color: #6a7282;
   padding: 10px 22px;
   border-radius: 10px;
   font-size: 13px;
@@ -314,12 +316,12 @@
 }
 
 .cancelBtn:hover {
-  background: #E5E7EB;
+  background: #e5e7eb;
 }
 
 .confirmBtn {
-  background: #0D3CCF;
-  color: #FFFFFF;
+  background: #0d3ccf;
+  color: #ffffff;
   padding: 10px 22px;
   border-radius: 10px;
   font-size: 13px;
@@ -334,7 +336,7 @@
 }
 
 .confirmBtn:disabled {
-  background: #C7D2FE;
+  background: #c7d2fe;
   cursor: not-allowed;
   opacity: 1;
 }
@@ -347,9 +349,9 @@
   justify-content: center;
   gap: 8px;
   padding: 11px 14px;
-  background: #EFF6FF;
-  color: #0D3CCF;
-  border: 1.5px dashed #0D3CCF;
+  background: #eff6ff;
+  color: #0d3ccf;
+  border: 1.5px dashed #0d3ccf;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
@@ -358,7 +360,7 @@
 }
 
 .generateLinkBtn:hover {
-  background: #DBEAFE;
+  background: #dbeafe;
 }
 
 /* ── Paste link area (step 2) ── */
@@ -370,7 +372,62 @@
 
 .pasteLinkHint {
   font-size: 12px;
-  color: #6A7282;
+  color: #6a7282;
   margin: 0;
   line-height: 1.5;
+}
+.selectInput {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.selectInput:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.cardActionIcons {
+  display: flex;
+  gap: 8px;
+  margin-left: 10px;
+}
+
+.iconBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.iconBtn:hover {
+  background: #dbeafe;
+}
+.iconBtnDanger {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: #fef2f2;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.iconBtnDanger:hover {
+  background: #fee2e2;
 }

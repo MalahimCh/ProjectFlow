@@ -1,46 +1,79 @@
 import SSidebar from "../Sidebar/Ssidebar";
-import { type FC, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import styles from "./SMeetings.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuVideo, LuClock, LuLink } from "react-icons/lu";
-
+import {
+  LuUsers,
+  LuMessageSquareText,
+  LuCalendar,
+  LuUserCheck,
+  LuVideo,
+  LuClock,
+  LuLink,
+  LuTrash2,
+  LuPencil,
+} from "react-icons/lu";
+import {
+  getSupervisorMeetings,
+  createSupervisorMeeting,
+  updateMeeting,
+  deleteMeeting,
+  getSupervisorProjects,
+} from "../../../services/supervisorService";
 type Meeting = {
   id: string;
   projectName: string;
+  projectId?: string;
   title: string;
-  date: string;
-  time: string;
+  scheduledAt: string;
   link: string;
 };
-
-const availableProjects = ["Mobile Mavericks", "Data Dynamics", "Alpha Innovators"];
+type Project = {
+  id: string;
+  title: string;
+};
 
 const SMeetings: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showJoinModal, setShowJoinModal]     = useState(false);
-  const [joinLink, setJoinLink]               = useState("");
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [joinLink, setJoinLink] = useState("");
 
-  const [meetings, setMeetings] = useState<Meeting[]>([
-    {
-      id: "1",
-      projectName: "Mobile Mavericks",
-      title: "Feedback Session",
-      date: "Mar 18, 2026",
-      time: "10:00 AM - 11:00 AM",
-      link: "https://meet.google.com/abc-defg-hij",
-    },
-    {
-      id: "2",
-      projectName: "Data Dynamics",
-      title: "Progress Review",
-      date: "Mar 19, 2026",
-      time: "02:00 PM - 03:00 PM",
-      link: "https://meet.google.com/xyz-mnp-qrs",
-    },
-  ]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+  const fetchMeetings = async () => {
+    try {
+      const data = await getSupervisorMeetings();
 
+      const formatted: Meeting[] = (data.meetings || []).map((m: any) => ({
+        id: m.id,
+        projectName: m.project?.title || "",
+        projectId: m.project?.id,
+        title: m.title,
+        scheduledAt: m.scheduledAt,
+        link: m.meetingUrl || "",
+      }));
+
+      setMeetings(formatted);
+    } catch (err) {
+      console.error("Failed to load meetings:", err);
+    }
+  };
+  const fetchProjects = async () => {
+    try {
+      const data = await getSupervisorProjects();
+      setProjects(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    fetchMeetings();
+    fetchProjects();
+  }, []);
   const [formData, setFormData] = useState({
     projectName: "",
     title: "",
@@ -60,7 +93,7 @@ const SMeetings: FC = () => {
   };
 
   const [meetLinkInput, setMeetLinkInput] = useState("");
-  const [meetLinkStep, setMeetLinkStep]   = useState<1 | 2>(1);
+  const [meetLinkStep, setMeetLinkStep] = useState<1 | 2>(1);
 
   const handleOpenCreateModal = () => {
     setMeetLinkStep(1);
@@ -73,40 +106,97 @@ const SMeetings: FC = () => {
     window.open("https://meet.google.com/new", "_blank");
     setMeetLinkStep(2);
   };
+  const handleEditMeeting = (meeting: Meeting) => {
+    setEditingMeeting(meeting);
 
-  const handleCreateMeeting = () => {
-    if (!formData.projectName || !formData.title || !meetLinkInput.trim()) {
-      alert("Fill all fields and paste the meeting link.");
+    const dt = new Date(meeting.scheduledAt);
+
+    setFormData({
+      projectName: meeting.projectName,
+      title: meeting.title,
+      date: dt.toISOString().split("T")[0],
+      time: dt.toTimeString().slice(0, 5),
+    });
+
+    setMeetLinkInput(meeting.link);
+    setSelectedProjectId(meeting.projectId || "");
+    setMeetLinkStep(2);
+    setShowCreateModal(true);
+  };
+  const handleDeleteMeeting = async (id: string) => {
+    const ok = window.confirm("Delete meeting?");
+    if (!ok) return;
+
+    try {
+      await deleteMeeting(id);
+      fetchMeetings();
+    } catch (err) {
+      alert("Delete failed");
+    }
+  };
+
+  const handleCreateMeeting = async () => {
+    if (!selectedProjectId || !formData.title || !meetLinkInput.trim()) {
+      alert("Fill all fields and select project.");
       return;
     }
 
-    const newMeeting: Meeting = {
-      id: Date.now().toString(),
-      projectName: formData.projectName,
-      title: formData.title,
-      date: formData.date,
-      time: formData.time,
-      link: meetLinkInput.trim(),
-    };
+    try {
+      const scheduledAt = new Date(
+        `${formData.date}T${formData.time}`,
+      ).toISOString();
 
-    setMeetings((prev) => [...prev, newMeeting]);
-    setShowCreateModal(false);
-    setMeetLinkStep(1);
-    setMeetLinkInput("");
-    setFormData({ projectName: "", title: "", date: "", time: "" });
+      if (editingMeeting) {
+        await updateMeeting(editingMeeting.id, {
+          title: formData.title,
+          scheduledAt,
+          meetingUrl: meetLinkInput.trim(),
+        });
+      } else {
+        await createSupervisorMeeting({
+          projectId: selectedProjectId,
+          title: formData.title,
+          scheduledAt,
+          meetingUrl: meetLinkInput.trim(),
+        });
+      }
+
+      setShowCreateModal(false);
+      setEditingMeeting(null);
+      setMeetLinkStep(1);
+      setMeetLinkInput("");
+      setFormData({ projectName: "", title: "", date: "", time: "" });
+      setSelectedProjectId("");
+
+      await fetchMeetings();
+    } catch (err) {
+      alert("Failed to save meeting");
+    }
   };
+  const totalMeetings = meetings.length;
+
+  const thisWeek = meetings.filter((m) => {
+    const d = new Date(m.scheduledAt);
+    const now = new Date();
+
+    const diff = (d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    return diff >= 0 && diff <= 7;
+  }).length;
+
+  const thisMonth = meetings.filter((m) => {
+    const d = new Date(m.scheduledAt);
+    const now = new Date();
+    return (
+      d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+    );
+  }).length;
 
   return (
     <div className={styles.container}>
       <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div className={styles.main}>
-        <Header
-          title="Meetings"
-          subtitle="Welcome back, Muhammad Kamran"
-          userName="Muhammad Kamran"
-          userId="SP2024001"
-        />
+        <Header title="Meetings" subtitle="Welcome back, Muhammad Kamran" />
 
         <div className={styles.content}>
           <div className={styles.topSection}>
@@ -136,10 +226,37 @@ const SMeetings: FC = () => {
             </div>
 
             <div className={styles.statsGrid}>
-              <StatsCard value={4}  label="Upcoming Meetings"     icon={<LuCalendar />}         bgColor="#EEF2FF" iconColor="#2563EB" />
-              <StatsCard value={3}  label="This Week"             icon={<LuUsers />}             bgColor="#ECFDF5" iconColor="#16A34A" />
-              <StatsCard value={8}  label="Completed This Month"  icon={<LuMessageSquareText />} bgColor="#FFF7ED" iconColor="#F59E0B" />
-              <StatsCard value={11} label="Total This Year"        icon={<LuUserCheck />}         bgColor="#EFF6FF" iconColor="#2563EB" />
+              <StatsCard
+                value={totalMeetings}
+                label="Upcoming Meetings"
+                icon={<LuCalendar />}
+                bgColor="#EEF2FF"
+                iconColor="#2563EB"
+              />
+
+              <StatsCard
+                value={thisWeek}
+                label="This Week"
+                icon={<LuUsers />}
+                bgColor="#ECFDF5"
+                iconColor="#16A34A"
+              />
+
+              <StatsCard
+                value={thisMonth}
+                label="This Month"
+                icon={<LuMessageSquareText />}
+                bgColor="#FFF7ED"
+                iconColor="#F59E0B"
+              />
+
+              <StatsCard
+                value={totalMeetings}
+                label="Total Meetings"
+                icon={<LuUserCheck />}
+                bgColor="#EFF6FF"
+                iconColor="#2563EB"
+              />
             </div>
           </div>
 
@@ -150,44 +267,78 @@ const SMeetings: FC = () => {
             </div>
 
             <div className={styles.meetingList}>
-              {meetings.map((m) => (
-                <div key={m.id} className={styles.meetingCard}>
-                  <div className={styles.meetingInfo}>
-                    <div className={styles.titleRow}>
-                      <h4>{m.projectName}</h4>
-                      <span className={styles.sessionBadge}>{m.title}</span>
+              {meetings.map((m) => {
+                const dt = new Date(m.scheduledAt);
+                return (
+                  <div key={m.id} className={styles.meetingCard}>
+                    <div className={styles.meetingInfo}>
+                      <div className={styles.titleRow}>
+                        <h4>{m.projectName}</h4>
+                        <span className={styles.sessionBadge}>{m.title}</span>
+                      </div>
+
+                      <div className={styles.dateTimeRow}>
+                        <LuCalendar />{" "}
+                        <span>
+                          {dt.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+
+                      <div className={styles.dateTimeRow}>
+                        <LuClock />{" "}
+                        <span>
+                          {dt.toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+
+                      <div className={styles.linkRow}>
+                        <LuLink /> <span>{m.link}</span>
+                      </div>
                     </div>
 
-                    <div className={styles.dateTimeRow}>
-                      <LuCalendar /> <span>{m.date}</span>
-                    </div>
+                    <div className={styles.meetingActions}>
+                      <button
+                        className={styles.joinBtn}
+                        onClick={() => joinMeeting(m.link)}
+                      >
+                        Join Meeting
+                      </button>
+                      <div className={styles.cardActionIcons}>
+                        <button onClick={() => handleEditMeeting(m)}>
+                          <LuPencil size={15} />
+                        </button>
 
-                    <div className={styles.dateTimeRow}>
-                      <LuClock /> <span>{m.time}</span>
-                    </div>
-
-                    <div className={styles.linkRow}>
-                      <LuLink /> <span>{m.link}</span>
+                        <button onClick={() => handleDeleteMeeting(m.id)}>
+                          <LuTrash2 size={15} />
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  <div className={styles.meetingActions}>
-                    <button
-                      className={styles.joinBtn}
-                      onClick={() => joinMeeting(m.link)}
-                    >
-                      Join Meeting
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
           {/* ── JOIN MEETING MODAL ── */}
           {showJoinModal && (
-            <div className={styles.overlay} onClick={() => { setShowJoinModal(false); setJoinLink(""); }}>
-              <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div
+              className={styles.overlay}
+              onClick={() => {
+                setShowJoinModal(false);
+                setJoinLink("");
+              }}
+            >
+              <div
+                className={styles.modal}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <h3 className={styles.modalTitle}>Join Meeting</h3>
                 <p className={styles.modalSubtitle}>
                   Paste a meeting link to join instantly.
@@ -202,7 +353,9 @@ const SMeetings: FC = () => {
                       className={styles.textInput}
                       value={joinLink}
                       onChange={(e) => setJoinLink(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleJoinConfirm()}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleJoinConfirm()
+                      }
                       autoFocus
                     />
                   </div>
@@ -211,7 +364,10 @@ const SMeetings: FC = () => {
                 <div className={styles.modalActions}>
                   <button
                     className={styles.cancelBtn}
-                    onClick={() => { setShowJoinModal(false); setJoinLink(""); }}
+                    onClick={() => {
+                      setShowJoinModal(false);
+                      setJoinLink("");
+                    }}
                   >
                     Cancel
                   </button>
@@ -229,21 +385,26 @@ const SMeetings: FC = () => {
 
           {/* ── CREATE MEETING MODAL ── */}
           {showCreateModal && (
-            <div className={styles.overlay} onClick={() => setShowCreateModal(false)}>
-              <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div
+              className={styles.overlay}
+              onClick={() => setShowCreateModal(false)}
+            >
+              <div
+                className={styles.modal}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <h3 className={styles.modalTitle}>Create Meeting</h3>
 
                 <div className={styles.inputGroup}>
                   <select
-                    className={styles.selectInput}
-                    value={formData.projectName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, projectName: e.target.value })
-                    }
+                    value={selectedProjectId}
+                    onChange={(e) => setSelectedProjectId(e.target.value)}
                   >
-                    <option value="" disabled>Select Project</option>
-                    {availableProjects.map((project) => (
-                      <option key={project} value={project}>{project}</option>
+                    <option value="">Select Project</option>
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.title}
+                      </option>
                     ))}
                   </select>
 
@@ -290,7 +451,8 @@ const SMeetings: FC = () => {
                   {meetLinkStep === 2 && (
                     <div className={styles.pasteLinkWrapper}>
                       <p className={styles.pasteLinkHint}>
-                        Copy the link from the Google Meet tab and paste it below.
+                        Copy the link from the Google Meet tab and paste it
+                        below.
                       </p>
                       <div className={styles.inputWithIcon}>
                         <LuLink size={15} className={styles.inputIcon} />

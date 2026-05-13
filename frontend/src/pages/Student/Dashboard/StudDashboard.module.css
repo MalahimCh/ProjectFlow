@@ -13,7 +13,7 @@
 .content {
   flex: 1;
   padding: 30px;
-  background: #F6F9FF;
+  background: #f6f9ff;
   overflow-y: auto;
 }
 
@@ -29,8 +29,8 @@
 
 /* ── Shared white card shell ── (mirrors InitDashboard .card) */
 .card {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
@@ -39,7 +39,7 @@
 .cardHeading {
   font-size: 16px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #1a1a1a;
   margin: 0 0 16px 0;
 }
 
@@ -59,14 +59,14 @@
 
 .metaLabel {
   font-size: 12px;
-  color: #6A7282;
+  color: #6a7282;
   margin: 0;
 }
 
 .metaValue {
   font-size: 14px;
   /* font-weight: 600; */
-  color: #1A1A1A;
+  color: #1a1a1a;
   margin: 0;
 }
 
@@ -85,7 +85,7 @@
 
 .progressLabel {
   font-size: 12px;
-  color: #6A7282;
+  color: #6a7282;
 }
 
 .progressPercent {
@@ -96,7 +96,7 @@
 .progressBar {
   width: 100%;
   height: 6px;
-  background: #E5E7EB;
+  background: #e5e7eb;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -115,8 +115,8 @@
 }
 
 .colCard {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 20px;
 }
@@ -146,7 +146,7 @@
 .viewAll {
   text-decoration: none;
   font-size: 13px;
-  color: #0D3CCF;
+  color: #0d3ccf;
 }
 
 /* ── Deadline list ── */
@@ -160,8 +160,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 12px 14px;
 }
@@ -177,7 +177,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1.5px solid #0D3CCF;
+  border: 1.5px solid #0d3ccf;
   background: transparent;
   display: flex;
   align-items: center;
@@ -194,7 +194,7 @@
 
 .deadlineDue {
   font-size: 11px;
-  color: #6A7282;
+  color: #6a7282;
   margin: 0;
 }
 
@@ -214,7 +214,7 @@
 .announcementItem {
   display: flex;
   gap: 12px;
-  background: #EFF6FF;
+  background: #eff6ff;
   border-radius: 10px;
   padding: 12px 14px;
 }
@@ -222,7 +222,7 @@
 .annIcon {
   width: 30px;
   height: 30px;
-  background: #DBEAFE;
+  background: #dbeafe;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -246,7 +246,7 @@
 
 .annSubtitle {
   font-size: 12px;
-  color: #6A7282;
+  color: #6a7282;
   margin: 0;
 }
 
@@ -259,7 +259,7 @@
 
 .annTime {
   font-size: 11px;
-  color: #0D3CCF;
+  color: #0d3ccf;
   font-weight: 500;
 }
 
@@ -272,12 +272,76 @@
   padding: 30px 16px;
   gap: 8px;
   text-align: center;
-  border: 1px dashed #E5E7EB;
+  border: 1px dashed #e5e7eb;
   border-radius: 10px;
 }
 
 .emptyText {
   font-size: 12px;
-  color: #6A7282;
+  color: #6a7282;
   margin: 0;
+}
+
+/* Add these to the BOTTOM of your existing StudDashboard.module.css */
+
+/* Error state */
+.errorState {
+  text-align: center;
+  padding: 60px 24px;
+  color: #dc2626;
+  font-size: 14px;
+  background: #fef2f2;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+}
+
+/* Skeleton placeholders */
+.skeletonCard {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+}
+
+.skeletonBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+/* Clickable deadline row (for assignment deadlines) */
+.deadlineClickable {
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 8px;
+  margin: 0 -8px;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.deadlineClickable:hover {
+  background: #eff6ff;
+}
+
+/* View project button */
+.viewProjectBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 7px 14px;
+  background: #eff6ff;
+  color: #0d3ccf;
+  border: 1px solid #bfdbfe;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.viewProjectBtn:hover {
+  background: #dbeafe;
 }

@@ -34,11 +34,6 @@ const meetingSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-
-    room: {
-      type: String,
-      trim: true,
-    },
   },
   {
     timestamps: true,

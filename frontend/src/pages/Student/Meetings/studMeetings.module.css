@@ -376,3 +376,48 @@
   margin: 0;
   line-height: 1.5;
 }
+/* Cleaner action buttons for meeting cards */
+
+.cardActionIcons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.iconBtn,
+.iconBtnDanger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+/* Edit button (blue pencil) */
+.iconBtn {
+  color: #2563eb;
+}
+
+/* Delete button (red bin) */
+.iconBtnDanger {
+  color: #dc2626;
+}
+
+/* Hover effects */
+.iconBtn:hover,
+.iconBtnDanger:hover {
+  transform: scale(1.12);
+  opacity: 0.85;
+}
+
+/* Optional active press effect */
+.iconBtn:active,
+.iconBtnDanger:active {
+  transform: scale(0.95);
+}

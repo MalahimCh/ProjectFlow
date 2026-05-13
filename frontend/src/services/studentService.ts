@@ -86,3 +86,91 @@ export type IncomingRequest = {
   status: "pending" | "accepted" | "rejected";
   createdAt: string;
 };
+
+/* ── Get student's meetings ───────────────────────── */
+export const getStudentMeetings = async () => {
+  const res = await api.get("meetings/student");
+  return res.data?.data ?? { project: null, meetings: [] };
+};
+
+/* ── Create meeting ───────────────────────────────── */
+export const createStudentMeeting = async (payload: {
+  title: string;
+  description?: string;
+  scheduledAt: string;
+  meetingUrl?: string;
+}) => {
+  const res = await api.post("meetings/student", payload);
+  return res.data;
+};
+
+/* ── Update meeting ───────────────────────────────── */
+export const updateMeeting = async (
+  meetingId: string,
+  payload: {
+    title?: string;
+    description?: string;
+    scheduledAt?: string;
+    meetingUrl?: string;
+  },
+) => {
+  const res = await api.put(`/meetings/${meetingId}`, payload);
+  return res.data;
+};
+
+/* ── Delete meeting ───────────────────────────────── */
+export const deleteMeeting = async (meetingId: string) => {
+  const res = await api.delete(`/meetings/${meetingId}`);
+  return res.data;
+};
+
+export interface DashboardDeadline {
+  id: string;
+  title: string;
+  due: string;
+  dueAt: string;
+  daysLeft: number;
+  type: "global" | "assignment";
+  assignmentId?: string;
+  projectId?: string;
+}
+
+export interface DashboardAnnouncement {
+  id: string;
+  title: string;
+  body: string;
+  postedAt: string;
+  createdAt: string;
+}
+
+export interface DashboardData {
+  hasProject: boolean;
+  student: { rollNumber: string };
+  project: {
+    id: string;
+    title: string;
+    domain: string;
+    status: string;
+    supervisor: string;
+    supervisorEmail: string;
+    team: string[];
+    progress: number;
+  } | null;
+  stats: {
+    progress: number;
+    pendingTasks: number;
+    meetings: number;
+  };
+  deadlines: DashboardDeadline[];
+  announcements: DashboardAnnouncement[];
+}
+
+export const fetchStudentDashboard = (): Promise<DashboardData> =>
+  api.get("/student/dashboard").then((r) => r.data.data);
+
+// frontend usage
+export const getStudentProjectId = async (): Promise<string> => {
+  const res = await api.get("/student/project-id");
+  console.log(res);
+  return res.data.data.projectId;
+};

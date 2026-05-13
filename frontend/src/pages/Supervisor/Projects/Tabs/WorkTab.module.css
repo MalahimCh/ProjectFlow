@@ -1,0 +1,124 @@
+/* WorkTab.module.css */
+.workSections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted, #9ca3af);
+  font-size: 13.5px;
+}
+
+.openBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary, #6366f1);
+  background: none;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #e5e7eb);
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.openBtn:hover {
+  background: #ede9fe;
+  border-color: var(--primary, #6366f1);
+}
+
+.assignmentList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.assignmentRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.assignmentRow:hover {
+  background: var(--hover-bg, #f9fafb);
+}
+
+.assignIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: #fef3c7;
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.assignInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.assignTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+  margin: 0 0 3px;
+}
+
+.dueLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.overdue {
+  color: #dc2626;
+}
+
+.assignRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
+.green {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.gray {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.chevron {
+  color: var(--text-secondary, #9ca3af);
+}

@@ -147,9 +147,6 @@ const SRequests: FC = () => {
               <div className={styles.emptyState}>
                 <LuInbox size={28} color="#D1D5DB" />
                 <p className={styles.emptyText}>No pending requests</p>
-                <p className={styles.emptySub}>
-                  New group supervision requests will appear here.
-                </p>
               </div>
             )}
 

@@ -12,6 +12,10 @@ import {
   getMyGroup,
   getIncomingRequests,
 } from "../controllers/Student/GroupController.js";
+import {
+  getStudentDashboard,
+  getStudentProjectId,
+} from "../controllers/Student/StudDashboardController.js";
 
 import { sendSupervisorRequest } from "../controllers/Student/supervisorRequestController.js";
 
@@ -19,8 +23,10 @@ const router = express.Router();
 
 // dashboard + profile
 router.get("/init-dashboard", authenticate, getInitDashboard);
+router.get("/dashboard", authenticate, getStudentDashboard);
 router.post("/student-profile", authenticate, createStudentProfile);
 
+router.get("/project-id", authenticate, getStudentProjectId);
 // discovery
 router.get("/find-team", authenticate, getAllStudentProfiles);
 router.get("/find-supervisor", authenticate, getAllSupervisors);

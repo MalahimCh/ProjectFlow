@@ -3,10 +3,12 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-
+import meetingRoutes from "./routes/meetingRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import studentRoutes from "./routes/StudRoutes.js";
 import supervisorRoutes from "./routes/SRoutes.js";
+
+import streamRoutes from "./routes/streamRoutes.js";
 import {
   notFoundHandler,
   globalErrorHandler,
@@ -53,6 +55,9 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/student", studentRoutes);
 app.use("/api/supervisor", supervisorRoutes);
+app.use("/api/meetings", meetingRoutes);
+
+app.use("/api/projects/:projectId", streamRoutes);
 
 // Error handlers
 app.use(notFoundHandler);

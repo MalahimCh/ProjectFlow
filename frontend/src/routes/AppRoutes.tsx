@@ -28,7 +28,6 @@ import PendingRequest from "../pages/Student/PendingRequest/PendingRequest";
 
 import StudDashboard from "../pages/Student/Dashboard/StudDashboard";
 import StudMeetings from "../pages/Student/Meetings/studMeetings";
-import StudProject from "../pages/Student/Project/StudProject";
 
 // Coordinator pages
 import CoordDashboard from "../pages/Coordinator/Dashboard/CoordDashboard";
@@ -38,6 +37,7 @@ import CoordEvaluations from "../pages/Coordinator/Evaluations/CoordEvaluations"
 import CoordWorkload from "../pages/Coordinator/Workload/CoordWorkload";
 import CoordProjects from "../pages/Coordinator/Projects/CoordProjects";
 
+import AssignmentDetail from "../pages/Supervisor/Projects/Tabs/AssignmentDetail";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -52,7 +52,6 @@ const AppRoutes = () => {
         <Route path="/repository" element={<Repository />} />
         <Route path="/setup-profile" element={<SetupProfilePage />} />
       </Route>
-
       {/* ================= Student Routes ================= */}
       <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
         {/* Initial group-formation flow */}
@@ -61,12 +60,18 @@ const AppRoutes = () => {
         <Route path="/student/findsupervisor" element={<FindSupervisor />} />
         <Route path="/student/requests" element={<PendingRequest />} />
 
+        <Route
+          path="/student/projects/:projectId"
+          element={<ProjectDetails role="student" />}
+        />
+        <Route
+          path="/student/projects/:projectId/assignments/:assignmentId"
+          element={<AssignmentDetail role="student" />}
+        />
         {/* Full project dashboard */}
         <Route path="/student/dashboard" element={<StudDashboard />} />
         <Route path="/student/meetings" element={<StudMeetings />} />
-        <Route path="/student/project" element={<StudProject />} />
       </Route>
-
       {/* ================= Supervisor Routes ================= */}
       <Route element={<ProtectedRoute allowedRoles={["supervisor"]} />}>
         <Route path="/supervisor/dashboard" element={<SDashboard />} />
@@ -74,11 +79,14 @@ const AppRoutes = () => {
         <Route path="/supervisor/meetings" element={<SMeetings />} />
         <Route path="/supervisor/requests" element={<SRequests />} />
         <Route
-          path="/supervisor/projects/:projectId"
-          element={<ProjectDetails />}
+          path="/projects/:projectId"
+          element={<ProjectDetails role="supervisor" />}
+        />
+        <Route
+          path="/projects/:projectId/assignments/:assignmentId"
+          element={<AssignmentDetail role="supervisor" />}
         />
       </Route>
-
       {/* ================= Coordinator Routes ================= */}
       <Route element={<ProtectedRoute allowedRoles={["coordinator"]} />}>
         <Route path="/coordinator/dashboard" element={<CoordDashboard />} />
@@ -88,10 +96,8 @@ const AppRoutes = () => {
         <Route path="/coordinator/evaluations" element={<CoordEvaluations />} />
         <Route path="/coordinator/workload" element={<CoordWorkload />} />
       </Route>
-
       {/* ================= Unauthorized ================= */}
       <Route path="/unauthorized" element={<div>Unauthorized Access</div>} />
-
       {/* ================= Fallback ================= */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

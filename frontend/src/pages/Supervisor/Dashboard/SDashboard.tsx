@@ -1,115 +1,29 @@
 import SSidebar from "../Sidebar/Ssidebar";
-import { type FC, useState } from "react";
-import { Link } from "react-router-dom";
+import { type FC, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./SDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuBookOpen, LuCircleCheck, LuClock, LuTriangleAlert, LuFlag } from "react-icons/lu"
+import {
+  LuUsers,
+  LuMessageSquareText,
+  LuCalendar,
+  LuUserCheck,
+  LuBookOpen,
+  LuCircleCheck,
+  LuClock,
+  LuTriangleAlert,
+  LuFlag,
+} from "react-icons/lu";
+import {
+  fetchSupervisorDashboard,
+  type SupervisorDashboardData,
+  type ActiveProject,
+  type UpcomingDeadline,
+  type UpcomingMeeting,
+} from "../../../services/supervisorService";
 
-export const formatSmartDateTime = (isoString: string) => {
-  const date = new Date(isoString);
-  const today = new Date();
-
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
-
-  const isToday = date.toDateString() === today.toDateString();
-  const isTomorrow = date.toDateString() === tomorrow.toDateString();
-
-  // time part
-  const time = date.toLocaleTimeString("en-PK", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  // base date label
-  let dateLabel: string;
-
-  if (isToday) {
-    dateLabel = "Today";
-  } else if (isTomorrow) {
-    dateLabel = "Tomorrow";
-  } else {
-    dateLabel = date.toLocaleDateString("en-PK", {
-      day: "numeric",
-      month: "short",
-    });
-  }
-
-  return {
-    label: dateLabel, // Today / Tomorrow / 22 Apr
-    time,             // 03:00 PM
-    fullDate: date,   // optional raw Date object
-  };
-};
-
-
-const dashboardView = {
-  activeGroups: [
-    {
-      groupName: "AI Project Team",
-      progress: 65,
-    },
-    {
-      groupName: "Web Dev FYP",
-      progress: 40,
-    },
-    {
-      groupName: "Database Systems Group",
-      progress: 80,
-    },
-    {
-      groupName: "Flex Clone",
-      progress: 72,
-    },
-  ],
-
-  upcomingMeetings: [
-    {
-      meetingType: "Sprint Review",
-      projectName: "AI Project",
-      datetime: "2026-04-25T15:00:00.000Z",
-    },
-    {
-      meetingType: "Client Discussion",
-      projectName: "Web Dev FYP",
-      datetime: "2026-04-27T11:00:00.000Z",
-    },
-    {
-      meetingType: "Team Sync",
-      projectName: "Database Systems",
-      datetime: "2026-04-28T17:30:00.000Z",
-    },
-    {
-      meetingType: "Design Review",
-      projectName: "AI Project",
-      datetime: "2026-04-30T14:00:00.000Z",
-    },
-  ],
-
-  upcomingDeadlines: [
-    {
-      deadlineType: "UI Prototype",
-      projectName: "Web Dev FYP",
-      datetime: "2026-04-25T06:59:00.000Z",
-    },
-    {
-      deadlineType: "Report Submission",
-      projectName: "AI Project",
-      datetime: "2026-04-25T00:00:00.000Z",
-    },
-    {
-      deadlineType: "Database Schema Finalization",
-      projectName: "Database Systems",
-      datetime: "2026-04-26T00:00:00.000Z",
-    },
-    {
-      deadlineType: "Final Presentation Slides",
-      projectName: "AI Project",
-      datetime: "2026-04-30T00:00:00.000Z",
-    },
-  ],
-};
+/* ── Helpers ───────────────────────────────────────────────── */
 
 const getProgressColor = (progress: number) => {
   if (progress < 50) return "#DC2626";
@@ -117,163 +31,280 @@ const getProgressColor = (progress: number) => {
   return "#16A34A";
 };
 
-const getUpcomingWithinWeek = (items: any[]) => {
+interface DeadlineStyled extends UpcomingDeadline {
+  dueLabel: string;
+  status: "urgent" | "normal";
+}
+
+interface MeetingStyled extends UpcomingMeeting {
+  dueLabel: string;
+}
+
+const styleDeadline = (item: UpcomingDeadline): DeadlineStyled => {
   const now = new Date();
+  const rawDate = new Date(item.datetime);
+  const diffMs = rawDate.getTime() - now.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  return items
-    .map((item) => {
-      const rawDate = new Date(item.datetime);
+  const timeString = rawDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-      const diffMs = rawDate.getTime() - now.getTime();
+  let dueLabel = "";
+  let status: "urgent" | "normal" = "normal";
 
-      // If already passed → don't show
-      if (diffMs <= 0) return null;
+  if (diffDays === 0) {
+    dueLabel = `Due Today at ${timeString}`;
+    status = "urgent";
+  } else if (diffDays === 1) {
+    dueLabel = `Due Tomorrow at ${timeString}`;
+    status = "urgent";
+  } else {
+    dueLabel = `Due in ${diffDays} days`;
+    status = "normal";
+  }
 
-      const diffDays = Math.floor(
-        diffMs / (1000 * 60 * 60 * 24)
-      );
-
-      // Only within next 7 days
-      if (diffDays > 6) return null;
-
-      const timeString = rawDate.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      let label = "";
-
-      if (diffDays === 0) {
-        label = `Due Today at ${timeString}`;
-      } else if (diffDays === 1) {
-        label = `Due Tomorrow at ${timeString}`;
-      } else {
-        label = `Due in ${diffDays} days`;
-      }
-
-      return { ...item, dueLabel: label, diffDays };
-    })
-    .filter(Boolean)
-    .sort((a, b) => a.diffDays - b.diffDays);
+  return { ...item, dueLabel, status };
 };
 
-const getUpcomingDeadlinesStyled = (items: any[]) => {
+const styleMeeting = (item: UpcomingMeeting): MeetingStyled => {
   const now = new Date();
+  const rawDate = new Date(item.datetime);
+  const diffMs = rawDate.getTime() - now.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  return items
-    .map((item) => {
-      const rawDate = new Date(item.datetime);
-      const diffMs = rawDate.getTime() - now.getTime();
+  const timeString = rawDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-      if (diffMs <= 0) return null;
+  let dueLabel = "";
 
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) {
+    dueLabel = `Today at ${timeString}`;
+  } else if (diffDays === 1) {
+    dueLabel = `Tomorrow at ${timeString}`;
+  } else {
+    dueLabel = `In ${diffDays} days at ${timeString}`;
+  }
 
-      if (diffDays > 6) return null;
-
-      const timeString = rawDate.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      let label = "";
-      let status = "";
-
-      if (diffDays === 0) {
-        label = `Due Today at ${timeString}`;
-        status = "urgent";
-      } else if (diffDays === 1) {
-        label = `Due Tomorrow at ${timeString}`;
-        status = "urgent";
-      } else {
-        label = `Due in ${diffDays} days`;
-        status = "normal";
-      }
-
-      return { ...item, dueLabel: label, status };
-    })
-    .filter(Boolean);
+  return { ...item, dueLabel };
 };
+
+/* ── Skeleton ──────────────────────────────────────────────── */
+const Skeleton = ({
+  width = "100%",
+  height = "16px",
+  radius = "6px",
+}: {
+  width?: string;
+  height?: string;
+  radius?: string;
+}) => (
+  <div
+    style={{
+      width,
+      height,
+      borderRadius: radius,
+      background: "linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%)",
+      backgroundSize: "200% 100%",
+      animation: "shimmer 1.4s infinite",
+    }}
+  />
+);
+
+/* ── Component ─────────────────────────────────────────────── */
 
 const SDashboard: FC = () => {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [data, setData] = useState<SupervisorDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const deadlines = getUpcomingDeadlinesStyled(dashboardView.upcomingDeadlines);
-  const meetings = getUpcomingWithinWeek(dashboardView.upcomingMeetings);
+  useEffect(() => {
+    fetchSupervisorDashboard()
+      .then(setData)
+      .catch(() => setError("Failed to load dashboard. Please refresh."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  console.log("Dashboard data:", data);
+  const stats = data?.stats ?? {
+    activeGroups: 0,
+    pendingRequests: 0,
+    upcomingMeetings: 0,
+    totalStudents: 0,
+  };
+
+  const activeProjects: ActiveProject[] = data?.activeProjects ?? [];
+
+  const deadlines: DeadlineStyled[] = (data?.upcomingDeadlines ?? []).map(
+    styleDeadline,
+  );
+
+  const meetings: MeetingStyled[] = (data?.upcomingMeetings ?? []).map(
+    styleMeeting,
+  );
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+        <div className={styles.main}>
+          <Header title="Dashboard" subtitle="Welcome back" />
+          <div className={styles.content}>
+            <div className={styles.errorState}>{error}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
       <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
+      <style>{`@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+
       <div className={styles.main}>
-        <Header
-          title="Dashboard"
-          subtitle="Welcome back, Muhammad Kamran"
-          userName="Junaid Hussain"
-          userId="CO2024001"
-        />
+        <Header title="Dashboard" subtitle="Welcome back" />
 
         <div className={styles.content}>
+          {/* ── Stats ── */}
           <div className={styles.statsGrid}>
-            <StatsCard value={2} label="Active Groups" icon={<LuUsers />} bgColor="#EFF6FF" iconColor="#0D3CCF"/>
-            <StatsCard value={3} label="Pending Requests" icon={<LuMessageSquareText />} bgColor="#FEF2F2" iconColor="#DC2626"/>
-            <StatsCard value={0} label="Upcoming Meetings" icon={<LuCalendar />} bgColor="#F0FDF4" iconColor="#16A34A"/>
-            <StatsCard value={6} label="Total Students" icon={<LuUserCheck />} bgColor="#FFF7ED" iconColor="#F59E0B"/>
+            {loading ? (
+              <>
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className={styles.skeletonCard}>
+                    <Skeleton height="80px" />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <StatsCard
+                  value={stats.activeGroups}
+                  label="Active Groups"
+                  icon={<LuUsers />}
+                  bgColor="#EFF6FF"
+                  iconColor="#0D3CCF"
+                />
+                <StatsCard
+                  value={stats.pendingRequests}
+                  label="Pending Requests"
+                  icon={<LuMessageSquareText />}
+                  bgColor="#FEF2F2"
+                  iconColor="#DC2626"
+                />
+                <StatsCard
+                  value={stats.upcomingMeetings}
+                  label="Upcoming Meetings"
+                  icon={<LuCalendar />}
+                  bgColor="#F0FDF4"
+                  iconColor="#16A34A"
+                />
+                <StatsCard
+                  value={stats.totalStudents}
+                  label="Total Students"
+                  icon={<LuUserCheck />}
+                  bgColor="#FFF7ED"
+                  iconColor="#F59E0B"
+                />
+              </>
+            )}
           </div>
 
+          {/* ── Active Projects ── */}
           <div className={styles.section}>
-                <div className={styles.projectsTopLine}>
-                  <p className={styles.sectionTitle}>Active Projects</p>
-                  <Link to="/supervisor/projects" className={styles.viewAll}>
-                    View All &gt;
-                  </Link>
-                </div>
-                <div className={styles.projectsGrid}>
-                  {dashboardView.activeGroups.map((project, idx) => (
-                    <div key={idx} className={styles.projectCard}>
-                      <div className={styles.cardIcons}>
-                        <div className={styles.bookIconWrapper}>
-                          <LuBookOpen className={styles.bookIcon}/>
-                        </div>
-                        <div className={styles.tickIconWrapper}>
-                          <LuCircleCheck className={styles.tickIcon}/>
-                        </div>
-                      </div>
+            <div className={styles.projectsTopLine}>
+              <p className={styles.sectionTitle}>Active Projects</p>
+              <Link to="/supervisor/projects" className={styles.viewAll}>
+                View All &gt;
+              </Link>
+            </div>
 
-                      <div className={styles.projectName}>
-                        <p>{project.groupName}</p>
+            {loading ? (
+              <div className={styles.projectsGrid}>
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className={styles.projectCard}>
+                    <Skeleton height="100px" />
+                  </div>
+                ))}
+              </div>
+            ) : activeProjects.length === 0 ? (
+              <div className={styles.emptyState}>
+                <LuBookOpen className={styles.emptyIcon} />
+                <p className={styles.emptyText}>No active projects yet</p>
+              </div>
+            ) : (
+              <div className={styles.projectsGrid}>
+                {activeProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className={styles.projectCard}
+                    onClick={() =>
+                      navigate(`/supervisor/projects/${project.id}`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className={styles.cardIcons}>
+                      <div className={styles.bookIconWrapper}>
+                        <LuBookOpen className={styles.bookIcon} />
                       </div>
-
-                      <div className={styles.progressHeader}>
-                          <p className={styles.progressText}>Progress</p>
-                          <p className={styles.progressPercent}>{project.progress}%</p>
-                      </div>
-
-                      <div className={styles.progressBar}>
-                        <div className={styles.progressFill}
-                          style={{
-                            width: `${project.progress}%`,
-                            backgroundColor: getProgressColor(project.progress),
-                          }}
-                        />
+                      <div className={styles.tickIconWrapper}>
+                        <LuCircleCheck className={styles.tickIcon} />
                       </div>
                     </div>
-                  ))}
-                </div>
+
+                    <div className={styles.projectName}>
+                      <p>{project.projectTitle}</p>
+                    </div>
+
+                    <div className={styles.progressHeader}>
+                      <p className={styles.progressText}>Progress</p>
+                      <p className={styles.progressPercent}>
+                        {project.progress}%
+                      </p>
+                    </div>
+
+                    <div className={styles.progressBar}>
+                      <div
+                        className={styles.progressFill}
+                        style={{
+                          width: `${project.progress}%`,
+                          backgroundColor: getProgressColor(project.progress),
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* ── Two column: Deadlines + Meetings ── */}
           <div className={styles.twoColumnSection}>
+            {/* Deadlines */}
             <div className={styles.column}>
               <p className={styles.sectionTitle}>Upcoming Deadlines</p>
-              {deadlines.length === 0 ? (
+
+              {loading ? (
+                <div className={styles.skeletonBlock}>
+                  <Skeleton height="80px" radius="10px" />
+                  <Skeleton height="80px" radius="10px" />
+                  <Skeleton height="80px" radius="10px" />
+                </div>
+              ) : deadlines.length === 0 ? (
                 <div className={styles.emptyState}>
                   <LuFlag className={styles.emptyIcon} />
                   <p className={styles.emptyText}>No upcoming deadlines</p>
                 </div>
               ) : (
-                deadlines.map((item, idx) => (
+                deadlines.map((item) => (
                   <div
-                    key={idx}
+                    key={item.id}
                     className={`${styles.taskCard} ${
                       item.status === "urgent"
                         ? styles.taskCardUrgent
@@ -288,9 +319,13 @@ const SDashboard: FC = () => {
                           <LuFlag className={styles.iconNormal} />
                         )}
                       </div>
-                      <div className={styles.taskTitle}>{item.deadlineType}</div>
+                      <div className={styles.taskTitle}>
+                        {item.deadlineType}
+                      </div>
                     </div>
-                    <div className={styles.taskSub}>{item.projectName}</div>
+                    {item.description && (
+                      <div className={styles.taskSub}>{item.description}</div>
+                    )}
                     <div
                       className={
                         item.status === "urgent"
@@ -298,7 +333,9 @@ const SDashboard: FC = () => {
                           : styles.taskMetaNormal
                       }
                     >
-                      <div><LuClock /></div>
+                      <div>
+                        <LuClock />
+                      </div>
                       <div>{item.dueLabel}</div>
                     </div>
                   </div>
@@ -306,32 +343,62 @@ const SDashboard: FC = () => {
               )}
             </div>
 
+            {/* Meetings */}
             <div className={styles.column}>
               <div className={styles.projectsTopLine}>
-                  <p className={styles.sectionTitle}>Upcoming Meetings</p>
-                  <Link to="/supervisor/meetings" className={styles.viewAll}>
-                    View All &gt;
-                  </Link>
+                <p className={styles.sectionTitle}>Upcoming Meetings</p>
+                <Link to="/supervisor/meetings" className={styles.viewAll}>
+                  View All &gt;
+                </Link>
               </div>
-              {meetings.length === 0 ? (
+
+              {loading ? (
+                <div className={styles.skeletonBlock}>
+                  <Skeleton height="80px" radius="10px" />
+                  <Skeleton height="80px" radius="10px" />
+                  <Skeleton height="80px" radius="10px" />
+                </div>
+              ) : meetings.length === 0 ? (
                 <div className={styles.emptyState}>
                   <LuCalendar className={styles.emptyIcon} />
                   <p className={styles.emptyText}>No upcoming meetings</p>
                 </div>
               ) : (
-                meetings.map((item, idx) => (
-                  <div key={idx} className={styles.taskCard}>
+                meetings.map((item) => (
+                  <div
+                    key={item.id}
+                    className={styles.taskCard}
+                    style={item.projectId ? { cursor: "pointer" } : {}}
+                    onClick={() => {
+                      if (item.projectId) {
+                        navigate(`/supervisor/projects/${item.projectId}`);
+                      }
+                    }}
+                  >
                     <div className={styles.meetingTop}>
                       <div className={styles.meetingIcon}>
-                        <LuCalendar/>
+                        <LuCalendar />
                       </div>
                       <div className={styles.taskTitle}>{item.meetingType}</div>
                     </div>
                     <div className={styles.taskSub}>{item.projectName}</div>
                     <div className={styles.meetingTime}>
-                      <div><LuClock/></div>
+                      <div>
+                        <LuClock />
+                      </div>
                       <div>{item.dueLabel}</div>
                     </div>
+                    {item.meetingUrl && (
+                      <a
+                        href={item.meetingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.joinLink}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Join Meeting →
+                      </a>
+                    )}
                   </div>
                 ))
               )}

@@ -2,6 +2,8 @@ import SupervisorRequest from "../../database/models/supervisorRequest.model.js"
 import Group from "../../database/models/group.model.js";
 import GroupMember from "../../database/models/groupMember.model.js";
 
+import Project from "../../database/models/project.model.js";
+
 /* ─────────────────────────────────────────────
    2. GET ALL REQUESTS FOR SUPERVISOR
 ──────────────────────────────────────────── */
@@ -72,43 +74,108 @@ export const getSupervisorRequests = async (req, res) => {
 
 /* ─────────────────────────────────────────────
    3. ACCEPT REQUEST
+   - Accepts supervisor request
+   - Assigns supervisor to group
+   - Creates Project automatically
+   - Rejects all other pending requests
 ──────────────────────────────────────────── */
 export const acceptSupervisorRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
 
+    // Find request
     const request = await SupervisorRequest.findById(requestId);
+
     if (!request) {
-      return res.status(404).json({ message: "Request not found" });
+      return res.status(404).json({
+        message: "Request not found",
+      });
     }
 
+    // Authorization check
     if (request.supervisor.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+      return res.status(403).json({
+        message: "Not authorized",
+      });
     }
 
-    // Update request status
+    // Prevent re-processing
+    if (request.status === "accepted") {
+      return res.status(400).json({
+        message: "Request already accepted",
+      });
+    }
+
+    // Get group
+    const group = await Group.findById(request.group);
+
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+
+    /* ─────────────────────────────────────────
+       1. ACCEPT THIS REQUEST
+    ───────────────────────────────────────── */
     request.status = "accepted";
     await request.save();
 
-    // Assign supervisor to group
-    const group = await Group.findById(request.group);
+    /* ─────────────────────────────────────────
+       2. UPDATE GROUP
+    ───────────────────────────────────────── */
     group.supervisor = request.supervisor;
     group.status = "completed";
     await group.save();
 
-    // Reject other pending requests for same group
+    /* ─────────────────────────────────────────
+       3. REJECT OTHER PENDING REQUESTS
+    ───────────────────────────────────────── */
     await SupervisorRequest.updateMany(
       {
         group: request.group,
-        _id: { $ne: request.id },
+        _id: { $ne: request._id },
         status: "pending",
       },
-      { status: "rejected" },
+      {
+        status: "rejected",
+      },
     );
 
+    /* ─────────────────────────────────────────
+       4. CREATE PROJECT AUTOMATICALLY
+    ───────────────────────────────────────── */
+    const existingProject = await Project.findOne({
+      group: request.group,
+    });
+
+    let project = existingProject;
+
+    if (!existingProject) {
+      project = await Project.create({
+        group: request.group,
+        supervisor: request.supervisor,
+
+        // Data copied from SupervisorRequest
+        title: request.fypName || "Untitled FYP",
+        description: request.fypDescription || "",
+        domain: "",
+
+        // Default status
+        status: "proposal",
+      });
+    }
+
+    /* ─────────────────────────────────────────
+       RESPONSE
+    ───────────────────────────────────────── */
     return res.status(200).json({
-      message: "Request accepted successfully",
-      data: request,
+      message: "Request accepted and project created successfully",
+      data: {
+        request,
+        group,
+        project,
+      },
     });
   } catch (error) {
     return res.status(500).json({
