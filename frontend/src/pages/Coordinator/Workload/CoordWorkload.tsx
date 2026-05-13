@@ -127,8 +127,6 @@ const CoordWorkload: FC = () => {
         <Header
           title="Supervisor Workload"
           subtitle="Monitor supervisor capacity and assigned projects"
-          userName="Junaid Hussain"
-          userId="CO2024001"
         />
 
         <div className={styles.content}>
