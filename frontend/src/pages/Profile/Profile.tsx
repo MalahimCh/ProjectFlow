@@ -1,9 +1,11 @@
 // Profile.tsx
-import { type FC, useState } from "react";
+import { type FC, useState, useEffect } from "react";
 import CoordSidebar from "../Coordinator/Sidebar/CoordSidebar";
 import SSidebar from "../Supervisor/Sidebar/Ssidebar";
 import StudSidebar from "../Student/Sidebar/StudSidebar";
 import Header from "../../components/Header/Header";
+import EditProfileModal from "./editProfileModal";
+import ResetPasswordModal from "./resetPasswordModal";
 import {
   LuMail,
   LuPhone,
@@ -12,33 +14,157 @@ import {
   LuUser,
   LuBriefcase,
   LuPencil,
+  LuLock,
+  LuMapPin,
+  LuGraduationCap,
+  LuTag,
+  LuLoader,
 } from "react-icons/lu";
 import styles from "./Profile.module.css";
+import {
+  fetchProfile,
+  updateProfile,
+  type Profile as ProfileData,
+  type StudentProfile,
+  type SupervisorProfile,
+} from "../../services/profileService";
 
-type UserRole = "coordinator" | "supervisor" | "student";
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function getRoleLabel(role: string): string {
+  switch (role) {
+    case "student":
+      return "Student";
+    case "supervisor":
+      return "Supervisor";
+    case "coordinator":
+      return "FYP Coordinator";
+    default:
+      return role;
+  }
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+interface InfoItemProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number | null | undefined;
+}
+
+const InfoItem: FC<InfoItemProps> = ({ icon, label, value }) => (
+  <div className={styles.infoItem}>
+    {icon}
+    <div>
+      <span>{label}</span>
+      <p>{value ?? "—"}</p>
+    </div>
+  </div>
+);
+
+// ─── Role-specific info panels ───────────────────────────────────────────────
+
+const StudentInfoPanel: FC<{ profile: StudentProfile; onEdit: () => void }> = ({
+  profile,
+  onEdit,
+}) => (
+  <div className={styles.card}>
+    <div className={styles.cardHeader}>
+      <h3>Academic Information</h3>
+      <button className={styles.iconButton} onClick={onEdit} title="Edit">
+        <LuPencil />
+      </button>
+    </div>
+    <div className={styles.infoList}>
+      <InfoItem
+        icon={<LuIdCard />}
+        label="Roll Number"
+        value={profile.rollNumber}
+      />
+      <InfoItem icon={<LuGraduationCap />} label="GPA" value={profile.gpa} />
+      <InfoItem
+        icon={<LuBuilding2 />}
+        label="Batch Year"
+        value={profile.batchYear}
+      />
+      <InfoItem
+        icon={<LuTag />}
+        label="Interests"
+        value={profile.interests?.length ? profile.interests.join(", ") : null}
+      />
+    </div>
+  </div>
+);
+
+const SupervisorInfoPanel: FC<{
+  profile: SupervisorProfile;
+  onEdit: () => void;
+}> = ({ profile, onEdit }) => (
+  <div className={styles.card}>
+    <div className={styles.cardHeader}>
+      <h3>Professional Information</h3>
+      <button className={styles.iconButton} onClick={onEdit} title="Edit">
+        <LuPencil />
+      </button>
+    </div>
+    <div className={styles.infoList}>
+      <InfoItem
+        icon={<LuUser />}
+        label="Designation"
+        value={profile.designation}
+      />
+      <InfoItem
+        icon={<LuBriefcase />}
+        label="Specialization"
+        value={profile.specialization}
+      />
+      <InfoItem
+        icon={<LuTag />}
+        label="Interests"
+        value={profile.interests?.length ? profile.interests.join(", ") : null}
+      />
+      <InfoItem
+        icon={<LuIdCard />}
+        label="Active Supervisions"
+        value={profile.workload}
+      />
+    </div>
+  </div>
+);
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 const Profile: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
-  // Change this value to test different sidebars
-  const role: UserRole = "supervisor";
+  useEffect(() => {
+    fetchProfile()
+      .then(setProfile)
+      .catch((err) => setFetchError(err.message ?? "Failed to load profile."))
+      .finally(() => setLoading(false));
+  }, []);
 
-  // Hardcoded user data
-  const profileData = {
-    fullName: "Junaid Hussain",
-    role: "FYP Coordinator",
-    department: "Computer Science",
-    email: "junaid.hussain@nu.edu.pk",
-    phone: "+92 300 1234567",
-    rollNumber: "CO2024001",
-    bio: "Responsible for overseeing Final Year Projects, assigning supervisors, and ensuring smooth project coordination across departments.",
-    specialization:
-      "Software Engineering, Project Management, Educational Systems",
-    office: "Block A, Room 204",
-    joined: "August 2021",
+  const handleSave = async (payload: Partial<ProfileData>) => {
+    const updated = await updateProfile(payload);
+    setProfile(updated);
   };
 
   const renderSidebar = () => {
+    const role = profile?.role ?? "student";
     switch (role) {
       case "student":
         return (
@@ -54,6 +180,31 @@ const Profile: FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.main}>
+          <div className={styles.loadingState}>
+            <LuLoader className={styles.spinner} />
+            <p>Loading profile…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchError || !profile) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.main}>
+          <div className={styles.errorState}>
+            <p>{fetchError ?? "Profile unavailable."}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       {renderSidebar()}
@@ -62,136 +213,105 @@ const Profile: FC = () => {
         <Header
           title="Profile"
           subtitle="View and manage your personal information"
-          userName={profileData.fullName}
-          userId={profileData.rollNumber}
         />
 
         <div className={styles.content}>
-          {/* Top Profile Card */}
+          {/* ── Top Profile Card ── */}
           <div className={styles.profileCard}>
-            <div className={styles.avatar}>
-              {profileData.fullName
-                .split(" ")
-                .map((name) => name[0])
-                .join("")
-                .slice(0, 2)}
-            </div>
+            <div className={styles.avatar}>{getInitials(profile.name)}</div>
 
             <div className={styles.profileInfo}>
-              <h2>{profileData.fullName}</h2>
-              <p>{profileData.role}</p>
-              <span>{profileData.department}</span>
+              <h2>{profile.name}</h2>
+              <p>{getRoleLabel(profile.role)}</p>
+              <span>{profile.department ?? "—"}</span>
             </div>
 
-            <button className={styles.editButton}>
-              <LuPencil />
-              Edit Profile
-            </button>
+            <div className={styles.profileActions}>
+              <button
+                className={styles.editButton}
+                onClick={() => setShowEditModal(true)}
+              >
+                <LuPencil />
+                Edit Profile
+              </button>
+              <button
+                className={styles.passwordButton}
+                onClick={() => setShowPasswordModal(true)}
+              >
+                <LuLock />
+                Reset Password
+              </button>
+            </div>
           </div>
 
-          {/* Information Grid */}
+          {/* ── Info Grid ── */}
           <div className={styles.infoGrid}>
-            {/* Personal Information */}
+            {/* Personal / Contact Info — shared for all roles */}
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3>Personal Information</h3>
-                <button className={styles.iconButton}>
+                <button
+                  className={styles.iconButton}
+                  onClick={() => setShowEditModal(true)}
+                  title="Edit"
+                >
                   <LuPencil />
                 </button>
               </div>
-
               <div className={styles.infoList}>
-                <div className={styles.infoItem}>
-                  <LuMail />
-                  <div>
-                    <span>Email</span>
-                    <p>{profileData.email}</p>
-                  </div>
-                </div>
-
-                <div className={styles.infoItem}>
-                  <LuPhone />
-                  <div>
-                    <span>Phone</span>
-                    <p>{profileData.phone}</p>
-                  </div>
-                </div>
-
-                <div className={styles.infoItem}>
-                  <LuIdCard />
-                  <div>
-                    <span>Roll Number</span>
-                    <p>{profileData.rollNumber}</p>
-                  </div>
-                </div>
-
-                <div className={styles.infoItem}>
-                  <LuBuilding2 />
-                  <div>
-                    <span>Department</span>
-                    <p>{profileData.department}</p>
-                  </div>
-                </div>
+                <InfoItem
+                  icon={<LuMail />}
+                  label="Email"
+                  value={profile.email}
+                />
+                <InfoItem
+                  icon={<LuPhone />}
+                  label="Phone"
+                  value={profile.phone}
+                />
+                <InfoItem
+                  icon={<LuBuilding2 />}
+                  label="Department"
+                  value={profile.department}
+                />
+                <InfoItem
+                  icon={<LuMapPin />}
+                  label="Address"
+                  value={profile.address}
+                />
               </div>
             </div>
 
-            {/* Professional Information */}
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3>Professional Information</h3>
-                <button className={styles.iconButton}>
-                  <LuPencil />
-                </button>
-              </div>
+            {/* Role-specific panel */}
+            {profile.role === "student" && (
+              <StudentInfoPanel
+                profile={profile as StudentProfile}
+                onEdit={() => setShowEditModal(true)}
+              />
+            )}
 
-              <div className={styles.infoList}>
-                <div className={styles.infoItem}>
-                  <LuUser />
-                  <div>
-                    <span>Role</span>
-                    <p>{profileData.role}</p>
-                  </div>
-                </div>
-
-                <div className={styles.infoItem}>
-                  <LuBriefcase />
-                  <div>
-                    <span>Specialization</span>
-                    <p>{profileData.specialization}</p>
-                  </div>
-                </div>
-
-                <div className={styles.infoItem}>
-                  <LuBuilding2 />
-                  <div>
-                    <span>Office</span>
-                    <p>{profileData.office}</p>
-                  </div>
-                </div>
-
-                <div className={styles.infoItem}>
-                  <LuIdCard />
-                  <div>
-                    <span>Joined</span>
-                    <p>{profileData.joined}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* About Section */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h3>About</h3>
-              <button className={styles.iconButton}>
-                <LuPencil />
-              </button>
-            </div>
-            <p className={styles.bio}>{profileData.bio}</p>
+            {profile.role === "supervisor" && (
+              <SupervisorInfoPanel
+                profile={profile as SupervisorProfile}
+                onEdit={() => setShowEditModal(true)}
+              />
+            )}
           </div>
         </div>
       </div>
+
+      {/* ── Modals ── */}
+      {showEditModal && (
+        <EditProfileModal
+          profile={profile}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleSave}
+        />
+      )}
+
+      {showPasswordModal && (
+        <ResetPasswordModal onClose={() => setShowPasswordModal(false)} />
+      )}
     </div>
   );
 };

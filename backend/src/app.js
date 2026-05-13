@@ -7,6 +7,7 @@ import meetingRoutes from "./routes/meetingRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import studentRoutes from "./routes/StudRoutes.js";
 import supervisorRoutes from "./routes/SRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 
 import streamRoutes from "./routes/streamRoutes.js";
 import {
@@ -58,7 +59,7 @@ app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/meetings", meetingRoutes);
 
 app.use("/api/projects/:projectId", streamRoutes);
-
+app.use("/api/profile", profileRoutes);
 // Error handlers
 app.use(notFoundHandler);
 app.use(globalErrorHandler);
