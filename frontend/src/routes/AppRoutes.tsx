@@ -8,7 +8,6 @@ import SignUpPage from "../pages/SignUp/SignUpPage";
 import SignInPage from "../pages/SignIn/SignInPage";
 
 // Shared pages (authenticated users only)
-import Settings from "../pages/Settings/Settings";
 import Profile from "../pages/Profile/Profile";
 import Repository from "../pages/Repository/Repository";
 import SetupProfilePage from "../pages/SetupProfile/SetupProfile";
@@ -48,7 +47,6 @@ const AppRoutes = () => {
       {/* ================= Shared Authenticated Routes ================= */}
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
         <Route path="/repository" element={<Repository />} />
         <Route path="/setup-profile" element={<SetupProfilePage />} />
       </Route>

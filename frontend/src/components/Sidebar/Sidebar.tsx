@@ -2,13 +2,7 @@ import type { FunctionComponent } from "react";
 import type { MenuItem } from "./types";
 import styles from "./Sidebar.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  LuLogOut,
-  LuSettings,
-  LuMenu,
-  LuUser,
-  LuGraduationCap,
-} from "react-icons/lu";
+import { LuLogOut, LuMenu, LuUser, LuGraduationCap } from "react-icons/lu";
 
 type SidebarProps = {
   menuItems: MenuItem[];
@@ -75,17 +69,6 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
         >
           <LuUser size={18} />
           <span>{!collapsed && "Profile"}</span>
-        </div>
-
-        <div
-          title={collapsed ? "Settings" : ""}
-          className={`${styles.menuItem} ${
-            location.pathname === "/settings" ? styles.active : ""
-          }`}
-          onClick={() => navigate("/settings")}
-        >
-          <LuSettings size={18} />
-          <span>{!collapsed && "Settings"}</span>
         </div>
 
         <div title={collapsed ? "Logout" : ""} className={styles.logout}>
