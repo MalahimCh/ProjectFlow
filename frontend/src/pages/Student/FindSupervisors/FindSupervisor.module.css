@@ -168,6 +168,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .searchInner input {
@@ -177,6 +178,7 @@
   font-size: 13px;
   color: #111827;
   background: transparent;
+  min-width: 0;
 }
 
 .searchInner input::placeholder {
@@ -186,7 +188,7 @@
 /* ── Grid ────────────────────────────────────────────── */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 16px;
 }
 
@@ -239,7 +241,6 @@
   text-overflow: ellipsis;
 }
 
-/* designation + dept tag on same row */
 .subRow {
   display: flex;
   align-items: center;
@@ -253,7 +254,6 @@
   font-weight: 400;
 }
 
-/* Department tag — blue pill like in screenshot */
 .deptTag {
   font-size: 11.5px;
   font-weight: 600;
@@ -280,6 +280,9 @@
 .infoText {
   font-size: 13px;
   color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .infoLabel {
@@ -298,7 +301,6 @@
   gap: 5px;
 }
 
-/* Specialization tags — blue */
 .tag {
   background: #eff6ff;
   color: #0d3ccf;
@@ -309,7 +311,6 @@
   border-radius: 6px;
 }
 
-/* Interest tags — neutral gray-blue to distinguish from specialization */
 .tagInterest {
   background: #f3f4f6;
   color: #374151;
@@ -375,6 +376,11 @@
   background: #0b32b0;
 }
 
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ── Empty state ─────────────────────────────────────── */
 .emptyState {
   display: flex;
@@ -399,6 +405,7 @@
   margin: 0;
 }
 
+/* ── Modal ───────────────────────────────────────────── */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -408,6 +415,8 @@
   justify-content: center;
   z-index: 100;
   backdrop-filter: blur(2px);
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .modalBox {
@@ -494,6 +503,8 @@
   resize: vertical;
   font-family: inherit;
   transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .fieldInput:focus,
@@ -545,4 +556,42 @@
 .submitBtn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* ── Tablet (768px – 1024px) ── */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .content {
+    padding: 20px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+  .content {
+    padding: 16px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topBar {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .barDivider {
+    display: none;
+  }
+
+  .searchInner {
+    width: 100%;
+    order: -1;
+  }
 }

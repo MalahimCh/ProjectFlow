@@ -19,11 +19,10 @@
   overflow-y: auto;
 }
 
-/* ── Top bar (filter + search) ───────────────────────── */
+/* ── Top bar ─────────────────────────────────────────── */
 .topBar {
   display: flex;
   align-items: center;
-  gap: 0;
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -86,7 +85,6 @@
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 0;
   width: 248px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   overflow: hidden;
@@ -191,6 +189,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .searchInner input {
@@ -200,6 +199,7 @@
   font-size: 13px;
   color: #111827;
   background: transparent;
+  min-width: 0;
 }
 
 .searchInner input::placeholder {
@@ -224,7 +224,6 @@
   gap: 0;
 }
 
-/* Card top row */
 .cardTop {
   display: flex;
   align-items: center;
@@ -258,6 +257,9 @@
   font-weight: 600;
   color: #111827;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .subRow {
@@ -279,14 +281,12 @@
   border-radius: 6px;
 }
 
-/* Divider */
 .divider {
   height: 1px;
   background: #f3f4f6;
   margin-bottom: 12px;
 }
 
-/* Info blocks */
 .infoBlock {
   margin-bottom: 10px;
 }
@@ -304,7 +304,6 @@
   margin: 0;
 }
 
-/* Interest tags */
 .tags {
   display: flex;
   gap: 6px;
@@ -320,7 +319,6 @@
   border-radius: 6px;
 }
 
-/* Send Request button */
 .button {
   margin-top: 12px;
   width: 100%;
@@ -336,10 +334,16 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
+  transition: background 0.15s;
 }
 
 .button:hover {
   background: #0b32b0;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ── Empty state ─────────────────────────────────────── */
@@ -379,6 +383,43 @@
   border-radius: 999px;
   background: #eef2ff;
   color: #4f46e5;
-  margin-left: 8px;
   white-space: nowrap;
+}
+
+/* ── Tablet (768px – 1024px) ── */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .content {
+    padding: 20px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+  .content {
+    padding: 16px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topBar {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .barDivider {
+    display: none;
+  }
+
+  .searchInner {
+    width: 100%;
+    order: -1;
+  }
 }

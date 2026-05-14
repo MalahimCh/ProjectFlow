@@ -3,16 +3,12 @@
   height: 100vh;
   background: #f6f9ff;
 }
-.page {
-  width: 100%;
-  max-width: 1100px;
-  display: flex;
-  flex-direction: column;
-}
+
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .content {
@@ -20,9 +16,15 @@
   padding: 30px;
   background: #f6f9ff;
   overflow-y: auto;
-
   display: flex;
   justify-content: center;
+}
+
+.page {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* LIST */
@@ -30,6 +32,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  margin-top: 10px;
 }
 
 /* CARD */
@@ -80,6 +83,7 @@
   background: #fff7ed;
   color: #d97706;
   border: 1px solid #fed7aa;
+  white-space: nowrap;
 }
 
 /* BODY */
@@ -179,17 +183,64 @@
   cursor: not-allowed;
 }
 
-.requestList {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 10px;
-}
-
+/* EMPTY / ERROR */
 .emptyState {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   margin-top: 40px;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.retryBtn {
+  margin-top: 4px;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #0d3ccf;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.retryBtn:hover {
+  background: #0b34b0;
+}
+
+/* ── Tablet (768px – 1024px) ── */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .content {
+    padding: 20px;
+  }
+}
+
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+  .content {
+    padding: 16px;
+  }
+
+  .requestCard {
+    padding: 14px;
+  }
+
+  .groupName {
+    font-size: 13px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .approve,
+  .reject {
+    width: 100%;
+  }
 }

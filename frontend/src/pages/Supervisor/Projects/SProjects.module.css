@@ -8,6 +8,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .content {
@@ -26,7 +27,6 @@
   align-content: start;
 }
 
-/* Section wrapper — matches .request in SRequests */
 .sectionHeader {
   background: #fffffd;
   border: 1px solid #e5e7eb;
@@ -42,7 +42,6 @@
   margin: 0 0 16px 0;
 }
 
-/* Matches .requestTitle */
 .title {
   font-size: 16px;
   font-weight: 600;
@@ -50,7 +49,6 @@
   margin: 0;
 }
 
-/* Matches .requestCountText */
 .activeBadge {
   font-size: 12px;
   color: #0d3ccf;
@@ -66,7 +64,6 @@
   gap: 16px;
 }
 
-/* Matches .requestCard */
 .projectCard {
   background: #ffffff;
   padding: 16px;
@@ -83,7 +80,6 @@
   align-items: center;
 }
 
-/* Matches .userIcon */
 .groupIcon {
   font-size: 16px;
   color: #0d3ccf;
@@ -109,7 +105,6 @@
   color: #6a7282;
 }
 
-/* Matches .projectName in SRequests */
 .projectName {
   font-size: 14px;
   font-weight: 600;
@@ -118,7 +113,6 @@
   min-height: 36px;
 }
 
-/* Deadline box — uses same blue tint as studentSection / requestCount */
 .deadlineBox {
   background: #eff6ff;
   border-radius: 8px;
@@ -145,7 +139,6 @@
   flex: 1;
 }
 
-/* Matches .studentSection pill */
 .daysBadge {
   font-size: 10px;
   font-weight: 500;
@@ -161,7 +154,6 @@
   margin: 0;
 }
 
-/* Progress — sits at bottom of card */
 .progressContainer {
   margin-top: auto;
 }
@@ -191,7 +183,6 @@
   text-align: right;
 }
 
-/* Matches .proposalButton feel but as a link-style button */
 .viewDetails {
   background: none;
   border: none;
@@ -206,9 +197,6 @@
   text-decoration: underline;
 }
 
-/* Append to the bottom of SProjects.module.css */
-
-/* Skeleton */
 .skeletonCard {
   border-radius: 10px;
   overflow: hidden;
@@ -217,7 +205,6 @@
   padding: 16px;
 }
 
-/* Error state */
 .errorState {
   text-align: center;
   padding: 40px 24px;
@@ -229,7 +216,6 @@
   margin-bottom: 16px;
 }
 
-/* Empty state */
 .emptyState {
   display: flex;
   flex-direction: column;
@@ -256,10 +242,44 @@
   text-align: center;
 }
 
-/* No deadline placeholder inside card */
 .noDeadline {
   font-size: 12px;
   color: #9ca3af;
   padding: 8px 0;
   font-style: italic;
+}
+
+/* ── Tablet (768px – 1024px) ── */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .content {
+    padding: 20px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .projectGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+  .content {
+    padding: 16px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .projectGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 14px;
+  }
 }

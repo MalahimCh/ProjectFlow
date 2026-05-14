@@ -19,12 +19,14 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   leftIcon?: FC<{ className?: string }>;
   rightIcon?: FC<{ className?: string }>;
+  error?: string;
 }
 
 const InputField: FC<InputProps> = ({
   label,
   leftIcon: LeftIcon,
   type,
+  error,
   ...inputProps
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +35,7 @@ const InputField: FC<InputProps> = ({
   return (
     <div className={styles.field}>
       <label className={styles.label}>{label}</label>
-      <div className={styles.inputContainer}>
+      <div className={`${styles.inputContainer} ${error ? styles.inputError : ""}`}>
         {LeftIcon && <LeftIcon className={styles.icon} />}
         <input
           className={styles.input}
@@ -56,9 +58,18 @@ const InputField: FC<InputProps> = ({
             />
           ))}
       </div>
+      {error && <span className={styles.fieldError}>{error}</span>}
     </div>
   );
 };
+
+interface FieldErrors {
+  name?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  terms?: string;
+}
 
 const SignUpPage: FC = () => {
   const navigate = useNavigate();
@@ -70,28 +81,67 @@ const SignUpPage: FC = () => {
     confirmPassword: "",
   });
 
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [error, setError] = useState<string>("");
   const [agreeTerms, setAgreeTerms] = useState<boolean>(false);
 
   const handleChange = (field: keyof SignUpFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+    if (error) setError("");
+  };
+
+  const handleTermsChange = (checked: boolean) => {
+    setAgreeTerms(checked);
+    if (fieldErrors.terms) {
+      setFieldErrors((prev) => ({ ...prev, terms: undefined }));
+    }
+    if (error) setError("");
+  };
+
+  const validateName = (name: string): string | undefined => {
+    if (!name.trim()) return "Full name is required";
+    if (name.trim().length < 2) return "Name must be at least 2 characters";
+    return undefined;
+  };
+
+  const validateEmail = (email: string): string | undefined => {
+    if (!email.trim()) return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return "Please enter a valid email address";
+    return undefined;
+  };
+
+  const validatePassword = (password: string): string | undefined => {
+    if (!password) return "Password is required";
+    if (password.length < 6) return "Password must be at least 6 characters";
+    return undefined;
+  };
+
+  const validateConfirmPassword = (
+    confirmPassword: string,
+    password: string
+  ): string | undefined => {
+    if (!confirmPassword) return "Please confirm your password";
+    if (confirmPassword !== password) return "Passwords do not match";
+    return undefined;
   };
 
   const validate = (): boolean => {
-    if (!formData.name || !formData.email || !formData.password) {
-      setError("All fields are required");
-      return false;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return false;
-    }
-    if (!agreeTerms) {
-      setError("You must agree to the terms and conditions");
-      return false;
-    }
-    setError("");
-    return true;
+    const errors: FieldErrors = {
+      name: validateName(formData.name),
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password),
+      confirmPassword: validateConfirmPassword(
+        formData.confirmPassword,
+        formData.password
+      ),
+      terms: !agreeTerms ? "You must agree to the terms and conditions" : undefined,
+    };
+    setFieldErrors(errors);
+    return !Object.values(errors).some(Boolean);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,6 +162,7 @@ const SignUpPage: FC = () => {
       setError(error.response?.data?.message || "Registration failed");
     }
   };
+
   return (
     <div className={styles.signupPage}>
       <Header />
@@ -164,13 +215,14 @@ const SignUpPage: FC = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form onSubmit={handleSubmit} className={styles.form} noValidate>
             <InputField
               label="Full Name"
               name="name"
               leftIcon={LuUser}
               value={formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
+              error={fieldErrors.name}
             />
             <InputField
               label="Email"
@@ -179,6 +231,7 @@ const SignUpPage: FC = () => {
               leftIcon={LuMail}
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
+              error={fieldErrors.email}
             />
             <InputField
               label="Password"
@@ -187,6 +240,7 @@ const SignUpPage: FC = () => {
               leftIcon={LuLock}
               value={formData.password}
               onChange={(e) => handleChange("password", e.target.value)}
+              error={fieldErrors.password}
             />
             <InputField
               label="Confirm Password"
@@ -195,21 +249,27 @@ const SignUpPage: FC = () => {
               leftIcon={LuLock}
               value={formData.confirmPassword}
               onChange={(e) => handleChange("confirmPassword", e.target.value)}
+              error={fieldErrors.confirmPassword}
             />
 
-            <div className={styles.terms}>
-              <input
-                type="checkbox"
-                checked={agreeTerms}
-                onChange={(e) => setAgreeTerms(e.target.checked)}
-                id="terms"
-              />
-              <label htmlFor="terms">
-                I agree to the{" "}
-                <span className={styles.termsAndConditions}>
-                  terms and conditions
-                </span>
-              </label>
+            <div className={styles.termsWrapper}>
+              <div className={styles.terms}>
+                <input
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={(e) => handleTermsChange(e.target.checked)}
+                  id="terms"
+                />
+                <label htmlFor="terms">
+                  I agree to the{" "}
+                  <span className={styles.termsAndConditions}>
+                    terms and conditions
+                  </span>
+                </label>
+              </div>
+              {fieldErrors.terms && (
+                <span className={styles.fieldError}>{fieldErrors.terms}</span>
+              )}
             </div>
 
             {error && (

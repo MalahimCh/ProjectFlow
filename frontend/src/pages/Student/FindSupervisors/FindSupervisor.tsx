@@ -55,9 +55,12 @@ const getWorkloadColor = (load: number, max: number): string => {
   return "#DC2626";
 };
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 /* ================= COMPONENT ================= */
 const FindSupervisor: FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [search, setSearch] = useState("");
   const [availableOnly, setAvailableOnly] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -74,6 +77,14 @@ const FindSupervisor: FC = () => {
   const [message, setMessage] = useState("");
 
   const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) setCollapsed(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   /* ── fetch group ── */
   useEffect(() => {
@@ -145,25 +156,15 @@ const FindSupervisor: FC = () => {
     setModal({ supervisorId, supervisorName });
   };
 
-  const closeModal = () => {
-    setModal(null);
-  };
+  const closeModal = () => setModal(null);
 
   const handleSendRequest = async () => {
     if (!modal || !groupId) return;
-
-    if (!fypName.trim()) {
-      alert("FYP title is required");
-      return;
-    }
-    if (!fypDescription.trim()) {
-      alert("FYP description is required");
-      return;
-    }
+    if (!fypName.trim()) { alert("FYP title is required"); return; }
+    if (!fypDescription.trim()) { alert("FYP description is required"); return; }
 
     try {
       setSendingId(modal.supervisorId);
-
       await sendSupervisorRequest(
         groupId,
         modal.supervisorId,
@@ -171,7 +172,6 @@ const FindSupervisor: FC = () => {
         fypDescription.trim(),
         message.trim() || undefined,
       );
-
       alert("Request sent successfully");
       closeModal();
     } catch (err: any) {
@@ -185,15 +185,27 @@ const FindSupervisor: FC = () => {
   /* ── early returns ── */
   if (loading)
     return (
-      <div className={styles.emptyState}>
-        <p>Loading supervisors...</p>
+      <div className={styles.container}>
+        <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+        <div className={styles.main}>
+          <Header title="Find Supervisor" subtitle="Select a supervisor for your FYP guidance" />
+          <div className={styles.content}>
+            <div className={styles.emptyState}><p>Loading supervisors...</p></div>
+          </div>
+        </div>
       </div>
     );
 
   if (error)
     return (
-      <div className={styles.emptyState}>
-        <p>{error}</p>
+      <div className={styles.container}>
+        <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+        <div className={styles.main}>
+          <Header title="Find Supervisor" subtitle="Select a supervisor for your FYP guidance" />
+          <div className={styles.content}>
+            <div className={styles.emptyState}><p>{error}</p></div>
+          </div>
+        </div>
       </div>
     );
 
@@ -219,9 +231,7 @@ const FindSupervisor: FC = () => {
                 <LuFilter size={14} />
                 Filter
                 {activeFilterCount > 0 && (
-                  <span className={styles.filterBadge}>
-                    {activeFilterCount}
-                  </span>
+                  <span className={styles.filterBadge}>{activeFilterCount}</span>
                 )}
                 <LuChevronDown size={13} />
               </button>
@@ -234,9 +244,7 @@ const FindSupervisor: FC = () => {
                       className={styles.filterOption}
                       onClick={() => setAvailableOnly((p) => !p)}
                     >
-                      <div
-                        className={`${styles.checkbox} ${availableOnly ? styles.checkboxActive : ""}`}
-                      >
+                      <div className={`${styles.checkbox} ${availableOnly ? styles.checkboxActive : ""}`}>
                         {availableOnly && <LuCheck size={10} />}
                       </div>
                       <span>Available slots only</span>
@@ -269,84 +277,54 @@ const FindSupervisor: FC = () => {
             <div className={styles.emptyState}>
               <LuSearch size={28} color="#D1D5DB" />
               <p className={styles.emptyText}>No supervisors found</p>
-              <p className={styles.emptySub}>
-                Try adjusting your search or filters.
-              </p>
+              <p className={styles.emptySub}>Try adjusting your search or filters.</p>
             </div>
           ) : (
             <div className={styles.grid}>
               {filtered.map((s) => {
                 const barColor = getWorkloadColor(s.workload, s.maxLoad);
-
                 return (
                   <div key={s.id} className={styles.card}>
-                    {/* TOP: avatar + name + designation + dept tag */}
                     <div className={styles.cardTop}>
                       <div className={styles.avatar}>{getInitials(s.name)}</div>
                       <div className={styles.cardMeta}>
                         <p className={styles.name}>{s.name}</p>
                         <div className={styles.subRow}>
-                          <span className={styles.designation}>
-                            {s.designation}
-                          </span>
+                          <span className={styles.designation}>{s.designation}</span>
                           {s.department && (
-                            <span className={styles.deptTag}>
-                              {s.department}
-                            </span>
+                            <span className={styles.deptTag}>{s.department}</span>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    {/* EMAIL */}
                     <div className={styles.infoRow}>
                       <LuMail size={13} className={styles.infoIcon} />
                       <span className={styles.infoText}>{s.email}</span>
                     </div>
 
-                    {/* SPECIALIZATION */}
                     {s.specialization.length > 0 && (
-                      <div
-                        className={styles.infoRow}
-                        style={{ alignItems: "flex-start" }}
-                      >
-                        <LuGraduationCap
-                          size={13}
-                          className={styles.infoIcon}
-                          style={{ marginTop: 2 }}
-                        />
+                      <div className={styles.infoRow} style={{ alignItems: "flex-start" }}>
+                        <LuGraduationCap size={13} className={styles.infoIcon} style={{ marginTop: 2 }} />
                         <div>
                           <p className={styles.infoLabel}>Specialization</p>
                           <div className={styles.tags}>
                             {s.specialization.map((sp, i) => (
-                              <span key={i} className={styles.tag}>
-                                {sp}
-                              </span>
+                              <span key={i} className={styles.tag}>{sp}</span>
                             ))}
                           </div>
                         </div>
                       </div>
                     )}
 
-                    {/* INTERESTS */}
                     {s.interests.length > 0 && (
-                      <div
-                        className={styles.infoRow}
-                        style={{ alignItems: "flex-start" }}
-                      >
-                        <LuBrain
-                          size={13}
-                          className={styles.infoIcon}
-                          style={{ marginTop: 2 }}
-                        />
+                      <div className={styles.infoRow} style={{ alignItems: "flex-start" }}>
+                        <LuBrain size={13} className={styles.infoIcon} style={{ marginTop: 2 }} />
                         <div>
                           <p className={styles.infoLabel}>Interests</p>
                           <div className={styles.tags}>
                             {s.interests.map((interest, i) => (
-                              <span
-                                key={i}
-                                className={`${styles.tag} ${styles.tagInterest}`}
-                              >
+                              <span key={i} className={`${styles.tag} ${styles.tagInterest}`}>
                                 {interest}
                               </span>
                             ))}
@@ -355,16 +333,10 @@ const FindSupervisor: FC = () => {
                       </div>
                     )}
 
-                    {/* WORKLOAD */}
                     <div className={styles.workloadRow}>
                       <LuUsers size={13} className={styles.infoIcon} />
-                      <span className={styles.workloadLabel}>
-                        Current Workload
-                      </span>
-                      <span
-                        className={styles.workloadCount}
-                        style={{ color: barColor }}
-                      >
+                      <span className={styles.workloadLabel}>Current Workload</span>
+                      <span className={styles.workloadCount} style={{ color: barColor }}>
                         {s.workload}/{s.maxLoad}
                       </span>
                     </div>
@@ -402,9 +374,7 @@ const FindSupervisor: FC = () => {
             <div className={styles.modalHeader}>
               <div>
                 <p className={styles.modalTitle}>Request Supervisor</p>
-                <p className={styles.modalSub}>
-                  Sending to {modal.supervisorName}
-                </p>
+                <p className={styles.modalSub}>Sending to {modal.supervisorName}</p>
               </div>
               <button className={styles.modalClose} onClick={closeModal}>
                 <LuX size={16} />
@@ -412,7 +382,6 @@ const FindSupervisor: FC = () => {
             </div>
 
             <div className={styles.modalBody}>
-              {/* FYP Title */}
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>
                   FYP Title <span className={styles.required}>*</span>
@@ -426,7 +395,6 @@ const FindSupervisor: FC = () => {
                 />
               </div>
 
-              {/* FYP Description */}
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>
                   FYP Description <span className={styles.required}>*</span>
@@ -440,7 +408,6 @@ const FindSupervisor: FC = () => {
                 />
               </div>
 
-              {/* Optional Message */}
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>
                   Message <span className={styles.optional}>(optional)</span>
@@ -456,9 +423,7 @@ const FindSupervisor: FC = () => {
             </div>
 
             <div className={styles.modalFooter}>
-              <button className={styles.cancelBtn} onClick={closeModal}>
-                Cancel
-              </button>
+              <button className={styles.cancelBtn} onClick={closeModal}>Cancel</button>
               <button
                 className={styles.submitBtn}
                 onClick={handleSendRequest}

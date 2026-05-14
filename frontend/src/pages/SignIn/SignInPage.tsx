@@ -19,12 +19,14 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   leftIcon?: FC<{ className?: string }>;
   rightIcon?: FC<{ className?: string }>;
+  error?: string;
 }
 
 const InputField: FC<InputProps> = ({
   label,
   leftIcon: LeftIcon,
   type,
+  error,
   ...inputProps
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +35,7 @@ const InputField: FC<InputProps> = ({
   return (
     <div className={styles.field}>
       <label className={styles.label}>{label}</label>
-      <div className={styles.inputContainer}>
+      <div className={`${styles.inputContainer} ${error ? styles.inputError : ""}`}>
         {LeftIcon && <LeftIcon className={styles.icon} />}
         <input
           className={styles.input}
@@ -56,9 +58,17 @@ const InputField: FC<InputProps> = ({
             />
           ))}
       </div>
+      {error && (
+        <span className={styles.fieldError}>{error}</span>
+      )}
     </div>
   );
 };
+
+interface FieldErrors {
+  email?: string;
+  password?: string;
+}
 
 const SignInPage: FC = () => {
   const navigate = useNavigate();
@@ -68,20 +78,39 @@ const SignInPage: FC = () => {
     password: "",
   });
 
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [error, setError] = useState<string>("");
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleChange = (field: keyof SignInFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear field error on change
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+    if (error) setError("");
+  };
+
+  const validateEmail = (email: string): string | undefined => {
+    if (!email.trim()) return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return "Please enter a valid email address";
+    return undefined;
+  };
+
+  const validatePassword = (password: string): string | undefined => {
+    if (!password) return "Password is required";
+    if (password.length < 6) return "Password must be at least 6 characters";
+    return undefined;
   };
 
   const validate = (): boolean => {
-    if (!formData.email || !formData.password) {
-      setError("All fields are required");
-      return false;
-    }
-    setError("");
-    return true;
+    const errors: FieldErrors = {
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password),
+    };
+    setFieldErrors(errors);
+    return !errors.email && !errors.password;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -152,7 +181,7 @@ const SignInPage: FC = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form onSubmit={handleSubmit} className={styles.form} noValidate>
             <InputField
               label="Email"
               name="email"
@@ -160,6 +189,7 @@ const SignInPage: FC = () => {
               leftIcon={LuMail}
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
+              error={fieldErrors.email}
             />
             <InputField
               label="Password"
@@ -168,6 +198,7 @@ const SignInPage: FC = () => {
               leftIcon={LuLock}
               value={formData.password}
               onChange={(e) => handleChange("password", e.target.value)}
+              error={fieldErrors.password}
             />
 
             <div className={styles.optionsRow}>
@@ -198,7 +229,7 @@ const SignInPage: FC = () => {
             </button>
 
             <div className={styles.loginRedirect}>
-              <span>Dont have an account? </span>
+              <span>Don't have an account? </span>
               <Link to="/" className={styles.signInHere}>
                 Sign up here
               </Link>

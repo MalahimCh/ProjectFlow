@@ -2,7 +2,7 @@ import SSidebar from "../Sidebar/Ssidebar";
 import { type FC, useState, useEffect, useCallback } from "react";
 import styles from "./SRequests.module.css";
 import Header from "../../../components/Header/Header";
-import { LuCalendar, LuCircleCheck, LuCircleX, LuInbox } from "react-icons/lu";
+import { LuCalendar, LuInbox } from "react-icons/lu";
 
 import {
   getSupervisorRequests,
@@ -38,29 +38,36 @@ const formatDate = (iso: string) =>
     year: "numeric",
   }).format(new Date(iso));
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 /* ── component ───────────────────────────────── */
 const SRequests: FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [requests, setRequests] = useState<SupervisorRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [acting, setActing] = useState<
     Record<string, "accepting" | "rejecting">
   >({});
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) setCollapsed(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   /* ── fetch requests ── */
   const fetchRequests = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-
       const data = await getSupervisorRequests();
-
       const pendingRequests = (data ?? []).filter(
         (r: SupervisorRequest) => r.status === "pending",
       );
-
       setRequests(pendingRequests);
     } catch (err) {
       console.error(err);
@@ -77,7 +84,6 @@ const SRequests: FC = () => {
   /* ── accept ── */
   const handleAccept = async (req: SupervisorRequest) => {
     setActing((prev) => ({ ...prev, [req.id]: "accepting" }));
-
     try {
       await acceptSupervisorRequest(req.id);
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
@@ -96,7 +102,6 @@ const SRequests: FC = () => {
   /* ── reject ── */
   const handleReject = async (req: SupervisorRequest) => {
     setActing((prev) => ({ ...prev, [req.id]: "rejecting" }));
-
     try {
       await rejectSupervisorRequest(req.id);
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
@@ -166,7 +171,6 @@ const SRequests: FC = () => {
                             {formatDate(r.createdAt)}
                           </p>
                         </div>
-
                         <span className={styles.badge}>Pending</span>
                       </div>
 
@@ -202,15 +206,14 @@ const SRequests: FC = () => {
                         <button
                           className={styles.approve}
                           onClick={() => handleAccept(r)}
-                          disabled={!!acting[r.id]}
+                          disabled={!!busy}
                         >
                           Approve
                         </button>
-
                         <button
                           className={styles.reject}
                           onClick={() => handleReject(r)}
-                          disabled={!!acting[r.id]}
+                          disabled={!!busy}
                         >
                           Reject
                         </button>

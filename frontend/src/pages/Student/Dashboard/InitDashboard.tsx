@@ -1,5 +1,5 @@
 import InitSidebar from "../Sidebar/InitSidebar";
-import { type FC, useState } from "react";
+import { type FC, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./InitDashboard.module.css";
 import Header from "../../../components/Header/Header";
@@ -14,15 +14,22 @@ import {
   LuUserPlus,
 } from "react-icons/lu";
 
-import { useEffect } from "react";
-
-/* ================= COMPONENT ================= */
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
 
 const InitDashboard: FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) setCollapsed(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -35,23 +42,18 @@ const InitDashboard: FC = () => {
         setLoading(false);
       }
     };
-
     fetchDashboard();
   }, []);
 
   if (loading || !dashboardData) {
     return <div>Loading dashboard...</div>;
   }
+
   console.log("Dashboard Data:", dashboardData);
 
-  /* ================= EXTRACT DATA ================= */
-
   const { stats, group, supervisor } = dashboardData;
-
   const members = group.members;
   const maxMembers = group.maxMembers;
-
-  /* ================= DERIVED STATE ================= */
 
   const groupCount = members.length;
   const remainingMembers = maxMembers - groupCount;
@@ -67,28 +69,14 @@ const InitDashboard: FC = () => {
       ? "Pending"
       : "Accepted";
 
-  /* ================= ACTION HANDLERS ================= */
-
-  const handleFindTeamMembers = () => {
-    navigate("/student/findteam");
-  };
-
-  const handleRequestSupervisor = () => {
-    navigate("/student/findsupervisor");
-  };
-
-  const handleSubmitGroup = () => {
-    navigate("/student/dashboard");
-  };
-
-  /* ================= BANNER CONTENT ================= */
+  const handleFindTeamMembers = () => navigate("/student/findteam");
+  const handleRequestSupervisor = () => navigate("/student/findsupervisor");
+  const handleSubmitGroup = () => navigate("/student/dashboard");
 
   const bannerConfig = !isGroupComplete
     ? {
         title: "Complete Your Group",
-        subtitle: `You need ${remainingMembers} more member${
-          remainingMembers > 1 ? "s" : ""
-        } to complete your group.`,
+        subtitle: `You need ${remainingMembers} more member${remainingMembers > 1 ? "s" : ""} to complete your group.`,
         buttonText: "Find Team Members",
         buttonClass: styles.action,
         buttonDisabled: false,
@@ -139,14 +127,13 @@ const InitDashboard: FC = () => {
       <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div className={styles.main}>
-        {/* ================= HEADER ================= */}
         <Header
           title="Dashboard"
           subtitle="A quick overview of your project progress."
         />
 
         <div className={styles.content}>
-          {/* ================= STATS ================= */}
+          {/* ── Stats ── */}
           <div className={styles.statsGrid}>
             <StatsCard
               value={`${groupCount} / ${maxMembers}`}
@@ -155,7 +142,6 @@ const InitDashboard: FC = () => {
               bgColor="#EFF6FF"
               iconColor="#0D3CCF"
             />
-
             <StatsCard
               value={stats.pendingRequests}
               label="Pending Requests"
@@ -163,7 +149,6 @@ const InitDashboard: FC = () => {
               bgColor="#FEF2F2"
               iconColor="#DC2626"
             />
-
             <StatsCard
               value={supervisorStatus}
               label="Supervisor Status"
@@ -173,22 +158,18 @@ const InitDashboard: FC = () => {
             />
           </div>
 
-          {/* ================= STATUS BANNER ================= */}
-          <div
-            className={`${styles.completeGroup} ${bannerConfig.containerClass}`}
-          >
+          {/* ── Status Banner ── */}
+          <div className={`${styles.completeGroup} ${bannerConfig.containerClass}`}>
             <div className={styles.row}>
               <div className={styles.left}>
                 <span className={`${styles.icon} ${bannerConfig.iconClass}`}>
                   {bannerConfig.icon}
                 </span>
-
                 <div>
                   <p className={styles.title}>{bannerConfig.title}</p>
                   <p className={styles.subtitle}>{bannerConfig.subtitle}</p>
                 </div>
               </div>
-
               <button
                 className={bannerConfig.buttonClass}
                 disabled={bannerConfig.buttonDisabled}
@@ -199,13 +180,12 @@ const InitDashboard: FC = () => {
             </div>
           </div>
 
-          {/* ================= GROUP CARD ================= */}
+          {/* ── Group Card ── */}
           {groupCount > 0 && (
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <p className={styles.cardHeading}>My Group</p>
               </div>
-
               <div className={styles.memberList}>
                 {[...members, ...Array(maxMembers - groupCount).fill(null)].map(
                   (member, index) => (
@@ -225,12 +205,10 @@ const InitDashboard: FC = () => {
                               .map((part: string) => part[0])
                               .join("")}
                           </div>
-
                           <div className={styles.info}>
                             <p className={styles.name}>{member.name}</p>
                             <p className={styles.reg}>{member.reg}</p>
                           </div>
-
                           {member.isLeader && (
                             <span className={styles.badge}>Leader</span>
                           )}
@@ -248,24 +226,21 @@ const InitDashboard: FC = () => {
             </div>
           )}
 
-          {/* ================= SUPERVISOR CARD ================= */}
+          {/* ── Supervisor Card ── */}
           {!noSupervisor && (
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <p className={styles.cardHeading}>Supervisor</p>
               </div>
-
               <div className={styles.listItem}>
                 <div>
                   <p className={styles.name}>{supervisor.name}</p>
-
                   <p className={styles.reg}>
                     {hasSupervisorAssigned
                       ? `Accepted on ${supervisor.acceptedOn}`
                       : `Requested on ${supervisor.requestedOn}`}
                   </p>
                 </div>
-
                 <span
                   className={`${styles.badge} ${
                     hasSupervisorAssigned ? styles.accepted : styles.pending

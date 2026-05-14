@@ -153,8 +153,6 @@ const CoordDeadlines: FC = () => {
         <Header
           title="Deadlines"
           subtitle="Set and manage project submission deadlines"
-          userName="Junaid Hussain"
-          userId="CO2024001"
         />
 
         <div className={styles.content}>

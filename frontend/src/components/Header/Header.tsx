@@ -77,7 +77,7 @@ const Header: FunctionComponent<HeaderProps> = ({ title, subtitle }) => {
           <span className={styles.icon}>
             <IoMdNotifications />
           </span>
-          <span className={styles.badge}>3</span>
+          {/* <span className={styles.badge}>3</span> */}
         </button>
 
         {/* User Info */}

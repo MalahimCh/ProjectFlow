@@ -30,39 +30,47 @@ interface Props {
   role?: "supervisor" | "student";
 }
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 const ProjectDetails = ({ role = "supervisor" }: Props) => {
   const { projectId } = useParams<{ projectId: string }>();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [activeTab, setActiveTab] = useState<"stream" | "work" | "grade">(
     "stream",
   );
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const Sidebar = role === "supervisor" ? SSidebar : StudSidebar;
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) {
+        setCollapsed(true);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     if (!projectId) return;
-    // Fetch project overview (use your existing project endpoint)
     api
       .get(`/projects/${projectId}`)
       .then((r) => {
         const p = r.data.data;
-
         setProject({
           id: p.id,
           title: p.title,
-          // members is now [{ name }] array — join into display string
           members:
             p.members?.map((m: { name: string }) => m.name).join(", ") || "",
-          // supervisor is now { name, email } object
           supervisor: p.supervisor?.name || "",
-          // deadline is now { dueDate, time, daysLeft, type } object or null
           deadline: p.deadline?.dueDate || "TBD",
           progress: p.progress ?? 0,
           grades: p.grades ?? [],
         });
       })
       .catch(() => {
-        // Fallback to static for development
         setProject({
           id: projectId,
           title: "AI-Based Healthcare Diagnosis System",

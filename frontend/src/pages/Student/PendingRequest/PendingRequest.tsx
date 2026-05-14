@@ -30,19 +30,25 @@ const timeAgo = (iso: string) => {
   return `${Math.floor(hrs / 24)}d ago`;
 };
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 /* ── component ───────────────────────────────────── */
 const PendingRequest: FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [requests, setRequests] = useState<IncomingRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [acting, setActing] = useState<Record<string, "accepting" | "rejecting">>({});
 
-  // per-card loading state: requestId → "accepting" | "rejecting" | null
-  const [acting, setActing] = useState<
-    Record<string, "accepting" | "rejecting">
-  >({});
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) setCollapsed(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  /* fetch */
   const fetchRequests = useCallback(async () => {
     try {
       setLoading(true);
@@ -56,29 +62,20 @@ const PendingRequest: FC = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests]);
+  useEffect(() => { fetchRequests(); }, [fetchRequests]);
 
-  /* accept */
   const handleAccept = async (req: IncomingRequest) => {
     setActing((p) => ({ ...p, [req.id]: "accepting" }));
     try {
       await acceptGroupRequest(req.id);
-      // remove from list optimistically
       setRequests((p) => p.filter((r) => r.id !== req.id));
     } catch (err: any) {
       alert(err?.response?.data?.message ?? "Failed to accept request.");
     } finally {
-      setActing((p) => {
-        const n = { ...p };
-        delete n[req.id];
-        return n;
-      });
+      setActing((p) => { const n = { ...p }; delete n[req.id]; return n; });
     }
   };
 
-  /* reject */
   const handleReject = async (req: IncomingRequest) => {
     setActing((p) => ({ ...p, [req.id]: "rejecting" }));
     try {
@@ -87,15 +84,10 @@ const PendingRequest: FC = () => {
     } catch (err: any) {
       alert(err?.response?.data?.message ?? "Failed to reject request.");
     } finally {
-      setActing((p) => {
-        const n = { ...p };
-        delete n[req.id];
-        return n;
-      });
+      setActing((p) => { const n = { ...p }; delete n[req.id]; return n; });
     }
   };
 
-  /* ── render ── */
   return (
     <div className={styles.container}>
       <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -116,9 +108,7 @@ const PendingRequest: FC = () => {
           {!loading && error && (
             <div className={styles.emptyState}>
               <p className={styles.emptyText}>{error}</p>
-              <button className={styles.retryBtn} onClick={fetchRequests}>
-                Retry
-              </button>
+              <button className={styles.retryBtn} onClick={fetchRequests}>Retry</button>
             </div>
           )}
 
@@ -136,50 +126,32 @@ const PendingRequest: FC = () => {
             <div className={styles.grid}>
               {requests.map((r) => {
                 const busy = acting[r.id];
-
                 return (
                   <div key={r.id} className={styles.card}>
-                    {/* TOP */}
                     <div className={styles.top}>
-                      <div className={styles.avatar}>
-                        {getInitials(r.sender.name)}
-                      </div>
-
+                      <div className={styles.avatar}>{getInitials(r.sender.name)}</div>
                       <div className={styles.meta}>
                         <p className={styles.name}>{r.sender.name}</p>
                         <p className={styles.email}>{r.sender.email}</p>
                       </div>
-
-                      <span className={styles.time}>
-                        {timeAgo(r.createdAt)}
-                      </span>
+                      <span className={styles.time}>{timeAgo(r.createdAt)}</span>
                     </div>
 
-                    {/* ACTIONS */}
                     <div className={styles.actions}>
                       <button
                         className={styles.accept}
                         onClick={() => handleAccept(r)}
                         disabled={!!busy}
                       >
-                        {busy === "accepting" ? (
-                          <span className={styles.spinner} />
-                        ) : (
-                          <LuCheck size={14} />
-                        )}
+                        {busy === "accepting" ? <span className={styles.spinner} /> : <LuCheck size={14} />}
                         Accept
                       </button>
-
                       <button
                         className={styles.reject}
                         onClick={() => handleReject(r)}
                         disabled={!!busy}
                       >
-                        {busy === "rejecting" ? (
-                          <span className={styles.spinner} />
-                        ) : (
-                          <LuX size={14} />
-                        )}
+                        {busy === "rejecting" ? <span className={styles.spinner} /> : <LuX size={14} />}
                         Decline
                       </button>
                     </div>

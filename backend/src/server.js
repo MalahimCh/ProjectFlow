@@ -1,3 +1,10 @@
+import dns from "dns";
+
+dns.setServers([
+  "1.1.1.1",
+  "8.8.8.8"
+]);
+
 import "dotenv/config";
 import app from "./app.js";
 import connectDB from "./config/db.js";
@@ -9,7 +16,5 @@ await connectDB();
 
 // Start server
 app.listen(PORT, () => {
-  console.log(
-    `🚀 Server running on port ${PORT} [${process.env.NODE_ENV}]`
-  );
+  console.log(`🚀 Server running on port ${PORT} [${process.env.NODE_ENV}]`);
 });

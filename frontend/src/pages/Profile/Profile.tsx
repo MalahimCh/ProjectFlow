@@ -29,7 +29,7 @@ import {
   type SupervisorProfile,
 } from "../../services/profileService";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getInitials(name: string): string {
   return name
@@ -53,6 +53,9 @@ function getRoleLabel(role: string): string {
   }
 }
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 interface InfoItemProps {
@@ -71,7 +74,7 @@ const InfoItem: FC<InfoItemProps> = ({ icon, label, value }) => (
   </div>
 );
 
-// ─── Role-specific info panels ───────────────────────────────────────────────
+// ─── Role-specific info panels ────────────────────────────────────────────────
 
 const StudentInfoPanel: FC<{ profile: StudentProfile; onEdit: () => void }> = ({
   profile,
@@ -144,12 +147,20 @@ const SupervisorInfoPanel: FC<{
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const Profile: FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) setCollapsed(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     fetchProfile()

@@ -50,14 +50,25 @@ const Skeleton = ({
   />
 );
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 /* ── Component ─────────────────────────────────────────────── */
 
 const StudDashboard: FC = () => {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) setCollapsed(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     fetchStudentDashboard()
@@ -66,14 +77,10 @@ const StudDashboard: FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  /* Derive display values safely */
   const project = data?.project ?? null;
   const stats = data?.stats ?? { progress: 0, pendingTasks: 0, meetings: 0 };
   const deadlines: DashboardDeadline[] = data?.deadlines ?? [];
   const announcements: DashboardAnnouncement[] = data?.announcements ?? [];
-
-  /* User name from project team — first member is the logged-in student
-     (in production, read from auth context instead) */
 
   if (error) {
     return (
@@ -93,13 +100,12 @@ const StudDashboard: FC = () => {
     <div className={styles.container}>
       <StudSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-      {/* shimmer keyframe injected once */}
       <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
 
       <div className={styles.main}>
         <Header
           title="Dashboard"
-          subtitle={`Welcome back. Showing your project overview and upcoming deadlines.`}
+          subtitle="Welcome back. Showing your project overview and upcoming deadlines."
         />
 
         <div className={styles.content}>
@@ -107,15 +113,9 @@ const StudDashboard: FC = () => {
           <div className={styles.statsGrid}>
             {loading ? (
               <>
-                <div className={styles.skeletonCard}>
-                  <Skeleton height="80px" />
-                </div>
-                <div className={styles.skeletonCard}>
-                  <Skeleton height="80px" />
-                </div>
-                <div className={styles.skeletonCard}>
-                  <Skeleton height="80px" />
-                </div>
+                <div className={styles.skeletonCard}><Skeleton height="80px" /></div>
+                <div className={styles.skeletonCard}><Skeleton height="80px" /></div>
+                <div className={styles.skeletonCard}><Skeleton height="80px" /></div>
               </>
             ) : (
               <>
@@ -170,9 +170,7 @@ const StudDashboard: FC = () => {
                   </div>
                   <div className={styles.metaItem}>
                     <p className={styles.metaLabel}>Members</p>
-                    <p className={styles.metaValue}>
-                      {project!.team.join(", ")}
-                    </p>
+                    <p className={styles.metaValue}>{project!.team.join(", ")}</p>
                   </div>
                   <div className={styles.metaItem}>
                     <p className={styles.metaLabel}>Domain</p>
@@ -186,9 +184,7 @@ const StudDashboard: FC = () => {
 
                 <div className={styles.progressSection}>
                   <div className={styles.progressInfo}>
-                    <span className={styles.progressLabel}>
-                      Overall Progress
-                    </span>
+                    <span className={styles.progressLabel}>Overall Progress</span>
                     <span
                       className={styles.progressPercent}
                       style={{ color: getProgressColor(project!.progress) }}
@@ -244,19 +240,11 @@ const StudDashboard: FC = () => {
                       <div
                         key={item.id}
                         className={`${styles.deadlineItem} ${
-                          item.type === "assignment"
-                            ? styles.deadlineClickable
-                            : ""
+                          item.type === "assignment" ? styles.deadlineClickable : ""
                         }`}
                         onClick={() => {
-                          if (
-                            item.type === "assignment" &&
-                            item.projectId &&
-                            item.assignmentId
-                          ) {
-                            navigate(
-                              `/student/projects/${item.projectId}/assignments/${item.assignmentId}`,
-                            );
+                          if (item.type === "assignment" && item.projectId && item.assignmentId) {
+                            navigate(`/student/projects/${item.projectId}/assignments/${item.assignmentId}`);
                           }
                         }}
                       >
@@ -266,15 +254,10 @@ const StudDashboard: FC = () => {
                           </div>
                           <div>
                             <p className={styles.deadlineTitle}>{item.title}</p>
-                            <p className={styles.deadlineDue}>
-                              Due: {item.due}
-                            </p>
+                            <p className={styles.deadlineDue}>Due: {item.due}</p>
                           </div>
                         </div>
-                        <span
-                          className={styles.deadlineStatus}
-                          style={{ color }}
-                        >
+                        <span className={styles.deadlineStatus} style={{ color }}>
                           {text}
                         </span>
                       </div>
@@ -289,10 +272,7 @@ const StudDashboard: FC = () => {
               <div className={styles.colCardHeader}>
                 <p className={styles.cardHeading}>Recent Announcements</p>
                 {project && (
-                  <Link
-                    to={`/student/projects/${project.id}`}
-                    className={styles.viewAll}
-                  >
+                  <Link to={`/student/projects/${project.id}`} className={styles.viewAll}>
                     View All &gt;
                   </Link>
                 )}
@@ -320,9 +300,7 @@ const StudDashboard: FC = () => {
                         <p className={styles.annSubtitle}>{a.body}</p>
                         <div className={styles.annMeta}>
                           <LuClock size={11} color="#0D3CCF" />
-                          <span className={styles.annTime}>
-                            Posted {a.postedAt}
-                          </span>
+                          <span className={styles.annTime}>Posted {a.postedAt}</span>
                         </div>
                       </div>
                     </div>

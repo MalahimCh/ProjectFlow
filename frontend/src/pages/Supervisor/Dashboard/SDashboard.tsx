@@ -4,17 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./SDashboard.module.css";
 import Header from "../../../components/Header/Header";
 import StatsCard from "../../../components/StatsCard/StatsCard";
-import {
-  LuUsers,
-  LuMessageSquareText,
-  LuCalendar,
-  LuUserCheck,
-  LuBookOpen,
-  LuCircleCheck,
-  LuClock,
-  LuTriangleAlert,
-  LuFlag,
-} from "react-icons/lu";
+import { LuUsers, LuMessageSquareText, LuCalendar, LuUserCheck, LuBookOpen, LuCircleCheck, LuClock, LuTriangleAlert, LuFlag } from "react-icons/lu";
 import {
   fetchSupervisorDashboard,
   type SupervisorDashboardData,
@@ -116,12 +106,26 @@ const Skeleton = ({
 
 /* ── Component ─────────────────────────────────────────────── */
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 const SDashboard: FC = () => {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [data, setData] = useState<SupervisorDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Keep collapsed in sync if the window is resized across the mobile breakpoint
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) {
+        setCollapsed(true);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     fetchSupervisorDashboard()

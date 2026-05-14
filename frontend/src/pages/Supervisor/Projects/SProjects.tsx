@@ -43,9 +43,12 @@ const Skeleton = ({
 
 /* ── Component ─────────────────────────────────────────────── */
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 const SProjects: FC = () => {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [projects, setProjects] = useState<SupervisedProject[]>([]);
   const [stats, setStats] = useState<ProjectsStats>({
     totalGroups: 0,
@@ -57,6 +60,16 @@ const SProjects: FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) {
+        setCollapsed(true);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
     fetchSupervisorProjects()
       .then((data) => {
         setStats(data.stats);
@@ -65,7 +78,9 @@ const SProjects: FC = () => {
       .catch(() => setError("Failed to load projects. Please refresh."))
       .finally(() => setLoading(false));
   }, []);
+
   console.log(projects);
+
   return (
     <div className={styles.container}>
       <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -163,7 +178,6 @@ const SProjects: FC = () => {
                           <LuUsers />
                         </div>
                         <div className={styles.groupMeta}>
-                          {/* ✅ was project.groupName */}
                           <h3>{project.group?.name ?? "Unknown Group"}</h3>
                           <span>
                             {memberCount} Member{memberCount !== 1 ? "s" : ""}
@@ -171,7 +185,6 @@ const SProjects: FC = () => {
                         </div>
                       </div>
 
-                      {/* ✅ was project.projectName */}
                       <p className={styles.projectName}>{project.title}</p>
 
                       {project.deadline ? (

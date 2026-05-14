@@ -21,6 +21,7 @@ import {
   deleteMeeting,
   getSupervisorProjects,
 } from "../../../services/supervisorService";
+
 type Meeting = {
   id: string;
   projectName: string;
@@ -29,13 +30,17 @@ type Meeting = {
   scheduledAt: string;
   link: string;
 };
+
 type Project = {
   id: string;
   title: string;
 };
 
+const isMobile = () =>
+  typeof window !== "undefined" && window.innerWidth <= 767;
+
 const SMeetings: FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isMobile());
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [joinLink, setJoinLink] = useState("");
@@ -44,10 +49,18 @@ const SMeetings: FC = () => {
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) setCollapsed(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const fetchMeetings = async () => {
     try {
       const data = await getSupervisorMeetings();
-
       const formatted: Meeting[] = (data.meetings || []).map((m: any) => ({
         id: m.id,
         projectName: m.project?.title || "",
@@ -56,12 +69,12 @@ const SMeetings: FC = () => {
         scheduledAt: m.scheduledAt,
         link: m.meetingUrl || "",
       }));
-
       setMeetings(formatted);
     } catch (err) {
       console.error("Failed to load meetings:", err);
     }
   };
+
   const fetchProjects = async () => {
     try {
       const data = await getSupervisorProjects();
@@ -70,10 +83,12 @@ const SMeetings: FC = () => {
       console.error(err);
     }
   };
+
   useEffect(() => {
     fetchMeetings();
     fetchProjects();
   }, []);
+
   const [formData, setFormData] = useState({
     projectName: "",
     title: "",
@@ -106,27 +121,25 @@ const SMeetings: FC = () => {
     window.open("https://meet.google.com/new", "_blank");
     setMeetLinkStep(2);
   };
+
   const handleEditMeeting = (meeting: Meeting) => {
     setEditingMeeting(meeting);
-
     const dt = new Date(meeting.scheduledAt);
-
     setFormData({
       projectName: meeting.projectName,
       title: meeting.title,
       date: dt.toISOString().split("T")[0],
       time: dt.toTimeString().slice(0, 5),
     });
-
     setMeetLinkInput(meeting.link);
     setSelectedProjectId(meeting.projectId || "");
     setMeetLinkStep(2);
     setShowCreateModal(true);
   };
+
   const handleDeleteMeeting = async (id: string) => {
     const ok = window.confirm("Delete meeting?");
     if (!ok) return;
-
     try {
       await deleteMeeting(id);
       fetchMeetings();
@@ -140,7 +153,6 @@ const SMeetings: FC = () => {
       alert("Fill all fields and select project.");
       return;
     }
-
     try {
       const scheduledAt = new Date(
         `${formData.date}T${formData.time}`,
@@ -167,18 +179,17 @@ const SMeetings: FC = () => {
       setMeetLinkInput("");
       setFormData({ projectName: "", title: "", date: "", time: "" });
       setSelectedProjectId("");
-
       await fetchMeetings();
     } catch (err) {
       alert("Failed to save meeting");
     }
   };
+
   const totalMeetings = meetings.length;
 
   const thisWeek = meetings.filter((m) => {
     const d = new Date(m.scheduledAt);
     const now = new Date();
-
     const diff = (d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
     return diff >= 0 && diff <= 7;
   }).length;
@@ -233,7 +244,6 @@ const SMeetings: FC = () => {
                 bgColor="#EEF2FF"
                 iconColor="#2563EB"
               />
-
               <StatsCard
                 value={thisWeek}
                 label="This Week"
@@ -241,7 +251,6 @@ const SMeetings: FC = () => {
                 bgColor="#ECFDF5"
                 iconColor="#16A34A"
               />
-
               <StatsCard
                 value={thisMonth}
                 label="This Month"
@@ -249,7 +258,6 @@ const SMeetings: FC = () => {
                 bgColor="#FFF7ED"
                 iconColor="#F59E0B"
               />
-
               <StatsCard
                 value={totalMeetings}
                 label="Total Meetings"
@@ -278,7 +286,7 @@ const SMeetings: FC = () => {
                       </div>
 
                       <div className={styles.dateTimeRow}>
-                        <LuCalendar />{" "}
+                        <LuCalendar />
                         <span>
                           {dt.toLocaleDateString("en-US", {
                             month: "short",
@@ -289,7 +297,7 @@ const SMeetings: FC = () => {
                       </div>
 
                       <div className={styles.dateTimeRow}>
-                        <LuClock />{" "}
+                        <LuClock />
                         <span>
                           {dt.toLocaleTimeString("en-US", {
                             hour: "2-digit",
@@ -311,11 +319,16 @@ const SMeetings: FC = () => {
                         Join Meeting
                       </button>
                       <div className={styles.cardActionIcons}>
-                        <button onClick={() => handleEditMeeting(m)}>
+                        <button
+                          className={styles.iconBtn}
+                          onClick={() => handleEditMeeting(m)}
+                        >
                           <LuPencil size={15} />
                         </button>
-
-                        <button onClick={() => handleDeleteMeeting(m.id)}>
+                        <button
+                          className={styles.iconBtnDanger}
+                          onClick={() => handleDeleteMeeting(m.id)}
+                        >
                           <LuTrash2 size={15} />
                         </button>
                       </div>
@@ -393,10 +406,13 @@ const SMeetings: FC = () => {
                 className={styles.modal}
                 onClick={(e) => e.stopPropagation()}
               >
-                <h3 className={styles.modalTitle}>Create Meeting</h3>
+                <h3 className={styles.modalTitle}>
+                  {editingMeeting ? "Edit Meeting" : "Create Meeting"}
+                </h3>
 
                 <div className={styles.inputGroup}>
                   <select
+                    className={styles.selectInput}
                     value={selectedProjectId}
                     onChange={(e) => setSelectedProjectId(e.target.value)}
                   >
@@ -436,7 +452,6 @@ const SMeetings: FC = () => {
                     }
                   />
 
-                  {/* Step 1 — generate link button */}
                   {meetLinkStep === 1 && (
                     <button
                       className={styles.generateLinkBtn}
@@ -447,7 +462,6 @@ const SMeetings: FC = () => {
                     </button>
                   )}
 
-                  {/* Step 2 — paste the real link back */}
                   {meetLinkStep === 2 && (
                     <div className={styles.pasteLinkWrapper}>
                       <p className={styles.pasteLinkHint}>
@@ -488,7 +502,7 @@ const SMeetings: FC = () => {
                     onClick={handleCreateMeeting}
                     disabled={meetLinkStep === 1 || !meetLinkInput.trim()}
                   >
-                    Create
+                    {editingMeeting ? "Update" : "Create"}
                   </button>
                 </div>
               </div>

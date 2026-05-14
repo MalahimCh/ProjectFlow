@@ -1,4 +1,3 @@
-/* ── Layout ── (matches InitDashboard exactly) */
 .container {
   display: flex;
   height: 100vh;
@@ -8,6 +7,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .content {
@@ -27,7 +27,7 @@
   align-content: start;
 }
 
-/* ── Shared white card shell ── (mirrors InitDashboard .card) */
+/* ── Shared white card shell ── */
 .card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -65,7 +65,6 @@
 
 .metaValue {
   font-size: 14px;
-  /* font-weight: 600; */
   color: #1a1a1a;
   margin: 0;
 }
@@ -121,12 +120,10 @@
   padding: 20px;
 }
 
-/* deadlines column takes ~2/3 */
 .colCardDeadlines {
   flex: 2;
 }
 
-/* announcements column takes ~1/3 */
 .colCardAnnouncements {
   flex: 1;
 }
@@ -138,7 +135,6 @@
   margin-bottom: 16px;
 }
 
-/* when heading is inside header row, override its own bottom margin */
 .colCardHeader .cardHeading {
   margin-bottom: 0;
 }
@@ -147,6 +143,7 @@
   text-decoration: none;
   font-size: 13px;
   color: #0d3ccf;
+  white-space: nowrap;
 }
 
 /* ── Deadline list ── */
@@ -170,9 +167,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  min-width: 0;
 }
 
-/* clock circle — outline only, matching picture */
 .clockCircle {
   width: 32px;
   height: 32px;
@@ -190,6 +188,9 @@
   font-weight: 600;
   color: #111827;
   margin: 0 0 3px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .deadlineDue {
@@ -202,6 +203,8 @@
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 /* ── Announcement list ── */
@@ -263,7 +266,7 @@
   font-weight: 500;
 }
 
-/* ── Empty state ── (mirrors InitDashboard empty slot style) */
+/* ── Empty state ── */
 .emptyState {
   display: flex;
   flex-direction: column;
@@ -282,9 +285,7 @@
   margin: 0;
 }
 
-/* Add these to the BOTTOM of your existing StudDashboard.module.css */
-
-/* Error state */
+/* ── Error state ── */
 .errorState {
   text-align: center;
   padding: 60px 24px;
@@ -295,7 +296,7 @@
   border: 1px solid #fecaca;
 }
 
-/* Skeleton placeholders */
+/* ── Skeleton ── */
 .skeletonCard {
   border-radius: 10px;
   overflow: hidden;
@@ -311,7 +312,7 @@
   padding: 4px 0;
 }
 
-/* Clickable deadline row (for assignment deadlines) */
+/* ── Clickable deadline ── */
 .deadlineClickable {
   cursor: pointer;
   transition: background 0.15s;
@@ -325,7 +326,7 @@
   background: #eff6ff;
 }
 
-/* View project button */
+/* ── View project button ── */
 .viewProjectBtn {
   display: inline-flex;
   align-items: center;
@@ -344,4 +345,62 @@
 
 .viewProjectBtn:hover {
   background: #dbeafe;
+}
+
+/* ── Tablet (768px – 1024px) ── */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .content {
+    padding: 20px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .twoCol {
+    flex-direction: column;
+  }
+
+  .colCardDeadlines,
+  .colCardAnnouncements {
+    flex: unset;
+    width: 100%;
+  }
+}
+
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+  .content {
+    padding: 16px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .metaGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .twoCol {
+    flex-direction: column;
+  }
+
+  .colCardDeadlines,
+  .colCardAnnouncements {
+    flex: unset;
+    width: 100%;
+  }
+
+  .cardHeading {
+    font-size: 14px;
+  }
+
+  .card,
+  .colCard {
+    padding: 16px;
+  }
 }

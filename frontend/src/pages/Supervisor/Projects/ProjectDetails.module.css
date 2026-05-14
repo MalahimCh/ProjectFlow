@@ -9,6 +9,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .content {
@@ -152,6 +153,7 @@
   color: #6A7282;
   text-align: center;
   transition: color 0.15s;
+  white-space: nowrap;
 }
 
 .tab:hover {
@@ -277,7 +279,6 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   font-size: 13px;
   font-weight: 500;
   color: #0D3CCF;
@@ -410,7 +411,6 @@
   display: flex;
   align-items: center;
   gap: 5px;
-
   background: none;
   border: none;
   padding: 0 0 0 20px;
@@ -453,6 +453,7 @@
 
 .fileInfo {
   flex: 1;
+  min-width: 0;
 }
 
 .fileName {
@@ -460,6 +461,9 @@
   font-weight: 600;
   color: #0f172a;
   margin: 0 0 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fileMeta {
@@ -554,28 +558,53 @@
   color: #0D3CCF;
 }
 
-/* ── Responsive ─────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .streamGrid {
-    grid-template-columns: 1fr;
-  }
+/* ── Loading state ──────────────────────────────────────── */
+.loadingState {
+  text-align: center;
+  padding: 60px 24px;
+  font-size: 14px;
+  color: #6A7282;
 }
 
-@media (max-width: 768px) {
+/* ── Tablet (768px – 1024px) ────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1024px) {
   .content {
     padding: 20px;
   }
 
+  .streamGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .projectMeta {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Mobile (≤ 767px) ───────────────────────────────────── */
+@media (max-width: 767px) {
+  .content {
+    padding: 16px;
+  }
+
+  .projectTitle {
+    font-size: 15px;
+  }
+
   .projectMeta {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .streamGrid {
+    grid-template-columns: 1fr;
   }
 
   .tabsWrapper {
     overflow-x: auto;
   }
 
-  .tab,
-  .activeTab {
-    white-space: nowrap;
+  .postBody {
+    padding-left: 0;
   }
 }
