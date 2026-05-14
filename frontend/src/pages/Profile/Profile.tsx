@@ -5,6 +5,7 @@ import SSidebar from "../Supervisor/Sidebar/Ssidebar";
 import StudSidebar from "../Student/Sidebar/StudSidebar";
 import Header from "../../components/Header/Header";
 import EditProfileModal from "./editProfileModal";
+import InitSidebar from "../Student/Sidebar/InitSidebar";
 import ResetPasswordModal from "./resetPasswordModal";
 import {
   LuMail,
@@ -28,6 +29,10 @@ import {
   type StudentProfile,
   type SupervisorProfile,
 } from "../../services/profileService";
+
+import { getUser } from "../../services/authService";
+
+type UserRole = "istudent" | "coordinator" | "supervisor" | "student";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -153,7 +158,7 @@ const Profile: FC = () => {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-
+  const [role, setRole] = useState<UserRole>("student"); // default role
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 767) setCollapsed(true);
@@ -173,16 +178,32 @@ const Profile: FC = () => {
     const updated = await updateProfile(payload);
     setProfile(updated);
   };
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        const userRole = await getUser();
+        setRole(userRole as UserRole);
+      } catch (error) {
+        console.error("Failed to fetch user role:", error);
+      }
+    };
 
+    fetchRole();
+  }, []);
   const renderSidebar = () => {
-    const role = profile?.role ?? "student";
     switch (role) {
+      case "istudent":
+        return (
+          <InitSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+        );
       case "student":
         return (
           <StudSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
         );
+
       case "supervisor":
         return <SSidebar collapsed={collapsed} setCollapsed={setCollapsed} />;
+
       case "coordinator":
       default:
         return (
